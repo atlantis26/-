@@ -1,12 +1,15 @@
 # coding:utf-8
+import os
 
-USER_INFO = "E:\\user_info.txt"
+USER_INFO = os.path.join(os.path.curdir, "user_info.txt")
+
 
 def console():
     logined = False
     while not logined:
         logined = login()
     do_something()
+
 
 def login():
     username = input(u"请输入账号: ")
@@ -29,11 +32,13 @@ def login():
         print(msg)
         lock_user(username)
 
+
 def auth_username(username):
     with open(USER_INFO, 'r') as f:
         for line in f:
             if username == line.split(",")[0].strip():
                 return True
+
 
 def auth(username, passwd):
     """
@@ -45,14 +50,15 @@ def auth(username, passwd):
         for line in f:
             if ','.join([username, passwd]) == line.strip():
                 return True
-            
+
+
 def lock_user(username):
     pass
-            
+
+
 def do_something():
     print("do something...")
 
     
-if __name__=="__main__":
-    a = console()
-            
+if __name__ == "__main__":
+    console()

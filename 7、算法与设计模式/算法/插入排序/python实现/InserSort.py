@@ -14,4 +14,4 @@ def InserSort(num):
 
 
 a = InserSort([3,5,4,7,8,1,2])
-print a
+print(a)
