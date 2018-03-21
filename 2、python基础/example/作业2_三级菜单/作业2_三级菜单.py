@@ -42,7 +42,7 @@ def get_current_menu(menu, menu_depth):
 
 def next_menu(menu, menu_depth, item):
     """
-    根据当前菜单与输入菜单项，修改菜单深度表，
+    根据当前菜单与输入菜单项，修改菜单深度表
     """
     if item in menu:
         if isinstance(menu, dict):
