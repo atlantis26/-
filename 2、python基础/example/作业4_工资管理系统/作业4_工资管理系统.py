@@ -39,7 +39,7 @@ def insert():
     info = input(u"请输入要增加的员工姓名和工资，共空格分割（例如：Eric 100000）:")
     user_info = info.strip().split(" ")
     if len(user_info) != 2:
-        return u"输入数据格式有误，修改失败，请核对后再试"
+        return u"输入数据格式有误，新增失败，请核对后再试"
     if user_is_exist(user_info[0]):
         return u"员工'{0}'已存在，请核对后再尝试".format(user_info[0])
     with open(InfoFile, "a") as f:
@@ -84,7 +84,7 @@ def work_flow():
         elif item == "3":
             print(insert())
         elif item == "4":
-            print("再见！")
+            print(u"再见！")
             break
         else:
             print(u"编号不存在，请核对后再重新输入")
