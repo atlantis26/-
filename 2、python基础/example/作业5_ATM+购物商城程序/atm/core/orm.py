@@ -6,8 +6,7 @@ class ResponseData(object):
     def __init__(self, code, msg, data=None):
         self.code = code
         self.msg = msg
-        if data is None:
-            self.data = data
+        self.data = data
 
 
 class Account(object):

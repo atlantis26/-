@@ -14,10 +14,8 @@ logger = logging.getLogger("atm.main")
 AUTH_FLAG = {"is_authenticated": False, "account_name": None}
 
 
-def login():
+def login(account_name, password):
     """登陆"""
-    account_name = input(u"请输入账号: ")
-    password = input(u"请输入密码: ")
     account_file = os.path.join(PROJECT_DIR, "db", "{0}.json".format(account_name))
     if not os.path.exists(account_file):
         code = 400
@@ -50,21 +48,19 @@ def logout():
     return ResponseData(code, msg)
 
 
-def create_account():
+def create_account(account_name, password1, password2):
     """创建新账户"""
-    account_name = input(u"请输入新建账户的账号：")
-    if account_is_exists:
+    if account_is_exists(account_name):
         code = 400
         msg = u"创建失败，账户{0}已存在".format(account_name)
     else:
-        password1 =  input(u"请输入设置密码：")
-        password2 = input(u"请再次输入设置密码：")
         if password1 != password2:
             code = 400
             msg = u"创建失败，账户{0}的两次设置密码不一致".format(account_name)
         else:
             resp = account_sample(account_name, password1)
             if resp.code == 200:
+                print(1111, resp.__dict__)
                 resp = save_account(resp.data.__dict__)
             code = resp.code
             msg = resp.msg
@@ -157,5 +153,21 @@ def history(year, month):
         code = 400
         msg = u"查询失败，无相关流水信息"
     logger.debug(ResponseData(code, msg, flow_list).__dict__)
+
+    return ResponseData(code, msg)
+
+
+@auth(AUTH_FLAG)
+def balance():
+    """查询余额"""
+    resp = load_account(AUTH_FLAG["account_name"])
+    if resp.code == 200:
+        ba = resp.data["balance"]
+        code = 200
+        msg = u"查询成功，您的当前余额为：{0}元".format(ba)
+    else:
+        code = 400
+        msg = "查询失败，原因：{0}".format(resp.msg)
+    logger.debug(ResponseData(code, msg).__dict__)
 
     return ResponseData(code, msg)

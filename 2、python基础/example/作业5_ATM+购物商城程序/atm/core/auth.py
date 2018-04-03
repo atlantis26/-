@@ -6,7 +6,7 @@ logger = logging.getLogger("atm.auth")
 
 
 def auth(auth_flag):
-    def new_auth(func):
+    def new_func(func):
         def deco(*args, **kwargs):
             if auth_flag["is_authenticated"]:
                 return func(*args, **kwargs)
@@ -16,3 +16,4 @@ def auth(auth_flag):
                 logger.debug(ResponseData(code, msg).__dict__)
                 return ResponseData(code, msg)
         return deco
+    return new_func
