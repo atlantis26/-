@@ -2,8 +2,13 @@
 import os
 from logging.config import dictConfig
 
+# 数据库设置
+DB_TYPE = "FileStorage" # 可扩展，当前支持文件存储信息方式，留有接入mysql数据库的可能
+
+AUTH_FLAG = {"account_name": None, "is_authenticated": False, "is_administrator": False}
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(PROJECT_DIR, 'logs')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

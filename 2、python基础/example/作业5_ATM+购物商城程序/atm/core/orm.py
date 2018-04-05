@@ -11,11 +11,12 @@ class ResponseData(object):
 
 class Account(object):
     """账户orm模型"""
-    def __init__(self, name, password, balance, locked=False):
+    def __init__(self, name, password, balance, locked=False, is_administrator=False):
         self.name = name
         self.password = password
         self.balance = balance
         self.locked = locked
+        self.is_administrator = is_administrator
 
 
 class Flow(object):
