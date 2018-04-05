@@ -1,6 +1,6 @@
 # coding:utf-8
 from atm.core.orm import ResponseData
-from atm.core.accounts import account_is_exists, load_account, settle_account, save_account, account_flow
+from atm.core.accounts import account_is_exists, load_account, settle_account, account_flow, reset_account
 from atm.conf.settings import PROJECT_DIR, AUTH_FLAG
 from atm.core.auth import auth
 import os
@@ -91,7 +91,10 @@ def repayment(money):
 @auth(AUTH_FLAG)
 def transfer(account_name, money):
     """转账"""
-    if not account_is_exists(account_name):
+    if account_name == AUTH_FLAG["account_name"]:
+        code = 400
+        msg = u"转账失败，不能对自己进行转账操作"
+    elif not account_is_exists(account_name):
         code = 400
         msg = u"转账失败，账户{0}不存在".format(account_name)
     else:
@@ -99,16 +102,18 @@ def transfer(account_name, money):
         if rsp.code == 200:
             rsp = settle_account(rsp.data, money, flag=0)
         if rsp.code == 200:
-            resp = load_account(account_name)
-            account = resp.data
-            account["balance"] += money
-            save_account(account)
+            rsp = load_account(account_name)
+        if rsp.code == 200:
+            rsp = settle_account(rsp.data, money, flag=2)
+        if rsp.code == 200:
             code = 200
             msg = u"转账成功，转账给账户{0}共计{1}元".format(account_name, money)
+            account_flow(AUTH_FLAG["account_name"], u"转账/支出", msg)
+            msg1 = u"转账成功，收到账户{0}转账共计{1}元".format(AUTH_FLAG["account_name"], money)
+            account_flow(account_name, u"转账/存入", msg1)
         else:
             code = rsp.code
             msg = u"转账失败，原因：{0}".format(rsp.msg)
-    account_flow(AUTH_FLAG["account_name"], u"转账", msg)
     logger.debug(ResponseData(code, msg).__dict__)
 
     return ResponseData(code, msg)
@@ -153,5 +158,24 @@ def balance():
 
 
 @auth(AUTH_FLAG)
-def reset():
-    pass
+def reset(password0, password1, password2):
+    """修改密码"""
+    resp = load_account(AUTH_FLAG["account_name"])
+    if resp.code == 200:
+        if resp.data["password"] == password0:
+            resp = reset_account(AUTH_FLAG["account_name"], password1, password2)
+            if resp.code == 200:
+                code = 200
+                msg = u"修改密码成功"
+            else:
+                code = 400
+                msg = u"修改密码失败，原因：{0}".format(resp.msg)
+        else:
+            code = 400
+            msg = u"修改密码失败，原密码输入错误"
+    else:
+        code = 400
+        msg = u"修改密码失败，原因：{0}".format(resp.msg)
+    logger.debug(ResponseData(code, msg).__dict__)
+
+    return ResponseData(code, msg)

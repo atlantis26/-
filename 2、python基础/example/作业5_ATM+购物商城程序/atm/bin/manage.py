@@ -10,7 +10,7 @@ def admin_login():
     if AUTH_FLAG["is_authenticated"]:
         msg = u"您当前已经登录系统，无需再次登录"
         print(msg)
-        return msg
+        return
     account_name = input(u"请输入账户的账号: ")
     password = input(u"请输入密码: ")
     rsp = login(account_name, password)
@@ -37,8 +37,14 @@ def admin_create_account():
     account_name = input(u"请输入新建账户的账号：")
     password1 = input(u"请输入设置密码：")
     password2 = input(u"请再次输入设置密码：")
-    rsp = create_account(account_name, password1, password2)
-    print(rsp.msg)
+    balance = input(u"请设置账户的信用额度（默认初始额度为：15000元，直接回车使用默认值）:").strip()
+    balance = 15000 if balance == "" else eval(balance)
+    if isinstance(balance, int):
+        if float(balance) >= 0:
+            rsp = create_account(account_name, password1, password2)
+            print(rsp.msg)
+            return
+    print(u"设置的信用额度必须是大于等于0的整数")
 
 
 @auth(AUTH_FLAG)
@@ -64,8 +70,8 @@ def admin_thawing_account():
 def admin_reset_account():
     """修改账户密码"""
     account_name = input(u"请输入账户的账号：")
-    password1 = input(u"请输入设置密码：")
-    password2 = input(u"请再次输入设置密码：")
+    password1 = input(u"请输入设置新密码：")
+    password2 = input(u"请再次输入设置新密码：")
     rsp = reset_account(account_name, password1, password2)
     print(rsp.msg)
 

@@ -6,7 +6,8 @@ class ResponseData(object):
     def __init__(self, code, msg, data=None):
         self.code = code
         self.msg = msg
-        self.data = data
+        if data is not None:
+            self.data = data
 
 
 class Account(object):
@@ -21,7 +22,7 @@ class Account(object):
 
 class Flow(object):
     """账户单笔流水信息"""
-    def __init__(self, datetime, account_name, action,details):
+    def __init__(self, datetime, account_name, action, details):
         self.datetime = datetime
         self.account_name = account_name
         self.action = action

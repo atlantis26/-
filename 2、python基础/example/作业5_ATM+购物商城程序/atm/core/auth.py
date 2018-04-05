@@ -9,10 +9,13 @@ def auth(auth_flag):
     def new_func(func):
         def deco(*args, **kwargs):
             if auth_flag["is_authenticated"]:
+                code = 200
+                msg = u"认证成功，账户{0}已成功登陆".format(auth_flag["account_name"])
+                logger.debug(ResponseData(code, msg).__dict__)
                 return func(*args, **kwargs)
             else:
                 code = 400
-                msg = u"操作失败，当前是未登录状态,请先登录账户"
+                msg = u"认证失败，当前是未登录状态,请先登录账户"
                 logger.debug(ResponseData(code, msg).__dict__)
                 print(msg)
                 return ResponseData(code, msg)
@@ -24,10 +27,14 @@ def is_administrator(auth_flag):
     def new_func(func):
         def deco(*args, **kwargs):
             if auth_flag["is_administrator"]:
+                code = 200
+                msg = u"认证成功，账户{0}是管理员身份".format(auth_flag["account_name"])
+                logger.debug(ResponseData(code, msg).__dict__)
                 return func(*args, **kwargs)
             else:
                 code = 400
-                msg = "{0}不是管理员账户，不能登录本后台管理系统".format(auth_flag["account_name"])
+                msg = "认证失败，账户{0}不是管理员身份，不能登录本后台管理系统".format(auth_flag["account_name"])
+                logger.debug(msg)
                 print(msg)
                 return ResponseData(code, msg)
         return deco

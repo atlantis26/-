@@ -2,13 +2,31 @@
 import os
 from logging.config import dictConfig
 
-# 数据库设置
-DB_TYPE = "FileStorage" # 可扩展，当前支持文件存储信息方式，留有接入mysql数据库的可能
-
-AUTH_FLAG = {"account_name": None, "is_authenticated": False, "is_administrator": False}
+# 项目根目录
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG_DIR = os.path.join(PROJECT_DIR, 'logs')
 
+# 数据库设置
+DB_TYPE = "FileStorage"  # 当前只支持文件存储信息方式，可扩展，留有接入MySQL等数据库的可能
+
+# 文件存储信息相关配置
+DB_Accounts = os.path.join(PROJECT_DIR, "db", "accounts")
+DB_Flows_History = os.path.join(PROJECT_DIR, "db", "flows_history")
+if not os.path.exists(DB_Accounts):
+    os.mkdir(DB_Accounts)
+if not os.path.exists(DB_Flows_History):
+    os.mkdir(DB_Flows_History)
+
+# # MySQL或其他关系数据库的相关配置
+# DB_HOST = ""
+# DB_PORT = ""
+# DB_USER = ""
+# DB_PASSWORD = ""
+
+# 账户登录认证状态标示
+AUTH_FLAG = {"account_name": None, "is_authenticated": False, "is_administrator": False}
+
+# log日志配置设置
+LOG_DIR = os.path.join(PROJECT_DIR, 'logs')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

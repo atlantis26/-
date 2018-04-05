@@ -64,6 +64,16 @@ def console_balance():
     print(rsp.msg)
 
 
+@auth(AUTH_FLAG)
+def console_reset():
+    """修改账户密码"""
+    password0 = input(u"请输入账户原密码：")
+    password1 = input(u"请输入设置新密码：")
+    password2 = input(u"请再次输入设置新密码：")
+    rsp = reset(password0, password1, password2)
+    print(rsp.msg)
+
+
 def console_help():
     """打印操作选项信息"""
     msg = u"""-------------------------------------------------
@@ -71,7 +81,7 @@ def console_help():
             <\033[36;1m1\033[0m>.登录账户                      <\033[36;1m2\033[0m>.登出账户
             <\033[36;1m3\033[0m>.存钱/还款                     <\033[36;1m4\033[0m>.取现
             <\033[36;1m5\033[0m>.转账                          <\033[36;1m6\033[0m>.按月查询账户流水信息
-            <\033[36;1m7\033[0m>.查询账户余额
+            <\033[36;1m7\033[0m>.查询账户余额                  <\033[36;1m8\033[0m>.重置密码
     """
     print(msg)
 
@@ -85,7 +95,8 @@ def console():
               "4": console_withdraw,
               "5": console_transfer,
               "6": console_flow_history,
-              "7": console_balance}
+              "7": console_balance,
+              "8": console_reset}
     while True:
         console_help()
         key = input("请输入操作选项编号>: ")
