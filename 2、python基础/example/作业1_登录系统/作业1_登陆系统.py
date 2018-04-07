@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-USER_INFO = os.path.join(os.path.curdir, "user_info.txt")
+USER_INFO = os.path.join(os.path.curdir, "staff_table.txt")
 
 
 def console():
