@@ -55,6 +55,7 @@ def purchase_product(product_id):
 
 
 def purchase_flow(name, action, details):
+    """生成购物消费流水并入库"""
     if DB_TYPE == "FileStorage":
         now = datetime.now()
         time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")

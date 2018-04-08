@@ -55,7 +55,7 @@ def div(item):
 
 
 def calc1(item):
-    """最小括号运算内的运算，由于除法分子/分母的特殊性，必须先算除法，再乘法，最后加减放"""
+    """最小括号运算内的运算，由于除法分子/分母的特殊性，必须先算除法，再乘法，最后加减法"""
     item = div(item)
     item = multi(item)
     item = add(item)
@@ -64,12 +64,12 @@ def calc1(item):
 
 
 def replace_calc(string):
-    # 进行相连的加减符号间的运算和替换
+    """进行相连的加减符号间的运算和替换"""
     return string.replace("+-", "-").replace("-+", "-").replace("--", "+").replace("++", "+")
 
 
 def calc(string):
-    """先找到找到最小单元的括号运算，再分别运算最小括号运算后替换字符串；递归直到算出最后结果"""
+    """先找到最小单元的括号运算，再分别运算最小括号运算后替换字符串；递归直到算出最后结果"""
     # 先去除所有空格符
     string = string.replace(" ", "")
     p = r'\([^()]+\)'

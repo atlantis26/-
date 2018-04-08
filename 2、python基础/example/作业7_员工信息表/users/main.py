@@ -17,7 +17,9 @@ def select():
         if rsp.code == 200:
             for user in rsp.data:
                 data.append([user[i] for i in index_lst])
-        msg = u"查询成功，共查询到{0}条信息".format(len(data))
+            msg = u"查询成功，共查询到{0}条信息".format(len(data))
+        else:
+            msg = rsp.msg
     else:
         msg = u"sql查询语句语法有误，请核对后再试"
     for user in data:
