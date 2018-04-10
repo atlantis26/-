@@ -31,14 +31,20 @@ class TeacherView(object):
 
 class MangerView(object):
     """管理视图"""
-    def create_teacher(self):
+
+    def __init__(self):
+        self.teachers = list()
+        self.classes = list()
+        self.courses = list()
+
+    def create_teacher(self, teacher):
         """创建讲师"""
-        pass
+        self.teachers.append(teacher)
 
-    def create_class(self):
+    def create_class(self, cls):
         """创建班级"""
-        pass
+        self.classes.append(cls)
 
-    def create_course(self):
+    def create_course(self, course):
         """创建课程"""
-        pass
+        self.courses.append(course)

@@ -11,8 +11,8 @@ def init_system():
     python = Course(cycle=365, price=6000)
     go = Course(cycle=365, price=6000)
 
-    beijing.classes.extend([linux, python])
-    shanghai.classes.append(go)
+    beijing.extend_courses(linux, python)
+    shanghai.append_course(go)
 
 
 def console_help():
