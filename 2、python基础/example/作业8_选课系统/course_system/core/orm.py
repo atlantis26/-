@@ -66,21 +66,21 @@ class School(object):
 
         return ResponseData(code, msg, class1)
 
-    def create_student(self, name, password, class_name):
+    def create_student(self, name, class_name):
         """创建学员"""
         if self.class_is_exists(class_name):
             raise SomeError(u"{0}班级不存在".format(class_name))
         student_id = self.get_student_id
-        student = Student(student_id, name, password, class_name)
+        student = Student(student_id, name, class_name)
         self.students.append(student)
         code = 200
-        msg = u"创建学员{0}成功".format(name)
+        msg = u"报名成功，创建学员{0}成功".format(name)
 
         return ResponseData(code, msg, student)
 
-    def create_teacher(self, name, password):
+    def create_teacher(self, name):
         emp_id = self.get_employee_id
-        teacher = Teacher(emp_id, name, password, self.school_name)
+        teacher = Teacher(emp_id, name, self.school_name)
         self.teachers.append(teacher)
         code = 200
         msg = u"创建讲师{0}成功".format(name)
@@ -99,19 +99,17 @@ class Course(object):
 
 class Teacher(object):
     """讲师"""
-    def __init__(self, emp_id, name, password, school_name):
+    def __init__(self, emp_id, name, school_name):
         self.emp_id = emp_id
         self.name = name
-        self.password = password
         self.school_name = school_name
 
 
 class Student(object):
     """学生"""
-    def __init__(self, student_id, name, password, class_name):
+    def __init__(self, student_id, name, class_name):
         self.student_id = student_id
         self.name = name
-        self.password = password
         self.class_name = class_name
 
 
@@ -123,7 +121,19 @@ class Class(object):
         self.teacher = teacher
 
 
+class EnrollCourse(object):
+    """已选课程"""
+    def __init__(self, student, school, course, class1, payment, time_stamp):
+        self.student = student
+        self.school = school
+        self.course = course
+        self.class1 = class1
+        self.payment = payment
+        self.time_stamp = time_stamp
+
+
 class ResponseData(object):
+    """统一返回数据"""
     def __init__(self, code, msg, data=None):
         self.code = code
         self.msg = msg
@@ -132,4 +142,5 @@ class ResponseData(object):
 
 
 class SomeError(Exception):
+    """自定义异常错误"""
     pass
