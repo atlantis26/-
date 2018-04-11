@@ -3,11 +3,8 @@
 
 class School(object):
     """学校"""
-    def __init__(self,
-                 courses=list(),
-                 classes=list(),
-                 teachers=list(),
-                 students=list()):
+    def __init__(self, school_name, courses=list(), classes=list(), teachers=list(), students=list()):
+        self.school_name = school_name
         self.courses = courses
         self.classes = classes
         self.teachers = teachers
@@ -33,15 +30,26 @@ class School(object):
         if [student for student in self.students if student.student_id == student_id]:
             return True
 
+    @property
+    def get_student_id(self):
+        """生成新学员的学号"""
+        return len(self.students) + 1
+
+    @property
+    def get_employee_id(self):
+        """生成新讲师的工号"""
+        return len(self.teachers) + 1
+
     def create_course(self, name, cycle, price):
         """创建课程"""
         if self.course_is_exists(name):
             raise SomeError(u"{0}课程已存在".format(name))
         course = Course(name, cycle, price)
         self.courses.append(course)
+        code = 200
         msg = u"创建课程{0}成功".format(name)
 
-        return msg
+        return ResponseData(code, msg, course)
 
     def create_class(self, name, course_name, teacher_id):
         """创建班级"""
@@ -53,9 +61,31 @@ class School(object):
             raise SomeError(u"{0}班级已经存在".format(name))
         class1 = Class(name, course_name, teacher_id)
         self.classes.append(class1)
+        code = 200
         msg = u"创建班级{0}成功".format(name)
 
-        return msg
+        return ResponseData(code, msg, class1)
+
+    def create_student(self, name, password, class_name):
+        """创建学员"""
+        if self.class_is_exists(class_name):
+            raise SomeError(u"{0}班级不存在".format(class_name))
+        student_id = self.get_student_id
+        student = Student(student_id, name, password, class_name)
+        self.students.append(student)
+        code = 200
+        msg = u"创建学员{0}成功".format(name)
+
+        return ResponseData(code, msg, student)
+
+    def create_teacher(self, name, password):
+        emp_id = self.get_employee_id
+        teacher = Teacher(emp_id, name, password, self.school_name)
+        self.teachers.append(teacher)
+        code = 200
+        msg = u"创建讲师{0}成功".format(name)
+
+        return ResponseData(code, msg, teacher)
 
 
 class Course(object):
@@ -69,19 +99,20 @@ class Course(object):
 
 class Teacher(object):
     """讲师"""
-    def __init__(self, emp_id, name, phone, password):
+    def __init__(self, emp_id, name, password, school_name):
         self.emp_id = emp_id
         self.name = name
-        self.phone = phone
         self.password = password
+        self.school_name = school_name
 
 
 class Student(object):
     """学生"""
-    def __init__(self, student_id, name, password):
+    def __init__(self, student_id, name, password, class_name):
         self.student_id = student_id
         self.name = name
         self.password = password
+        self.class_name = class_name
 
 
 class Class(object):

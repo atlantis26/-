@@ -1,8 +1,26 @@
 # coding:utf-8
-class StudentView(object):
+
+
+class _BaseView(object):
+    def __init__(self, schools=list()):
+        self.schools = schools
+
+    @property
+    def list_school_name(self):
+        return [school.school_name for school in self.schools]
+
+
+class StudentView(_BaseView):
     """学员视图"""
     def register(self):
-        """注册"""
+        """注册学校课程"""
+        # 选择学校
+        schools = self.list_school_name
+        print(u"你可以报名注册的学校： ")
+        for school in schools:
+            print(school)
+        # 选择课程
+        # 选择班级
         pass
 
     def pay(self):
@@ -14,7 +32,7 @@ class StudentView(object):
         pass
 
 
-class TeacherView(object):
+class TeacherView(_BaseView):
     """讲师视图"""
     def select_class(self):
         """选择班级"""
@@ -29,7 +47,7 @@ class TeacherView(object):
         pass
 
 
-class MangerView(object):
+class MangerView(_BaseView):
     """管理视图"""
 
     def __init__(self):
