@@ -6,21 +6,18 @@ from logging.config import dictConfig
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 文件存储信息相关配置
-DB_Courses = os.path.join(BASE_DIR, "db", "Courses")
 DB_Schools = os.path.join(BASE_DIR, "db", "Schools")
-DB_Students = os.path.join(BASE_DIR, "db", "Students")
-DB_Teachers = os.path.join(BASE_DIR, "db", "Teachers")
-if not os.path.exists(DB_Courses):
-    os.mkdir(DB_Courses)
+DB_Accounts = os.path.join(BASE_DIR, "db", "Accounts")
+DB_Flows_History = os.path.join(BASE_DIR, "db", "Flows_History")
 if not os.path.exists(DB_Schools):
     os.mkdir(DB_Schools)
-if not os.path.exists(DB_Students):
-    os.mkdir(DB_Students)
-if not os.path.exists(DB_Teachers):
-    os.mkdir(DB_Teachers)
+if not os.path.exists(DB_Accounts):
+    os.mkdir(DB_Accounts)
+if not os.path.exists(DB_Flows_History):
+    os.mkdir(DB_Flows_History)
 
 
-# log日志配置设置
+# log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.mkdir(LOG_DIR)

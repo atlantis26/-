@@ -22,8 +22,10 @@ class _BaseView(object):
 
 class StudentView(_BaseView):
     """学员视图"""
-    def __init__(self, student, schools):
-        self.student = student
+    def __init__(self, username, password, schools):
+        self.username = username
+        self.password = password
+        self.schools = schools
         _BaseView.__init__(self, schools)
 
     def get_school_by_name(self, school_name):
@@ -59,7 +61,7 @@ class StudentView(_BaseView):
         """按照学校选课程报名"""
         try:
             schools = self.list_schools
-            print(u"查询可报名的学校： ")
+            print(u"可报名的学校： ")
             for school in schools:
                 print(school.school_name)
             school_name = input(u"请输入您选择的学校：").strip()
@@ -67,14 +69,14 @@ class StudentView(_BaseView):
             print(u"可选择的课程：")
             for course in school.courses():
                 print(course.name)
-            course_name = input(u"请输入您的选择的课程：").strip()
+            course_name = input(u"请输入您选择的课程：").strip()
             print(u"可选择的班级：")
             class_list = self.get_classes_by_course(school_name, course_name)
             for class1 in class_list:
                 print(class1.name)
             class_name = input(u"请输入您选择的班级：").strip()
             if not [c for c in class_list if c.name == class_name]:
-                raise SomeError(u"{0}学校的{1}课程不存在{2}班级)".format(school_name, course_name, class_name))
+                raise SomeError(u"{0}学校的{1}课程不存在{2}班级".format(school_name, course_name, class_name))
             rsp = school.create_student(username, class_name)
             msg = rsp.msg
         except SomeError as e:
@@ -85,7 +87,7 @@ class StudentView(_BaseView):
         """按照课程选学校报名"""
         try:
             courses_list = self.list_all_courses
-            print(u"查询报名学习的课程： ")
+            print(u"可报名学习的课程： ")
             for courses in courses_list:
                 print(courses.name)
             course_name = input(u"请输入您选择的课程：").strip()
@@ -93,14 +95,14 @@ class StudentView(_BaseView):
             print(u"可选择的学校：")
             for school in school_list:
                 print(school.school_name)
-            school_name = input(u"请输入您的选择的学校：").strip()
+            school_name = input(u"请输入您选择的学校：").strip()
             print(u"可选择的班级：")
             class_list = self.get_classes_by_course(school_name, course_name)
             for class1 in class_list:
                 print(class1.name)
             class_name = input(u"请输入您选择的班级：").strip()
             if not [c for c in class_list if c.name == class_name]:
-                raise SomeError(u"{0}学校的{1}课程不存在{2}班级)".format(school_name, course_name, class_name))
+                raise SomeError(u"{0}学校的{1}课程不存在{2}班级".format(school_name, course_name, class_name))
             school = self.get_school_by_name(school_name)
             rsp = school.create_student(username, class_name)
             msg = rsp.msg
