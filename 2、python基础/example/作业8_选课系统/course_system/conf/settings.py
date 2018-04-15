@@ -7,15 +7,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 文件存储信息相关配置
 DB_Schools = os.path.join(BASE_DIR, "db", "Schools")
-DB_Accounts = os.path.join(BASE_DIR, "db", "Accounts")
+DB_Users = os.path.join(BASE_DIR, "db", "Users")
 DB_Flows_History = os.path.join(BASE_DIR, "db", "Flows_History")
 if not os.path.exists(DB_Schools):
     os.mkdir(DB_Schools)
-if not os.path.exists(DB_Accounts):
-    os.mkdir(DB_Accounts)
+if not os.path.exists(DB_Users):
+    os.mkdir(DB_Users)
 if not os.path.exists(DB_Flows_History):
     os.mkdir(DB_Flows_History)
 
+# 账户登录认证状态标示
+AUTH_FLAG = {"username": None, "is_authenticated": False, "is_administrator": False}
 
 # log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')

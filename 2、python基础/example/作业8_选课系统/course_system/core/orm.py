@@ -3,8 +3,8 @@
 
 class School(object):
     """学校: 包含学校名称、开的课程列表、班级列表、教师列表"""
-    def __init__(self, school_name, courses=list(), classes=list(), teachers=list()):
-        self.school_name = school_name
+    def __init__(self, name, courses=list(), classes=list(), teachers=list()):
+        self.name = name
         self.courses = courses
         self.classes = classes
         self.teachers = teachers
@@ -22,11 +22,6 @@ class School(object):
     def class_is_exists(self, name):
         """判断班级已存在，名字唯一"""
         if [cla for cla in self.classes if cla.name == name]:
-            return True
-
-    def teacher_is_exists(self, emp_id):
-        """判断教师已存在，员工编号唯一"""
-        if [teacher for teacher in self.teachers if teacher.emp_id == emp_id]:
             return True
 
     def create_course(self, name, cycle, price):
@@ -53,9 +48,9 @@ class School(object):
 
         return ResponseData(code, msg, class1)
 
-    def create_teacher(self, name, age, sex, class_list=list()):
+    def create_teacher(self, name, class_list=list()):
         emp_id = self.get_employee_id
-        teacher = Teacher(emp_id, name, age, sex, class_list)
+        teacher = Teacher(emp_id, name, class_list)
         self.teachers.append(teacher)
         code = 200
         msg = u"创建讲师{0}成功".format(name)
@@ -100,22 +95,18 @@ class Course(object):
 
 
 class Teacher(object):
-    """讲师：包含讲师员工编号、姓名、年龄、性别、管理的班级列表等属性"""
-    def __init__(self, emp_id, name, age, sex, class_list=list()):
+    """讲师：包含讲师员工编号、姓名、管理的班级列表等属性"""
+    def __init__(self, emp_id, name,  class_list=list()):
         self.emp_id = emp_id
         self.name = name
-        self.age = age
-        self.sex = sex
         self.class_list = class_list
 
 
 class Student(object):
-    """学员: 包括学号、姓名、年龄、性别、已报名课程列表等属性"""
-    def __init__(self, student_id, name, age, sex, registered_course_list=list()):
+    """学员: 包括学号、姓名、已报名课程列表等属性"""
+    def __init__(self, student_id, name, registered_course_list=list()):
         self.student_id = student_id
         self.name = name
-        self.age = age
-        self.sex = sex
         self.registered_course_list = registered_course_list
 
 
@@ -129,8 +120,8 @@ class RegisteredCourse(object):
         self.time_stamp = time_stamp
 
 
-class Account(object):
-    """账户orm模型"""
+class User(object):
+    """用户orm模型"""
     def __init__(self, name, password, balance, locked=False, is_administrator=False):
         self.name = name
         self.password = password
@@ -140,7 +131,7 @@ class Account(object):
 
 
 class Flow(object):
-    """账户单笔流水信息"""
+    """用户单笔流水信息"""
     def __init__(self, datetime, account_name, action, details):
         self.datetime = datetime
         self.account_name = account_name

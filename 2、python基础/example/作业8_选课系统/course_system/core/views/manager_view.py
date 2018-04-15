@@ -20,13 +20,23 @@ class _BaseView(object):
         return list(set(course_list))
 
 
-class StudentView(_BaseView):
+class StudentView(object):
     """学员视图"""
     def __init__(self, username, password, schools):
         self.username = username
         self.password = password
         self.schools = schools
-        _BaseView.__init__(self, schools)
+        self.__console()
+
+    def __console(self):
+        """ 学员视图主页"""
+        msg = u"""-------------------------------------------------
+            您可以选择如下操作：
+                <\033[36;1m1\033[0m>.选课程                      <\033[36;1m2\033[0m>.登出账户
+                <\033[36;1m3\033[0m>.账户充值                    <\033[36;1m4\033[0m>.查询消费历史
+                <\033[36;1m5\033[0m>.查询个人信息                <\033[36;1m8\033[0m>.重置密码
+        """
+        print(msg)
 
     def get_school_by_name(self, school_name):
         """根据名字查询学校"""
