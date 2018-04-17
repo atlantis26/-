@@ -1,27 +1,40 @@
 # coding:utf-8
+from conf.settings import RP
+
+
+class ResourcePool(object):
+    """统一管理系统生成的学校、班级等数据"""
+    def __init__(self, schools=list(), classes=list(), courses=list(), teachers=list(), students=list()):
+        self.schools = schools
+        self.classes = classes
+        self.courses = courses
+        self.teachers = teachers
+        self.students = students
 
 
 class School(object):
     """学校: 包含学校名称、开的课程列表、班级列表、教师列表"""
-    def __init__(self, name, courses=list(), classes=list(), teachers=list()):
+    def __init__(self, name):
+        self.Id = self.__get_school_id
         self.name = name
-        self.courses = courses
-        self.classes = classes
-        self.teachers = teachers
+
+    @property
+    def __get_school_id(self):
+        return len(RP.teachers) + 1
 
     @property
     def get_employee_id(self):
         """生成新讲师的工号"""
-        return len(self.teachers) + 1
+        return len(RP.teachers) + 1
 
     def course_is_exists(self, name):
         """判断课程已存在, 名字唯一"""
-        if [course for course in self.courses if course.name == name]:
+        if [course for course in RP.courses if course.name == name]:
             return True
 
     def class_is_exists(self, name):
         """判断班级已存在，名字唯一"""
-        if [cla for cla in self.classes if cla.name == name]:
+        if [cla for cla in RP.classes if cla.name == name]:
             return True
 
     def create_course(self, name, cycle, price):
@@ -29,7 +42,7 @@ class School(object):
         if self.course_is_exists(name):
             raise SomeError(u"{0}课程已存在".format(name))
         course = Course(name, cycle, price)
-        self.courses.append(course)
+        RP.courses.append(course)
         code = 200
         msg = u"创建课程{0}成功".format(name)
 
@@ -65,26 +78,6 @@ class Class(object):
         self.course = course
         self.student_list = student_list
 
-    @property
-    def get_student_id(self):
-        """生成新学员的学号"""
-        return len(self.student_list) + 1
-
-    def student_is_exists(self, student_id):
-        """判断学生已存在,学号唯一"""
-        if [student for student in self.student_list if student.student_id == student_id]:
-            return True
-
-    def create_student(self, name, age, sex, registered_course_list=list()):
-        """创建学员"""
-        student_id = self.get_student_id
-        student = Student(student_id, name, age, sex, registered_course_list)
-        self.student_list.append(student)
-        code = 200
-        msg = u"报名成功，创建学员{0}成功".format(name)
-
-        return ResponseData(code, msg, student)
-
 
 class Course(object):
     """课程：包含课程名称、学习周期、学费价格等属性"""
@@ -104,10 +97,11 @@ class Teacher(object):
 
 class Student(object):
     """学员: 包括学号、姓名、已报名课程列表等属性"""
-    def __init__(self, student_id, name, registered_course_list=list()):
+    def __init__(self, student_id, name, school_name, course_list=list()):
         self.student_id = student_id
         self.name = name
-        self.registered_course_list = registered_course_list
+        self.school_name = school_name
+        self.course_list = course_list
 
 
 class RegisteredCourse(object):

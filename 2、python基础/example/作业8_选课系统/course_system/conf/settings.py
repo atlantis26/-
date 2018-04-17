@@ -1,20 +1,26 @@
 # coding:utf-8
-import os
+from db.init_resource_pool import init_resource_pool
 from logging.config import dictConfig
+import os
 
 # 项目根目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 文件存储信息相关配置
-DB_Schools = os.path.join(BASE_DIR, "db", "Schools")
 DB_Users = os.path.join(BASE_DIR, "db", "Users")
 DB_Flows_History = os.path.join(BASE_DIR, "db", "Flows_History")
-if not os.path.exists(DB_Schools):
-    os.mkdir(DB_Schools)
 if not os.path.exists(DB_Users):
     os.mkdir(DB_Users)
 if not os.path.exists(DB_Flows_History):
     os.mkdir(DB_Flows_History)
+
+# 存放学校、班级等相关的资源的pkl文件目录
+ResourcePoolDir = os.path.join(BASE_DIR, "db", "ResourcePool")
+if not os.path.exists(ResourcePoolDir):
+    os.mkdir(ResourcePoolDir)
+
+# 初始化资源池对象,用于存放学校、班级等相关资源
+RP = init_resource_pool()
 
 # 账户登录认证状态标示
 AUTH_FLAG = {"username": None, "is_authenticated": False, "is_administrator": False}

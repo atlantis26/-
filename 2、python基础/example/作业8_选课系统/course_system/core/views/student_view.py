@@ -1,8 +1,12 @@
 # coding:utf-8
-from core.orm import Student
+from core.orm import Student, ResponseData
 from core.users import settle_user
 from core.views.base_view import BaseView
-from core.orm import SomeError
+from core.auth import auth
+from conf.settings import AUTH_FLAG
+import logging
+
+logger = logging.getLogger("atm.auth")
 
 
 class StudentView(BaseView):
@@ -13,6 +17,7 @@ class StudentView(BaseView):
         self.__init_courses()
         self.console()
 
+    @auth(AUTH_FLAG)
     def console(self):
         """ 学员视图主页"""
         msg = u"""-------------------------------------------------
@@ -47,6 +52,17 @@ class StudentView(BaseView):
                                               class1.name, course.price, course.cycle])
                     course_id += 1
 
+    def __get_school_by_name(self, name):
+        """通过学校名称找到学校对象"""
+        return [school for school in self.schools if school.name == name][0]
+
+    @property
+    def get_student_id(self):
+        """生成新学员的学号"""
+        return len(self.student_list) + 1
+
+
+    @auth(AUTH_FLAG)
     def show_course_list(self):
         """展示可选择的课程信息列表"""
         print(u"课程列表如下：（您可以通过[<\033[36;1m购买课程\033[0m>]功能报名你想要学习的课程）")
@@ -54,29 +70,43 @@ class StudentView(BaseView):
             info = u"课程编号：{0}  课程名：{1}  所属学校：{2}  所属班级：{3}  所需学费：{4}元   学习周期：{5}天"\
                 .format(*course_info)
             print(info)
+        code = 200
+        msg = u"查询可选课程列表成功"
+        data = self.courses_list
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
+        return ResponseData(code, msg, data)
+
+    @auth(AUTH_FLAG)
     def purchase_course(self):
         """购买课程"""
         num = input(u"请输入你想要购买的课程的编号：").strip()
         courses = [i for i in self.courses_list if num == i[0]]
         if not courses:
-            print(u"课程编号{0}不存在，你可用通过<\033[36;1m课程列表\033[0m>功能查询，请核对后再试".format(num))
+            code = 400
+            msg = u"用户{0}输入的课程编号{1}不存在，请核对后再试，可通过<\033[36;1m课程列表\033[0m>功能查询"\
+                .format(self.username, num)
         else:
             info = u"你将购买的课程：课程编号：{0}  课程名：{1}  所属学校：{2}  所属班级：{3}  " \
                    u"所需学费：{4}元   学习周期：{5}天".format(*courses[0])
             print(info)
-            num = input(u"请确定是否购买该课程,输入Y确认，输入N取消：").strip()
-            if num == "Y":
-                # 支付
-                rsp = settle_user(self.username, courses[0][4])
-                if rsp.cpde == 200:
-                    # 创建学员角色
-                    student = Student()
-                else:
+            confirm = input(u"请确定是否购买该课程,输入Y确认，输入N取消：").strip()
+            if confirm != "Y":
+                print(u"您输入的确认信息错误，购买课程失败，请核对后再试")
+                code = 400
+                msg = u"用户{0}购买编号为{1}的课程时未成功确认购买，购买失败，课程详细：{2}"\
+                    .format(self.username, num, courses[0])
+            else:
+                price = courses[0][4]
+                rsp = settle_user(self.username, price, flag=0)
+                if rsp.code == 200:
+                    student_id = self.__get_student_id()
+                    student = Student(self.username, )
 
 
-            #
 
 
+
+    @auth(AUTH_FLAG)
     def course_in_learning(self):
         pass
