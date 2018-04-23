@@ -1,167 +1,213 @@
 # coding:utf-8
-from core.orm import SomeError
+from core.orm import School, SomeError, ResponseData
+from core.users import create_user
+from core.views.base_view import BaseView
+from conf.settings import AUTH_FLAG, RP
+from core.db_handler import save_resources_pool
+from core.auth import auth
+import logging
+
+logger = logging.getLogger("system.manager_view")
 
 
-class _BaseView(object):
-    def __init__(self, schools=list()):
-        self.schools = schools
+class Manager(object):
+    @staticmethod
+    def create_school(school_name):
+        school_id = RP.get_school_id
+        if RP.school_is_exists(school_name):
+            raise SomeError(u"学校{0}已存在".format(school_name))
+        school = School(school_id, school_name)
+        RP.schools.append(school)
+        save_resources_pool()
 
-    @property
-    def list_schools(self):
-        """列出所有的学校"""
-        return self.schools
+        return school
 
-    @property
-    def list_all_courses(self):
-        """列出所有的课程"""
-        course_list = list()
-        for cl in [school.courses for school in self.schools]:
-            course_list.extend(cl)
-        return list(set(course_list))
+    @staticmethod
+    def create_course(school_name, course_name, cycle, price):
+        school = RP.school_is_exists(school_name)
+        if not school:
+            raise SomeError(u"学校{0}不存在".format(school_name))
+        if RP.course_is_exists(school.id, course_name):
+            raise SomeError(u"学校'{0}'已存在课程'{1}'".format(school_name, course_name))
+        course_id = RP.get_course_id
+        course = RP.schools[school.id].create_course(course_id, course_name, cycle, price)
+        RP.courses.append(course)
+        save_resources_pool()
+
+        return course
+
+    @staticmethod
+    def create_class(school_name, class_name, course_name):
+        school = RP.school_is_exists(school_name)
+        course = RP.course_is_exists(school.id, course_name)
+        if not school:
+            raise SomeError(u"学校{0}不存在".format(school_name))
+        if not course:
+            raise SomeError(u"学校{0}不存在课程{1}".format(school_name, course_name))
+        class_id = RP.get_class_id
+        class1 = RP.schools[school.id].create_class(class_id, class_name, course.id)
+        RP.classes.append(class1)
+        save_resources_pool()
+
+        return class1
+
+    @staticmethod
+    def create_teacher(teacher_name, username, password1, password2, role=u"讲师"):
+        teacher = create_user(teacher_name, username, password1, password2, role)
+        return teacher
 
 
-class StudentView(object):
-    """学员视图"""
-    def __init__(self, username, password, schools):
-        self.username = username
-        self.password = password
-        self.schools = schools
-        self.__console()
+class MangerView(BaseView):
+    """管理员视图"""
+    def __init__(self, username, password, role_id):
+        BaseView.__init__(self, username, password, role_id)
+        if AUTH_FLAG["is_authenticated"]:
+            self.console()
 
-    def __console(self):
-        """ 学员视图主页"""
-        msg = u"""-------------------------------------------------
-            您可以选择如下操作：
-                <\033[36;1m1\033[0m>.选课程                      <\033[36;1m2\033[0m>.登出账户
-                <\033[36;1m3\033[0m>.账户充值                    <\033[36;1m4\033[0m>.查询消费历史
-                <\033[36;1m5\033[0m>.查询个人信息                <\033[36;1m8\033[0m>.重置密码
-        """
-        print(msg)
+    @auth(AUTH_FLAG)
+    def console(self):
+        """ 管理员视图主页"""
+        while True:
+            msg = u"""-------------------------------------------------
+                您可以选择如下操作：
+                    <\033[36;1m1\033[0m>.创建学校                   <\033[36;1m2\033[0m>.创建课程
+                    <\033[36;1m3\033[0m>.创建班级                   <\033[36;1m4\033[0m>.创建讲师
+                    <\033[36;1m5\033[0m>.查询已存在的教学资源列表    <\033[36;1m6\033[0m>.为讲师分配班级
+                    <\033[36;1m7\033[0m>.登出系统
+            """
+            print(msg)
+            actions = {"1": self.create_school,
+                       "2": self.create_course,
+                       "3": self.create_class,
+                       "4": self.create_teacher,
+                       "5": self.show_info,
+                       "6": self.teacher_add_class,
+                       "7": self.logout}
+            num = input(u"请输入您选择的操作的编号:").strip()
+            if num not in actions:
+                print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
+                continue
+            ret = actions[num]()
+            print(ret.msg)
 
-    def get_school_by_name(self, school_name):
-        """根据名字查询学校"""
-        school_list = [s for s in self.list_schools if s.school_name == school_name]
-        if not school_list:
-            raise SomeError(u"{0}学校不存在".format(school_name))
-        return school_list[0]
-
-    def get_course_by_name(self, school_name, course_name):
-        """根据名字查询课程"""
-        school = self.get_school_by_name(school_name)
-        course_list = [c for c in school.courses if c.name == course_name]
-        if not course_list:
-            raise SomeError(u"{0}学校不存在{1}课程".format(school_name, course_name))
-        return course_list[0]
-
-    def get_classes_by_course(self, school_name, course_name):
-        """根据学校课程名查询班级"""
-        school = self.get_school_by_name(school_name)
-        return [cls for cls in school.classes if cls.course == course_name]
-
-    def get_schools_by_course(self, course_name):
-        """列出有课程的学校"""
-        school_list = list()
-        for school in self.schools:
-            for course in school.courses:
-                if course.name == course_name:
-                    school_list.append(school)
-        return school_list
-
-    def select_by_school(self, username):
-        """按照学校选课程报名"""
+    @auth(AUTH_FLAG)
+    def create_school(self):
+        """创建学校"""
         try:
-            schools = self.list_schools
-            print(u"可报名的学校： ")
-            for school in schools:
-                print(school.school_name)
-            school_name = input(u"请输入您选择的学校：").strip()
-            school = self.get_school_by_name(school_name)
-            print(u"可选择的课程：")
-            for course in school.courses():
-                print(course.name)
-            course_name = input(u"请输入您选择的课程：").strip()
-            print(u"可选择的班级：")
-            class_list = self.get_classes_by_course(school_name, course_name)
-            for class1 in class_list:
-                print(class1.name)
-            class_name = input(u"请输入您选择的班级：").strip()
-            if not [c for c in class_list if c.name == class_name]:
-                raise SomeError(u"{0}学校的{1}课程不存在{2}班级".format(school_name, course_name, class_name))
-            rsp = school.create_student(username, class_name)
-            msg = rsp.msg
+            school_name = input(u"请输入新建学校的名字：").strip()
+            school = Manager.create_school(school_name)
+            code = 200
+            msg = u"创建学校{0}成功".format(school_name)
+            data = school.__dict__
         except SomeError as e:
-            msg = "报名课程失败，原因：{0}".format(str(e))
-        print(msg)
+            code = 400
+            msg = u"创建学校失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
-    def select_by_course(self, username):
-        """按照课程选学校报名"""
-        try:
-            courses_list = self.list_all_courses
-            print(u"可报名学习的课程： ")
-            for courses in courses_list:
-                print(courses.name)
-            course_name = input(u"请输入您选择的课程：").strip()
-            school_list = self.get_schools_by_course(course_name)
-            print(u"可选择的学校：")
-            for school in school_list:
-                print(school.school_name)
-            school_name = input(u"请输入您选择的学校：").strip()
-            print(u"可选择的班级：")
-            class_list = self.get_classes_by_course(school_name, course_name)
-            for class1 in class_list:
-                print(class1.name)
-            class_name = input(u"请输入您选择的班级：").strip()
-            if not [c for c in class_list if c.name == class_name]:
-                raise SomeError(u"{0}学校的{1}课程不存在{2}班级".format(school_name, course_name, class_name))
-            school = self.get_school_by_name(school_name)
-            rsp = school.create_student(username, class_name)
-            msg = rsp.msg
-        except SomeError as e:
-            msg = "报名课程失败，原因：{0}".format(str(e))
-        print(msg)
+        return ResponseData(code, msg, data)
 
-
-
-    def pay(self):
-        """交学费"""
-        pass
-
-
-    def __str__(self):
-        msg = ""
-
-
-class TeacherView(_BaseView):
-    """讲师视图"""
-    def select_class(self):
-        """选择班级"""
-        pass
-
-    def list_students(self):
-        """查看班级学员列表"""
-        pass
-
-    def modify_student(self):
-        """修改学员成绩"""
-        pass
-
-
-class MangerView(_BaseView):
-    """管理视图"""
-
-    def __init__(self):
-        self.teachers = list()
-        self.classes = list()
-        self.courses = list()
-
-    def create_teacher(self, teacher):
-        """创建讲师"""
-        self.teachers.append(teacher)
-
-    def create_class(self, cls):
-        """创建班级"""
-        self.classes.append(cls)
-
-    def create_course(self, course):
+    @auth(AUTH_FLAG)
+    def create_course(self):
         """创建课程"""
-        self.courses.append(course)
+        try:
+            school_name = input(u"请输入学校的名字：").strip()
+            course_name = input(u"请输入课程的名字：").strip()
+            cycle = input(u"请输入课程的学习周期（天）：").strip()
+            price = input(u"请输入课程的学费：").strip()
+            course = Manager.create_course(school_name, course_name, cycle, price)
+            code = 200
+            msg = u"创建课程{0}成功".format(course_name)
+            data = course.__dict__
+        except SomeError as e:
+            code = 400
+            msg = u"创建课程{0}失败，原因：".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @auth(AUTH_FLAG)
+    def create_class(self):
+        """创建班级"""
+        try:
+            school_name = input(u"请输入学校的名字：").strip()
+            course_name = input(u"请输入课程的名字：").strip()
+            class_name = input(u"请输入班级的名字：").strip()
+            class1 = Manager.create_class(school_name, class_name, course_name)
+            code = 200
+            msg = u"创建班级{0}成功".format(class_name)
+            data = class1.__dict__
+        except SomeError as e:
+            code = 400
+            msg = u"创建班级{0}失败，原因：".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @auth(AUTH_FLAG)
+    def create_teacher(self):
+        """创建讲师角色"""
+        try:
+            teacher_name = input(u"请输入讲师的名字：").strip()
+            username = input(u"请输入讲师登录系统的用户名：").strip()
+            password1 = input(u"请输入设置密码：").strip()
+            password2 = input(u"请再次输入设置密码：").strip()
+            user = Manager.create_teacher(teacher_name, username, password1, password2, role=u"讲师")
+            code = 200
+            msg = u"创建讲师{0}成功".format(teacher_name)
+            data = user.__dict__
+        except SomeError as e:
+            code = 400
+            msg = u"创建讲师{0}失败，原因：".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @auth(AUTH_FLAG)
+    def teacher_add_class(self):
+        """为讲师分配班级"""
+        try:
+            teacher_id = eval(input(u"请输入讲师的员工编号：").strip())
+            class_id = eval(input(u"请输入班级的编号：").strip())
+            if not (isinstance(teacher_id, int) and 0 <= teacher_id <= len(RP.teachers)-1):
+                raise SomeError(u"讲师的编号{0}不存在".format(teacher_id))
+            if not (isinstance(class_id, int) and 0 <= class_id <= len(RP.classes) - 1):
+                raise SomeError(u"班级的编号{0}不存在".format(class_id))
+            RP.teachers[teacher_id].add_class(class_id)
+            save_resources_pool()
+            code = 200
+            msg = u"分配班级成功".format(RP.teachers[teacher_id].name)
+        except SomeError as e:
+            code = 400
+            msg = u"分配课程失败，原因：".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    @auth(AUTH_FLAG)
+    def show_info(self):
+        """查询已存在的教学资源列表"""
+        try:
+            print(u"学校资源列表：")
+            for school in RP.schools:
+                print(school.__dict__)
+            print(u"课程资源列表：")
+            for course in RP.courses:
+                print(course.__dict__)
+            print(u"班级资源列表：")
+            for class1 in RP.classes:
+                print(class1.__dict__)
+            print(u"讲师资源列表：")
+            for teacher in RP.teachers:
+                print(teacher.__dict__)
+            code = 200
+            msg = u"查询资源成功"
+        except SomeError as e:
+            code = 400
+            msg = u"查询资源失败，原因：".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)

@@ -1,0 +1,50 @@
+2018-04-22 19:23:17 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 19:23:45 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校{0}成功', 'data': {'id': 0, 'name': 'chengdu'}}
+2018-04-22 19:23:56 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 19:24:33 - manager_view.py:86(manager_view:create_course) - DEBUG - {'code': 200, 'msg': '创建课程enlish成功', 'data': {'id': 0, 'name': 'enlish', 'cycle': '120', 'price': '8000', 'school_id': 0}}
+2018-04-22 19:25:11 - manager_view.py:110(manager_view:create_class) - DEBUG - {'code': 200, 'msg': '创建班级enlish成功', 'data': {'id': 0, 'name': '3班', 'course_id': 0, 'school_id': 0, 'student_id_list': []}}
+2018-04-22 19:25:36 - manager_view.py:130(manager_view:create_teacher) - DEBUG - {'code': 200, 'msg': '创建讲师lilei成功', 'data': {'username': 'lilei', 'password': '123456', 'balance': 0, 'role': '讲师'}}
+2018-04-22 19:25:39 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 19:28:48 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 19:36:21 - manager_view.py:62(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校{0}成功', 'data': {'id': 0, 'name': 'wuhan'}}
+2018-04-22 19:38:04 - manager_view.py:62(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校tianjian成功', 'data': {'id': 0, 'name': 'tianjian'}}
+2018-04-22 19:39:41 - manager_view.py:62(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校xianggang成功', 'data': {'id': 0, 'name': 'xianggang'}}
+2018-04-22 19:40:13 - manager_view.py:62(manager_view:create_school) - DEBUG - {'code': 400, 'msg': '创建学校学校beijing已存在失败，原因：'}
+2018-04-22 19:42:05 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校dwda成功', 'data': {'id': 0, 'name': 'dwda'}}
+2018-04-22 19:49:16 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校wdwfoo成功', 'data': {'id': 0, 'name': 'wdwfoo'}}
+2018-04-22 20:52:55 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校oopowp成功', 'data': {'id': 0, 'name': 'oopowp'}}
+2018-04-22 20:52:58 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 20:54:05 - manager_view.py:155(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 21:03:13 - manager_view.py:62(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校ddddddd成功', 'data': {'id': 0, 'name': 'ddddddd'}}
+2018-04-22 21:04:27 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校dwwqqqq成功', 'data': {'id': 0, 'name': 'dwwqqqq'}}
+2018-04-22 21:06:10 - manager_view.py:61(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校dwwq成功', 'data': {'id': 0, 'name': 'dwwq'}}
+2018-04-22 23:38:18 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 23:45:36 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-22 23:48:35 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:09:55 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:13:14 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:20:47 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:20:59 - manager_view.py:102(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校chengdu成功', 'data': {'id': 2, 'name': 'chengdu'}}
+2018-04-23 00:21:02 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:21:35 - manager_view.py:122(manager_view:create_course) - DEBUG - {'code': 200, 'msg': '创建课程java成功', 'data': {'id': 3, 'name': 'java', 'cycle': '365', 'price': '5500', 'school_id': 2}}
+2018-04-23 00:21:38 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:22:14 - manager_view.py:141(manager_view:create_class) - DEBUG - {'code': 200, 'msg': '创建班级java成功', 'data': {'id': 3, 'name': '1班', 'course_id': 3, 'school_id': 2, 'student_id_list': []}}
+2018-04-23 00:22:28 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:24:18 - manager_view.py:161(manager_view:create_teacher) - DEBUG - {'code': 200, 'msg': '创建讲师lili成功', 'data': {'id': 3, 'name': 'lili', 'username': 'lili123', 'class_id_list': []}}
+2018-04-23 00:24:23 - manager_view.py:186(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:36:20 - manager_view.py:205(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 00:38:02 - manager_view.py:205(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:36:52 - manager_view.py:209(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:37:28 - manager_view.py:104(manager_view:create_school) - DEBUG - {'code': 200, 'msg': '创建学校chengdu成功', 'data': {'id': 2, 'name': 'chengdu'}}
+2018-04-23 23:37:33 - manager_view.py:209(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:42:58 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:43:26 - manager_view.py:126(manager_view:create_course) - DEBUG - {'code': 200, 'msg': '创建课程java成功', 'data': {'id': 3, 'name': 'java', 'cycle': '365', 'price': '6000', 'school_id': 2}}
+2018-04-23 23:43:36 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:44:43 - manager_view.py:145(manager_view:create_class) - DEBUG - {'code': 200, 'msg': '创建班级1班成功', 'data': {'id': 3, 'name': '1班', 'course_id': 3, 'school_id': 2, 'student_id_list': []}}
+2018-04-23 23:44:49 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:45:47 - manager_view.py:165(manager_view:create_teacher) - DEBUG - {'code': 200, 'msg': '创建讲师tommy成功', 'data': {'id': 3, 'name': 'tommy', 'username': 'tommy123', 'class_id_list': []}}
+2018-04-23 23:45:53 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:46:20 - manager_view.py:186(manager_view:teacher_add_class) - DEBUG - {'code': 400, 'msg': '为讲师输入的讲师员工编号不存在 分配课程失败，原因：'}
+2018-04-23 23:49:53 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}
+2018-04-23 23:50:26 - manager_view.py:186(manager_view:teacher_add_class) - DEBUG - {'code': 200, 'msg': '分配班级成功'}
+2018-04-23 23:50:31 - manager_view.py:211(manager_view:show_info) - DEBUG - {'code': 200, 'msg': '查询资源成功'}

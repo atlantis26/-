@@ -1,134 +1,103 @@
 # coding:utf-8
-from conf.settings import RP
-
-
-class ResourcePool(object):
-    """统一管理系统生成的学校、班级等数据"""
-    def __init__(self, schools=list(), classes=list(), courses=list(), teachers=list(), students=list()):
-        self.schools = schools
-        self.classes = classes
-        self.courses = courses
-        self.teachers = teachers
-        self.students = students
 
 
 class School(object):
     """学校: 包含学校名称、开的课程列表、班级列表、教师列表"""
-    def __init__(self, name):
-        self.Id = self.__get_school_id
+    def __init__(self, school_id, name):
+        self.id = school_id
         self.name = name
 
     @property
-    def __get_school_id(self):
-        return len(RP.teachers) + 1
+    def __school_id(self):
+        return self.id
 
-    @property
-    def get_employee_id(self):
-        """生成新讲师的工号"""
-        return len(RP.teachers) + 1
+    def create_course(self, course_id, course_name, cycle, price):
+        """创建新课程"""
+        course = Course(course_id, course_name, cycle, price, self.__school_id)
+        return course
 
-    def course_is_exists(self, name):
-        """判断课程已存在, 名字唯一"""
-        if [course for course in RP.courses if course.name == name]:
-            return True
-
-    def class_is_exists(self, name):
-        """判断班级已存在，名字唯一"""
-        if [cla for cla in RP.classes if cla.name == name]:
-            return True
-
-    def create_course(self, name, cycle, price):
-        """创建课程"""
-        if self.course_is_exists(name):
-            raise SomeError(u"{0}课程已存在".format(name))
-        course = Course(name, cycle, price)
-        RP.courses.append(course)
-        code = 200
-        msg = u"创建课程{0}成功".format(name)
-
-        return ResponseData(code, msg, course)
-
-    def create_class(self, name, course_name, student_list=list()):
-        """创建班级"""
-        if not self.course_is_exists(course_name):
-            raise SomeError(u"{0}课程不存在".format(course_name))
-        if self.class_is_exists(name):
-            raise SomeError(u"{0}班级已经存在".format(name))
-        class1 = Class(name, course_name, student_list)
-        self.classes.append(class1)
-        code = 200
-        msg = u"创建班级{0}成功".format(name)
-
-        return ResponseData(code, msg, class1)
-
-    def create_teacher(self, name, class_list=list()):
-        emp_id = self.get_employee_id
-        teacher = Teacher(emp_id, name, class_list)
-        self.teachers.append(teacher)
-        code = 200
-        msg = u"创建讲师{0}成功".format(name)
-
-        return ResponseData(code, msg, teacher)
+    def create_class(self, class_id, class_name, course_id, student_id_list=list()):
+        """创建新班级"""
+        class1 = Class(class_id, class_name, course_id, self.__school_id, student_id_list)
+        return class1
 
 
 class Class(object):
     """班级：包含班级名称、课程名、学员列表等属性"""
-    def __init__(self, name, course, student_list=list()):
+    def __init__(self, class_id, name, course_id, school_id, student_id_list=list()):
+        self.id = class_id
         self.name = name
-        self.course = course
-        self.student_list = student_list
+        self.course_id = course_id
+        self.school_id = school_id
+        self.student_id_list = student_id_list
+
+    def add_student(self, student_id):
+        """班级添加学员"""
+        student_id_list = self.student_id_list[:]
+        if student_id in student_id_list:
+            raise SomeError(u"添加失败，学员{0}已经在学员列表当中".format(student_id))
+        student_id_list.append(student_id)
+        self.student_id_list = student_id_list
 
 
 class Course(object):
     """课程：包含课程名称、学习周期、学费价格等属性"""
-    def __init__(self, name, cycle, price):
+    def __init__(self, course_id, name, cycle, price, school_id):
+        self.id = course_id
         self.name = name
         self.cycle = cycle
         self.price = price
+        self.school_id = school_id
 
 
 class Teacher(object):
-    """讲师：包含讲师员工编号、姓名、管理的班级列表等属性"""
-    def __init__(self, emp_id, name,  class_list=list()):
-        self.emp_id = emp_id
+    """讲师角色：包含讲师员工编号、姓名、系统用户名、管理的班级的id列表等属性"""
+    def __init__(self, teacher_id, name, username, class_id_list=list()):
+        self.id = teacher_id
         self.name = name
-        self.class_list = class_list
+        self.username = username
+        self.class_id_list = class_id_list
+
+    def add_class(self, class_id):
+        """新增负责的班级"""
+        class_id_list = self.class_id_list[:]
+        if class_id in class_id_list:
+            raise SomeError(u"添加失败，班级{0}已经在班级列表当中".format(class_id))
+        class_id_list.append(class_id)
+        self.class_id_list = class_id_list
 
 
 class Student(object):
-    """学员: 包括学号、姓名、已报名课程列表等属性"""
-    def __init__(self, student_id, name, school_name, course_list=list()):
-        self.student_id = student_id
+    """学员角色: 包括学号、姓名、 系统用户名、已报名课程id列表等属性"""
+    def __init__(self, student_id, name, username, course_id_list=list()):
+        self.id = student_id
         self.name = name
-        self.school_name = school_name
-        self.course_list = course_list
+        self.username = username
+        self.course_id_list = course_id_list
 
-
-class RegisteredCourse(object):
-    """已报名学习课程：包括学校、课程、班级、学费支付状态，时间戳等属性"""
-    def __init__(self, school, course, class1, payment_state, time_stamp):
-        self.school = school
-        self.course = course
-        self.class1 = class1
-        self.payment_state = payment_state
-        self.time_stamp = time_stamp
+    def add_course(self, course_id):
+        """新增学习的课程"""
+        course_id_list = self.course_id_list[:]
+        if course_id in course_id_list:
+            raise SomeError(u"添加失败，课程{0}已经在学习列表当中".format(course_id))
+        course_id_list.append(course_id)
+        self.course_id_list = course_id_list
 
 
 class User(object):
-    """用户orm模型"""
-    def __init__(self, name, password, balance, locked=False, is_administrator=False):
-        self.name = name
+    """用户orm模型, 包括系统用户名、密码、余额、身份角色"""
+    def __init__(self, username, password, balance, role):
+        self.username = username
         self.password = password
         self.balance = balance
-        self.locked = locked
-        self.is_administrator = is_administrator
+        self.role = role
 
 
 class Flow(object):
-    """用户单笔流水信息"""
-    def __init__(self, datetime, account_name, action, details):
-        self.datetime = datetime
-        self.account_name = account_name
+    """用户单笔消费流水信息，包括时间戳、用户名、事件、详细信息"""
+    def __init__(self, time_stamp, username, action, details):
+        self.time_stamp = time_stamp
+        self.username = username
         self.action = action
         self.details = details
 
