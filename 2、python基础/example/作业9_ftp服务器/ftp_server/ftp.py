@@ -4,7 +4,7 @@ import tarfile
 
 from ftplib import FTP
 
-def ftpconnect(host, username, password)
+def ftpconnect(host, username, password):
     ftp = FTP()
     ftp.connect(host, 21)
     ftp.login(username, password)
