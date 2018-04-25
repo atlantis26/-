@@ -6,6 +6,7 @@ from conf.settings import RP, USERNAME, PASSWORD
 from core.users import init_manager, create_user
 from core.db_handler import save_resources_pool
 
+
 def register_user():
     """创建新学员用户账号"""
     try:

@@ -14,6 +14,11 @@ DB_Users = os.path.join(BASE_DIR, "db", "Users")
 if not os.path.exists(DB_Users):
     os.mkdir(DB_Users)
 
+# 用户FTP文件仓库
+DB_Storage = os.path.join(BASE_DIR, "db", "Storage")
+if not os.path.exists(DB_Users):
+    os.mkdir(DB_Users)
+
 # 账户登录认证状态标示
 AUTH_FLAG = {"username": None, "is_authenticated": False}
 
