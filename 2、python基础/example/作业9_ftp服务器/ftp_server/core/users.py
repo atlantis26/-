@@ -17,7 +17,7 @@ class UserManager(object):
         if not UserManager.user_is_exists(username):
             raise SomeError(u"用户{0}不存在".format(username))
         user = UserManager.load_user(username)
-        if user.password != password:
+        if user["password"] != password:
             raise SomeError(u"用户{0}的密码错误".format(username))
         AUTH_FLAG["is_authenticated"] = True
         AUTH_FLAG["username"] = username
@@ -40,7 +40,8 @@ class UserManager(object):
         if password1 != password2:
             raise SomeError(u"两次设置密码不一致".format(username))
         user = User(username, password1)
-        UserManager.save_user(user)
+        user_json = json.dumps(user.__dict__)
+        UserManager.save_user(user_json)
         return user
 
     @staticmethod
@@ -65,7 +66,6 @@ class UserManager(object):
     def save_user(user):
         """保存用户数据，写入到存储文件"""
         user_file = os.path.join(DB_Users, "{0}.json".format(user.username))
-        user_json = json.dumps(user.__dict__)
         with open(user_file, "w") as f:
-            f.write(user_json)
+            f.write(user)
             f.flush()

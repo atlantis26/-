@@ -3,8 +3,8 @@ from core.client_handler import FtpClient
 
 
 class FtpSystem(object):
-    def __init__(self):
-        self.client = FtpClient("localhost", 4396)
+    def __init__(self, host, ip):
+        self.client = FtpClient(host, ip)
         self.username = None
         self.password = None
         self.console()
@@ -64,5 +64,6 @@ class FtpSystem(object):
                 continue
             actions[num]()
 
+
 if __name__ == "__main__":
-    FtpSystem()
+    FtpSystem("localhost", 4396)
