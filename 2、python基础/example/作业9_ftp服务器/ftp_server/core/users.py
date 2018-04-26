@@ -65,7 +65,7 @@ class UserManager(object):
     def save_user(user):
         """保存用户数据，写入到存储文件"""
         user_file = os.path.join(DB_Users, "{0}.json".format(user.username))
-        user_json = json.dumps(user)
+        user_json = json.dumps(user.__dict__)
         with open(user_file, "w") as f:
             f.write(user_json)
             f.flush()

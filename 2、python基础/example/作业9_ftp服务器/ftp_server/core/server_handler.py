@@ -1,56 +1,38 @@
 # coding:utf-8
 from core.users import UserManager
-from core.orm import SomeError, ResponseData
+from core.orm import SocketServer, SomeError, ResponseData
 from core.auth import auth
 from conf.settings import AUTH_FLAG, DB_Storage
-import socket
 import os
 import logging
 
-logger = logging.getLogger("system.users")
+logger = logging.getLogger("ftp.server")
 
 
-class SocketServer(object):
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
-        self.server = socket.socket()
-        self.server.bind((host, port))
-        self.server.listen(5)
-        self.session, self.address = self.server.accept()
-
-    def receive(self):
-        """接收数据"""
-        data = self.session.recv(1024)
-        return data
-
-    def send(self, data):
-        """发送数据"""
-        self.session.sendall(data)
-
-    def close(self):
-        """关闭连接"""
-        self.server.close()
-
-
-class FtpServer(object):
+class FtpServer(SocketServer):
     """FTP服务器"""
-    def __init__(self):
-        self.username = None
-        self.password = None
+    def __init__(self, host, port, username=None, password=None):
+        SocketServer.__init__(self, host, port)
+        self.username = username
+        self.password = password
 
-    @classmethod
-    def __create_user_home(cls, username):
-        """创建个人仓库"""
-        user_home = os.path.join(DB_Storage, username)
-        os.mkdir(user_home)
+    def console(self):
+        while True:
+            action_id, kwargs = self.receive()
+            actions = {"1": self.register,
+                       "2": self.login,
+                       "3": self.logout,
+                       "4": self.show,
+                       "5": self.upload,
+                       "6": self.download}
+            actions[action_id](**kwargs)
 
-    @classmethod
-    def register(cls, username, password1, password2):
+    @staticmethod
+    def register(username, password1, password2):
         """注册用户"""
         try:
             user = UserManager.create_user(username, password1, password2)
-            cls.__create_user_home(username)
+            FtpServer._create_user_home(username)
             code = 200
             msg = u"用户{0}注册成功".format(username)
             data = user.__dict__
@@ -62,11 +44,22 @@ class FtpServer(object):
 
         return ResponseData(code, msg, data)
 
-    @classmethod
-    def login(cls, username, password):
+    @staticmethod
+    def _create_user_home(username):
+        """创建个人仓库"""
+        user_home = os.path.join(DB_Storage, username)
+        os.mkdir(user_home)
+
+    @property
+    def _get_user_home(self):
+        return os.path.join(DB_Storage, self.username)
+
+    def login(self, username, password):
         """用户登录"""
         try:
             UserManager.login(username, password)
+            self.username = username
+            self.password = password
             code = 200
             msg = u"用户{0}成功登录，欢迎您使用本系统".format(username)
         except SomeError as e:
@@ -109,11 +102,17 @@ class FtpServer(object):
         return ResponseData(code, msg, data)
 
     @auth(AUTH_FLAG)
-    def upload(self):
+    def upload(self, file_name, data):
         """上传文件到个人仓库"""
-        pass
+        file_path = os.path.join(self._get_user_home, file_name)
+        with open(file_path, "wb") as f:
+            f.write(data)
+            f.flush()
 
     @auth(AUTH_FLAG)
-    def download(self):
+    def download(self, file_name):
         """下载文件"""
-        pass
+        file_path = os.path.join(self._get_user_home, file_name)
+        with open(file_path, "rb") as f:
+            data = f.read()
+        return data
