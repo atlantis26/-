@@ -3,7 +3,7 @@
 from core.orm import ResponseData
 import logging
 
-logger = logging.getLogger("system.auth")
+logger = logging.getLogger("ftp.auth")
 
 
 def auth(auth_flag):

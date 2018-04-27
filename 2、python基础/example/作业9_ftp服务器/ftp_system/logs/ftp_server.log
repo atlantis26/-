@@ -1,0 +1,10 @@
+2018-04-27 13:14:37 - server_handler.py:45(server_handler:register) - DEBUG - {'code': 400, 'msg': '用户zhangsan注册失败，原因：两次设置密码不一致'}
+2018-04-27 13:26:27 - server_handler.py:45(server_handler:register) - DEBUG - {'code': 200, 'msg': '用户zhangsan注册成功', 'data': <core.orm.User object at 0x00000000029904E0>}
+2018-04-27 13:29:45 - server_handler.py:46(server_handler:register) - DEBUG - {'code': 200, 'msg': '用户zhangsan注册成功', 'data': {'username': 'zhangsan', 'password': '123456'}}
+2018-04-27 13:30:07 - server_handler.py:73(server_handler:login) - DEBUG - {'code': 200, 'msg': '用户zhangsan成功登录，欢迎您使用本系统'}
+2018-04-27 13:33:34 - server_handler.py:73(server_handler:login) - DEBUG - {'code': 200, 'msg': '用户zhangsan成功登录，欢迎您使用本系统'}
+2018-04-27 13:33:36 - server_handler.py:107(server_handler:show) - DEBUG - {'code': 200, 'msg': '用户zhangsan查询个人仓库文件成功', 'data': []}
+2018-04-27 13:33:40 - server_handler.py:107(server_handler:show) - DEBUG - {'code': 200, 'msg': '用户zhangsan查询个人仓库文件成功', 'data': []}
+2018-04-27 13:38:36 - server_handler.py:73(server_handler:login) - DEBUG - {'code': 200, 'msg': '用户zhangsan成功登录，欢迎您使用本系统'}
+2018-04-27 13:39:59 - server_handler.py:73(server_handler:login) - DEBUG - {'code': 200, 'msg': '用户zhangsan成功登录，欢迎您使用本系统'}
+2018-04-27 13:42:22 - server_handler.py:73(server_handler:login) - DEBUG - {'code': 400, 'msg': '用户zhansgan登录失败，原因：用户zhansgan不存在'}

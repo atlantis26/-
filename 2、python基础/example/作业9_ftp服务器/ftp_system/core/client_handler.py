@@ -5,7 +5,7 @@ import json
 import os
 import logging
 
-logger = logging.getLogger("ftp.client")
+logger = logging.getLogger("ftp.ftp_client")
 
 
 class FtpClient(object):
@@ -61,18 +61,19 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
-    def logout(self, username):
+    def logout(self):
         """用户登出"""
         try:
             data = dict()
             data["action_id"] = "3"
-            data["kwargs"] = {"username": username}
+            # data["kwargs"] = {"username": self.username}
+            data["kwargs"] = {}
             rsp = self._get_response(data)
             code = rsp["code"]
             msg = rsp["msg"]
-            self.username = None
-            self.password = None
-
+            if rsp["code"] == 200:
+                self.username = None
+                self.password = None
         except SomeError as e:
             code = 400
             msg = u"用户{0}登出失败，原因：{1}".format(self.username, str(e))
@@ -85,7 +86,8 @@ class FtpClient(object):
         try:
             data = dict()
             data["action_id"] = "4"
-            data["kwargs"] = {"username": self.username}
+            # data["kwargs"] = {"username": self.username}
+            data["kwargs"] = {}
             rsp = self._get_response(data)
             code = rsp["code"]
             msg = rsp["msg"]
@@ -104,9 +106,9 @@ class FtpClient(object):
             req_body = dict()
             req_body["action_id"] = "5"
             req_body["kwargs"] = {"file_name": file_name}
-            with open(file_path, "rb") as f:
+            with open(file_path, "r") as f:
                 data = f.read()
-            req_body["kwargs"]["data"] = data
+            req_body["kwargs"]["data"] = data.encode("utf-8")
 
             rsp = self._get_response(req_body)
             code = rsp["code"]

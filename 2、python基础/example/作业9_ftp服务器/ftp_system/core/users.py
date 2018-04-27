@@ -7,7 +7,7 @@ import os
 import logging
 
 
-logger = logging.getLogger("system.users")
+logger = logging.getLogger("ftp.users")
 
 
 class UserManager(object):
@@ -40,8 +40,7 @@ class UserManager(object):
         if password1 != password2:
             raise SomeError(u"两次设置密码不一致".format(username))
         user = User(username, password1)
-        user_json = json.dumps(user.__dict__)
-        UserManager.save_user(user_json)
+        UserManager.save_user(user)
         return user
 
     @staticmethod
@@ -65,7 +64,8 @@ class UserManager(object):
     @staticmethod
     def save_user(user):
         """保存用户数据，写入到存储文件"""
+        user_json = json.dumps(user.__dict__)
         user_file = os.path.join(DB_Users, "{0}.json".format(user.username))
         with open(user_file, "w") as f:
-            f.write(user)
+            f.write(user_json)
             f.flush()

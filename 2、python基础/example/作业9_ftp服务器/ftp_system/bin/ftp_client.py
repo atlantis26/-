@@ -2,7 +2,7 @@
 from core.client_handler import FtpClient
 
 
-class FtpSystem(object):
+class FtpPortal(object):
     def __init__(self, host, ip):
         self.client = FtpClient(host, ip)
         self.username = None
@@ -66,4 +66,4 @@ class FtpSystem(object):
 
 
 if __name__ == "__main__":
-    FtpSystem("localhost", 4396)
+    FtpPortal("localhost", 4396)

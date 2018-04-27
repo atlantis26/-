@@ -24,9 +24,10 @@ class SocketServer(object):
 
         return action_id, kwargs
 
-    # def sendall(self, data):
-    #     """发送数据"""
-    #     self.conn.sendall(data)
+    @staticmethod
+    def sendall(conn, data):
+        """发送数据"""
+        conn.sendall(data)
 
     def __del__(self):
         """关闭连接"""

@@ -1,29 +1,25 @@
 # coding:utf-8
-from core.users import UserManager
 from core.orm import SocketServer, SomeError, ResponseData
+from core.users import UserManager
 from core.auth import auth
 from conf.settings import AUTH_FLAG, DB_Storage
 import json
 import os
 import logging
 
-logger = logging.getLogger("ftp.server")
+logger = logging.getLogger("ftp.ftp_server")
 
 
 class FtpServer(SocketServer):
     """FTP服务器"""
-    def __init__(self, host, port, username=None, password=None):
+    def __init__(self, host, port):
         SocketServer.__init__(self, host, port)
-        self.username = username
-        self.password = password
 
     def console(self):
         while True:
             conn, address = self.server.accept()
             while True:
-                print(2222222, conn, address)
                 action_id, kwargs = self.receive(conn)
-                print(111111, action_id, kwargs)
                 actions = {"1": self.register,
                            "2": self.login,
                            "3": self.logout,
@@ -42,6 +38,7 @@ class FtpServer(SocketServer):
             FtpServer._create_user_home(username)
             code = 200
             msg = u"用户{0}注册成功".format(username)
+            data = data.__dict__
         except SomeError as e:
             code = 400
             msg = u"用户{0}注册失败，原因：{1}".format(username, str(e))
@@ -58,14 +55,16 @@ class FtpServer(SocketServer):
 
     @property
     def _get_user_home(self):
-        return os.path.join(DB_Storage, self.username)
+        user_home = os.path.join(DB_Storage, AUTH_FLAG["username"])
+        if not os.path.exists(user_home):
+            os.mkdir(user_home)
+        return user_home
 
-    def login(self, username, password):
+    @staticmethod
+    def login(username, password):
         """用户登录"""
         try:
             UserManager.login(username, password)
-            self.username = username
-            self.password = password
             code = 200
             msg = u"用户{0}成功登录，欢迎您使用本系统".format(username)
         except SomeError as e:
@@ -94,14 +93,16 @@ class FtpServer(SocketServer):
         """显示个人FTP仓库信息"""
         try:
             data = list()
-            user_home = os.path.join(DB_Storage, self.username)
+            user_home = os.path.join(DB_Storage, AUTH_FLAG["username"])
+            if not user_home:
+                raise SomeError(u"用户个人仓库不存在")
             for root, dirs, files in os.walk(user_home):
                 data = files
             code = 200
-            msg = u"用户{0}查询个人仓库文件成功".format(self.username)
+            msg = u"用户{0}查询个人仓库文件成功".format(AUTH_FLAG["username"])
         except SomeError as e:
             code = 400
-            msg = u"用户{0}查询个人仓库文件失败, 原因：{1}".format(self.username, str(e))
+            msg = u"用户{0}查询个人仓库文件失败, 原因：{1}".format(AUTH_FLAG["username"], str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -116,10 +117,10 @@ class FtpServer(SocketServer):
                 f.write(data)
                 f.flush()
             code = 200
-            msg = u"用户{0}上传文件成功".format(self.username)
+            msg = u"用户{0}上传文件成功".format(AUTH_FLAG["username"])
         except SomeError as e:
             code = 400
-            msg = u"用户{0}上传文件失败, 原因：{1}".format(self.username, str(e))
+            msg = u"用户{0}上传文件失败, 原因：{1}".format(AUTH_FLAG["username"], str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -133,10 +134,10 @@ class FtpServer(SocketServer):
             with open(file_path, "rb") as f:
                 data = f.read()
             code = 200
-            msg = u"用户{0}下载文件成功".format(self.username)
+            msg = u"用户{0}下载文件成功".format(AUTH_FLAG["username"])
         except SomeError as e:
             code = 400
-            msg = u"用户{0}下载文件失败, 原因：{1}".format(self.username, str(e))
+            msg = u"用户{0}下载文件失败, 原因：{1}".format(AUTH_FLAG["username"], str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
