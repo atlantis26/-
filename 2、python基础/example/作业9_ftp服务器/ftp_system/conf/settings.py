@@ -2,22 +2,18 @@
 from logging.config import dictConfig
 import os
 
-# 初始化管理员账号
-USERNAME = "admin"
-PASSWORD = "admin"
-
 # 项目根目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 文件存储信息相关配置
+# 文件目录，存储用户信息相关配置
 DB_Users = os.path.join(BASE_DIR, "db", "Users")
 if not os.path.exists(DB_Users):
     os.mkdir(DB_Users)
 
 # 用户FTP文件仓库
 DB_Storage = os.path.join(BASE_DIR, "db", "Storage")
-if not os.path.exists(DB_Users):
-    os.mkdir(DB_Users)
+if not os.path.exists(DB_Storage):
+    os.mkdir(DB_Storage)
 
 # 账户登录认证状态标示
 AUTH_FLAG = {"username": None, "is_authenticated": False}

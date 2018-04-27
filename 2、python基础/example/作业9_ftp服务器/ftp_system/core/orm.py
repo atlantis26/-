@@ -14,15 +14,16 @@ class SocketServer(object):
     @staticmethod
     def receive(conn):
         """接收数据并进行解析，约定与客户端交互的json数据格式：
-        {"action_id": "action_id", "kwargs":{"key1": "value1", "key2": "value2"} }
+        {"action_id": "action_id", "kwargs":{"key1": "value1", "key2": "value2"} }___separator___file data
         """
         data = conn.recv(1024)
-        receive_strings = str(data, encoding='utf-8')
-        payload = json.loads(receive_strings)
+        payload, file_data = data.split("___separator___")
+        payload = str(payload, encoding='utf-8')
+        payload = json.loads(payload)
         action_id = payload["action_id"]
         kwargs = payload["kwargs"]
 
-        return action_id, kwargs
+        return action_id, kwargs, file_data
 
     @staticmethod
     def sendall(conn, data):

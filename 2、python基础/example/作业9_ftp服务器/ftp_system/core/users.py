@@ -1,7 +1,7 @@
 # coding:utf-8
 from core.orm import User, SomeError
 from conf.settings import AUTH_FLAG
-from conf.settings import DB_Users
+from conf.settings import DB_Users, DB_Storage
 import json
 import os
 import logging
@@ -69,3 +69,11 @@ class UserManager(object):
         with open(user_file, "w") as f:
             f.write(user_json)
             f.flush()
+
+    @staticmethod
+    def create_or_get_user_home(username):
+        """创建或者获取个人仓库目录路径"""
+        user_home = os.path.join(DB_Storage, username)
+        if not os.path.exists(user_home):
+            os.mkdir(user_home)
+        return user_home

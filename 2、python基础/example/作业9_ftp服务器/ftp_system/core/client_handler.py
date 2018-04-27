@@ -9,11 +9,11 @@ logger = logging.getLogger("ftp.ftp_client")
 
 
 class FtpClient(object):
-    def __init__(self, host, port, username=None, password=None):
+    def __init__(self, host, port):
         self.client = socket.socket()
         self.client.connect((host, port))
-        self.username = username
-        self.password = password
+        self.username = None
+        self.password = None
 
     def _get_response(self, req_data):
         """发送请求，并获取响应"""
@@ -36,7 +36,7 @@ class FtpClient(object):
             msg = rsp["msg"]
         except SomeError as e:
             code = 400
-            msg = u"用户{0}注册失败，原因：{1}".format(username, str(e))
+            msg = u"注册用户失败，原因：{1}".format(username, str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -56,7 +56,7 @@ class FtpClient(object):
             self.password = password
         except SomeError as e:
             code = 400
-            msg = u"用户{0}登录失败，原因：{1}".format(username, str(e))
+            msg = u"登录失败，原因：{1}".format(username, str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -66,7 +66,6 @@ class FtpClient(object):
         try:
             data = dict()
             data["action_id"] = "3"
-            # data["kwargs"] = {"username": self.username}
             data["kwargs"] = {}
             rsp = self._get_response(data)
             code = rsp["code"]
@@ -76,7 +75,7 @@ class FtpClient(object):
                 self.password = None
         except SomeError as e:
             code = 400
-            msg = u"用户{0}登出失败，原因：{1}".format(self.username, str(e))
+            msg = u"登出失败，原因：{1}".format(self.username, str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -84,16 +83,16 @@ class FtpClient(object):
     def show(self):
         """显示个人FTP仓库信息"""
         try:
-            data = dict()
-            data["action_id"] = "4"
-            # data["kwargs"] = {"username": self.username}
-            data["kwargs"] = {}
-            rsp = self._get_response(data)
+            req_body = dict()
+            req_body["action_id"] = "4"
+            req_body["kwargs"] = {}
+            rsp = self._get_response(req_body)
             code = rsp["code"]
             msg = rsp["msg"]
+            data = rsp["data"] if code == 200 else None
         except SomeError as e:
             code = 400
-            msg = u"用户{0}查询个人仓库文件失败, 原因：{1}".format(self.username, str(e))
+            msg = u"查询个人文件列表失败, 原因：{0}".format(self.username, str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -102,28 +101,32 @@ class FtpClient(object):
     def upload(self, file_path):
         """上传文件到个人仓库"""
         try:
+            if not os.path.exists(file_path):
+                raise SomeError(u"文件{0}不存在".format(file_path))
             file_name = os.path.split(file_path)[-1]
             req_body = dict()
             req_body["action_id"] = "5"
             req_body["kwargs"] = {"file_name": file_name}
-            with open(file_path, "r") as f:
+            with open(file_path, "rb") as f:
                 data = f.read()
-            req_body["kwargs"]["data"] = data.encode("utf-8")
+            print(type(data))
+            req_body["kwargs"]["file_data"] = str(data, encoding="utf-8")
 
             rsp = self._get_response(req_body)
             code = rsp["code"]
             msg = rsp["msg"]
         except SomeError as e:
             code = 400
-            msg = u"上传文件失败, 原因：{1}".format(self.username, str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
+            msg = u"上传文件失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
 
-        return ResponseData(code, msg, data)
+        return ResponseData(code, msg)
 
     def download(self, file_name, directory):
         """下载文件"""
         try:
+            if not os.path.exists(directory):
+                raise SomeError(u"存放文件的目录{0}不存在".format(directory))
             file_path = os.path.join(directory, file_name)
             req_body = dict()
             req_body["action_id"] = "6"
@@ -133,12 +136,13 @@ class FtpClient(object):
             code = rsp["code"]
             msg = rsp["msg"]
             if code == 200:
+                file_data = bytes(rsp["data"], encoding="utf-8")
                 with open(file_path, "wb") as f:
-                    f.write(rsp["data"])
+                    f.write(file_data)
                     f.flush()
         except SomeError as e:
             code = 400
-            msg = u"下载文件失败, 原因：{1}".format(self.username, str(e))
+            msg = u"下载文件失败, 原因：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
