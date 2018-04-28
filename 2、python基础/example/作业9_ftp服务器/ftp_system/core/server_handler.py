@@ -3,6 +3,7 @@ from core.orm import SocketServer, SomeError, ResponseData
 from core.users import UserManager
 from conf.settings import AUTH_FLAG
 from core.auth import auth
+import shutil
 import json
 import os
 import logging
@@ -27,7 +28,7 @@ class FtpServer(SocketServer):
                                "4": self.show,
                                "5": self.upload,
                                "6": self.download}
-                    rsp = actions[action_id](**kwargs)
+                    rsp = actions[action_id](kwargs)
                     rsp = bytes(json.dumps(rsp.__dict__), encoding='utf-8')
                     conn.sendall(rsp)
             except ConnectionResetError as e:
@@ -101,15 +102,12 @@ class FtpServer(SocketServer):
         return ResponseData(code, msg, data)
 
     @auth(AUTH_FLAG)
-    def upload(self, file_name, file_data):
+    def upload(self, file_name, temp_file_path):
         """上传文件到个人仓库"""
         try:
             user_home = UserManager.create_or_get_user_home(AUTH_FLAG["username"])
             file_path = os.path.join(user_home, file_name)
-            file_data = bytes(file_data, encoding="utf-8")
-            with open(file_path, "wb") as f:
-                f.write(file_data)
-                f.flush()
+            shutil.move(temp_file_path, file_path)
             code = 200
             msg = u"上传文件成功"
         except SomeError as e:
@@ -120,22 +118,19 @@ class FtpServer(SocketServer):
         return ResponseData(code, msg)
 
     @auth(AUTH_FLAG)
-    def download(self, file_name):
+    def download(self, file_name, socket_conn):
         """下载文件"""
         try:
             user_home = UserManager.create_or_get_user_home(AUTH_FLAG["username"])
             file_path = os.path.join(user_home, file_name)
             if not os.path.exists(file_path):
                 raise SomeError(u"文件{0}不存在".format(file_name))
-            with open(file_path, "rb") as f:
-                data = f.read()
-                data = str(data, encoding="utf-8")
+            self.send_file_data(socket_conn, file_path)
             code = 200
             msg = u"下载文件成功"
         except SomeError as e:
             code = 400
             msg = u"下载文件失败, 原因：{0}".format(str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
-        return ResponseData(code, msg, data)
+        return ResponseData(code, msg)

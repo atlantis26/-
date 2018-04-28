@@ -16,9 +16,26 @@ class FtpClient(object):
         self.password = None
 
     def _get_response(self, req_data):
-        """发送请求，并获取响应"""
+        """不带文件内容的请求，发送请求，并获取响应"""
         data_json = bytes(json.dumps(req_data), encoding='utf-8')
         self.client.send(data_json)
+        rsp = self.client.recv(1024)
+        rsp = json.loads(str(rsp, encoding='utf-8'))
+        return rsp
+
+    def _get_upload_file_response(self, req_data, file_path):
+        """对于上传文件的请求，发送请求，并获取响应,
+        发送两次请求，第一次告诉服务端，第二次发送文件数据
+        """
+        data_json = bytes(json.dumps(req_data), encoding='utf-8')
+        self.client.send(data_json)
+        # 发送文件内容，并接收服务端响应
+        with open(file_path, "rb") as f:
+            while True:
+                file_data = f.read(1024)
+                if not file_data:
+                    break
+                self.client.send(file_data)
         rsp = self.client.recv(1024)
         rsp = json.loads(str(rsp, encoding='utf-8'))
         return rsp
@@ -109,9 +126,7 @@ class FtpClient(object):
             req_body["kwargs"] = {"file_name": file_name}
             with open(file_path, "rb") as f:
                 data = f.read()
-            print(type(data))
-            req_body["kwargs"]["file_data"] = str(data, encoding="utf-8")
-
+            req_body["kwargs"]["file_size"] = 1024
             rsp = self._get_response(req_body)
             code = rsp["code"]
             msg = rsp["msg"]

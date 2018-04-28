@@ -15,6 +15,11 @@ DB_Storage = os.path.join(BASE_DIR, "db", "Storage")
 if not os.path.exists(DB_Storage):
     os.mkdir(DB_Storage)
 
+# 用于暂时存放上传文件的临时文件
+DB_Temp = os.path.join(BASE_DIR, "db", "Temp")
+if not os.path.exists(DB_Temp):
+    os.mkdir(DB_Temp)
+
 # 账户登录认证状态标示
 AUTH_FLAG = {"username": None, "is_authenticated": False}
 
