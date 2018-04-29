@@ -1,5 +1,7 @@
 # coding:utf-8
+from core.orm import SocketMethods
 from core.orm import SomeError, ResponseData
+from conf.settings import Label_Byte_String
 import socket
 import json
 import os
@@ -24,8 +26,7 @@ class FtpClient(object):
         return rsp
 
     def _get_upload_file_response(self, req_data, file_path):
-        """对于上传文件的请求，发送请求，并获取响应,
-        发送两次请求，第一次告诉服务端，第二次发送文件数据
+        """对于上传文件的请求，发送两次请求数据，第一次告诉服务端文件名称，第二次连续发送文件数据直到全部发送完成
         """
         data_json = bytes(json.dumps(req_data), encoding='utf-8')
         self.client.send(data_json)
@@ -34,10 +35,25 @@ class FtpClient(object):
             while True:
                 file_data = f.read(1024)
                 if not file_data:
+                    self.client.send(Label_Byte_String)
                     break
                 self.client.send(file_data)
         rsp = self.client.recv(1024)
         rsp = json.loads(str(rsp, encoding='utf-8'))
+        return rsp
+
+    def _get_download_file_response(self, req_data, directory):
+        """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称和大小，第二次连续接收文件数据直到完成
+        """
+        file_name = req_data["kwargs"]["file_name"]
+        file_path = os.path.join(directory, file_name)
+        data_json = bytes(json.dumps(req_data), encoding='utf-8')
+        self.client.send(data_json)
+        # 发送文件内容，并接收服务端响应
+        rsp = self.client.recv(1024)
+        rsp = json.loads(str(rsp, encoding="utf-8"))
+        if rsp["code"] == 200:
+            SocketMethods.receive_file_by_label_string(self.client, file_path)
         return rsp
 
     def register(self, username, password1, password2):
@@ -124,10 +140,7 @@ class FtpClient(object):
             req_body = dict()
             req_body["action_id"] = "5"
             req_body["kwargs"] = {"file_name": file_name}
-            with open(file_path, "rb") as f:
-                data = f.read()
-            req_body["kwargs"]["file_size"] = 1024
-            rsp = self._get_response(req_body)
+            rsp = self._get_upload_file_response(req_body, file_path)
             code = rsp["code"]
             msg = rsp["msg"]
         except SomeError as e:
@@ -142,19 +155,13 @@ class FtpClient(object):
         try:
             if not os.path.exists(directory):
                 raise SomeError(u"存放文件的目录{0}不存在".format(directory))
-            file_path = os.path.join(directory, file_name)
             req_body = dict()
             req_body["action_id"] = "6"
             req_body["kwargs"] = {"file_name": file_name}
-            rsp = self._get_response(req_body)
+            rsp = self._get_download_file_response(req_body, directory)
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
-            if code == 200:
-                file_data = bytes(rsp["data"], encoding="utf-8")
-                with open(file_path, "wb") as f:
-                    f.write(file_data)
-                    f.flush()
         except SomeError as e:
             code = 400
             msg = u"下载文件失败, 原因：{0}".format(str(e))

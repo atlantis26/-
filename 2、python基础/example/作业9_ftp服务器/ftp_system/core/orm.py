@@ -1,23 +1,16 @@
 # coding:utf-8
-from conf.settings import DB_Temp
+from conf.settings import DB_Temp, Label_Byte_String
 from datetime import datetime
-import socket
 import os
 import json
 
 
-class SocketServer(object):
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
-        self.server = socket.socket()
-        self.server.bind((host, port))
-        self.server.listen(5)
-
+class SocketMethods(object):
     @staticmethod
-    def receive(conn):
-        """接收数据并进行解析，约定与客户端交互的json数据格式：
-        {"action_id": "action_id", "kwargs":{"key1": "value1", "key2": "value2"} }
+    def receive_data_by_action(conn):
+        """接收数据并进行解析，与客户端协议约定请求交互为json数据，格式：
+        {"action_id": "action_id", "kwargs":{"key1": "value1", "key2": "value2"} },
+        对上传文件请求（action_id=5）做单独处理
         """
         data = conn.recv(1024)
         payload = str(data, encoding='utf-8')
@@ -25,45 +18,49 @@ class SocketServer(object):
         action_id = payload["action_id"]
         kwargs = payload["kwargs"]
         if action_id == "5":
-            file_size = kwargs["file_size"]
-            temp_file_path = SocketServer.receive_file_data(conn, file_size)
+            temp_file_path = SocketMethods.receive_file_data(conn)
             kwargs["temp_file_path"] = temp_file_path
-        if action_id == "6":
-            kwargs["socket_conn"] = conn
 
         return action_id, kwargs
 
     @staticmethod
-    def receive_file_data(conn, file_size):
-        """接受文件数据，并存储在临时文件内，返回临时文件的路径地址"""
+    def receive_file_data(conn):
+        """接受文件数据"""
         now = datetime.now()
         time_stamp = now.strftime("%Y-%m-%d_%H%M%S")
         temp_file = os.path.join(DB_Temp, "temp_file_{0}".format(time_stamp))
-        with open(temp_file, "wb") as f:
-            while file_size > 0:
-                if file_size <= 1024:
-                    data = conn.recv(1024)
-                    f.write(data)
-                    break
-                elif file_size > 1024:
-                    data = conn.recv(1024)
-                    f.write(data)
-                    file_size -= 1024
+        SocketMethods.receive_file_by_label_string(conn, temp_file)
         return temp_file
 
     @staticmethod
-    def send_file_data(conn, file_path):
-        """发送文件数据"""
-        with open(file_path, "rb") as f:
+    def receive_file_by_label_string(conn, file_path):
+        """以标示字符串Label_Byte_String来判断文件内容是否接收完成"""
+        with open(file_path, "wb") as f:
             while True:
-                data = f.read(1024)
-                if not data:
+                data = conn.recv(1024)
+                if Label_Byte_String in data:
+                    data = data.replace(Label_Byte_String, b"")
+                    f.write(data)
+                    f.flush()
                     break
-                conn.sendall(data)
+                else:
+                    f.write(data)
+                    f.flush()
 
-    def __del__(self):
-        """关闭连接"""
-        self.server.close()
+    @staticmethod
+    def send_data_by_action(conn, action_id, response_obj):
+        """发送文件数据,对下载文件请求（action_id=6）做单独处理， 以标示字符串Label_Byte_String来标示文件内容被发送完成"""
+        response_body = bytes(json.dumps(response_obj.__dict__), encoding='utf-8')
+        conn.sendall(response_body)
+        if action_id == "6" and response_obj.code == 200:
+            file_path = response_obj.data["file_path"]
+            with open(file_path, "rb") as f:
+                while True:
+                    data = f.read(1024)
+                    if not data:
+                        conn.sendall(Label_Byte_String)
+                        break
+                    conn.sendall(data)
 
 
 class User(object):

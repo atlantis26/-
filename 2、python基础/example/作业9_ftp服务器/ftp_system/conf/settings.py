@@ -20,6 +20,9 @@ DB_Temp = os.path.join(BASE_DIR, "db", "Temp")
 if not os.path.exists(DB_Temp):
     os.mkdir(DB_Temp)
 
+# 标示字符串，用于发送文件与接收文件数据时的结束标示
+Label_Byte_String = b"---send file data has finished---"
+
 # 账户登录认证状态标示
 AUTH_FLAG = {"username": None, "is_authenticated": False}
 
