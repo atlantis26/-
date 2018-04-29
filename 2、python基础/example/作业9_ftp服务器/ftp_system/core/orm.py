@@ -49,7 +49,7 @@ class SocketMethods(object):
 
     @staticmethod
     def send_data_by_action(conn, action_id, response_obj):
-        """发送文件数据,对下载文件请求（action_id=6）做单独处理， 以标示字符串Label_Byte_String来标示文件内容被发送完成"""
+        """发送请求响应数据,对下载文件请求（action_id=6）做单独处理，以标示字符串Label_Byte_String来标示文件内容发送完成"""
         response_body = bytes(json.dumps(response_obj.__dict__), encoding='utf-8')
         conn.sendall(response_body)
         if action_id == "6" and response_obj.code == 200:

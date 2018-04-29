@@ -34,7 +34,6 @@ class FtpServer(object):
                                "6": self.download}
                     rsp = actions[action_id](**kwargs)
                     SocketMethods.send_data_by_action(conn, action_id, rsp)
-            # except ConnectionResetError as e:
             except Exception as e:
                 msg = u"远程客户端连接实例({0},{1})意外断开，详细：{2}".format(conn, address, str(e))
                 print(msg)

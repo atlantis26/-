@@ -1,7 +1,6 @@
 # coding:utf-8
+from conf.settings import DB_Users, DB_Storage, AUTH_FLAG
 from core.orm import User, SomeError
-from conf.settings import AUTH_FLAG
-from conf.settings import DB_Users, DB_Storage
 import json
 import os
 import logging

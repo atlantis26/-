@@ -43,7 +43,7 @@ class FtpClient(object):
         return rsp
 
     def _get_download_file_response(self, req_data, directory):
-        """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称和大小，第二次连续接收文件数据直到完成
+        """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称，第二次连续接收文件数据直到完成
         """
         file_name = req_data["kwargs"]["file_name"]
         file_path = os.path.join(directory, file_name)
@@ -67,6 +67,7 @@ class FtpClient(object):
             rsp = self._get_response(data)
             code = rsp["code"]
             msg = rsp["msg"]
+            data = rsp["data"] if code == 200 else None
         except SomeError as e:
             code = 400
             msg = u"注册用户失败，原因：{1}".format(username, str(e))
