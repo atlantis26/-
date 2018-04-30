@@ -1,1 +1,0 @@
-[("Iphone", 5800), ("Mac Pro", 9800), ("Bike", 800), ("Watch", 2000), ("Coffee", 31)]

@@ -1,5 +1,0 @@
-Alex 100000
-Rain 80000
-Egon 50000
-Yuan 25000
-zhangsan 20000
