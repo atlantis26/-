@@ -1,0 +1,30 @@
+1.用户加密（用户名密码数据先MD5加密后传输）
+2.多用户登录（TreadTCPServer）
+3.用户自己的家目录，只能访问自己的家目录
+4.对用户进行磁盘配额，可设置不同配额，（创建用户时，新增配额quota字段）
+5.用户自己的家目录下随意切换目录（则支持文件目录上传，目录切换(记录用户当前所在目录路径，然后对当前目录进行管理就可实现目录切换)）
+
+
+  mkdir dirname
+  rmdir dirname
+  cd dirname
+  cd ..
+  ls dirname
+  put filepath(完整、断点传输)
+  get filename(完整、断点传输)
+  pwd
+  help
+
+6.查看用户当前目录下文件
+7.允许上传下载文件，保证文件一致性（md5校验）
+8.传输过程中进度条（文件size总大小与已传大小,然后计算百分比，再用sys.stdout.write打印进度条）
+9.文件断点续传（1.停止时记录已经传输数据的位置或大小 size_or_flag
+               2.发送续传请求给服务端，传递size_or_flag
+               3.服务端根据续传请求中的size_or_flag，使用文件句柄的f.seek()移动文件文本光标，然后传输光标后的文件数据）
+
+统一操作指令 （类似linux指令 ls；pwd ;cd ../.., get file_name, put file_name）
+通过打印操作指令，然后统一input(),然后解析输入命令，然后仔细操作。。。
+
+判断是否支持输入的支持操作（使用反射判断， hasattr(self, cmd_name, "not support"),-> func = getattr(self, cmd_{action})，-> rsp = func()）
+
+方法函数命名时需以cmd_开头

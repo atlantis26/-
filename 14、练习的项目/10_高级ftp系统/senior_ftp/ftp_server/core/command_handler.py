@@ -1,0 +1,232 @@
+# coding:utf-8
+from core.orm import SomeError, ResponseData
+from conf.settings import DB_STORAGE
+import shutil
+import os
+import logging
+
+logger = logging.getLogger("ftp.commands")
+
+
+class FtpCommands(object):
+    def __init__(self, username=None):
+        self.username = username
+        self.path_depth = []
+
+    def run(self, command, **kwargs):
+        """执行命令，并返回执行结果"""
+        try:
+            self.validate_cmd(command)
+            method_name = "cmd_{0}".format(command)
+            return getattr(self, method_name)(**kwargs)
+        except TypeError as e:
+            print(str(e))
+            msg = u"{0}命令执行失败，语法有误".format(command)
+            logger.debug(ResponseData(400, msg).__dict__)
+            return ResponseData(400, msg)
+
+    def update_user_status(self, username):
+        """设置用户登录状态"""
+        if not username:
+            self.username = None
+            self.path_depth = []
+
+    def validate_cmd(self, cmd):
+        """检查命令cmd是否被支持"""
+        if not hasattr(self, "cmd_{0}".format(cmd)):
+            raise SomeError(u"{0}命令不存在".format(cmd))
+        return True
+
+    def is_authenticated(self):
+        """判断是否是已登录状态"""
+        if not self.username:
+            raise SomeError(u"认证失败,当前是未登录状态,请先登录用户")
+
+    @property
+    def current_path(self):
+        """返回当前登录用户所在的绝对路径"""
+        return os.path.join(self.user_home, *self.path_depth)
+
+    @property
+    def user_home(self):
+        """返回当前登录用户的家目录"""
+        self.is_authenticated()
+        return os.path.join(DB_STORAGE, self.username)
+
+    def cmd_mkdir(self, name):
+        """
+        功能描述：创建一个新目录；
+        使用语法：mkdir ${name};
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            path = os.path.join(self.current_path, name)
+            if os.path.exists(path):
+                raise SomeError(u"文件目录{0}已存在".format(name))
+            os.mkdir(path)
+            code = 200
+            msg = "mkdir命令执行成功"
+        except SomeError as e:
+            code = 400
+            msg = "mkdir命令执行失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def cmd_remove(self, name):
+        """
+        功能描述：删除目录或文件，如果目标是非空目录，那么会递归删除其子文件、子目录
+        使用语法：remove ${name}; 参数${name}为当前路径下的目录或文件的名称
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            if not name:
+                raise SomeError(u"文件目录名不能为空")
+            path = os.path.join(self.current_path, name)
+            if not os.path.exists(path):
+                raise SomeError(u"文件目录{0}不存在".format(name))
+            if os.path.isfile(path):
+                os.remove(path)
+            else:
+                shutil.rmtree(path)
+            code = 200
+            msg = "remove命令执行成功"
+        except SomeError as e:
+            code = 400
+            msg = "remove命令执行失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def cmd_cd(self, name):
+        """
+        功能描述：切换用户所在目录
+        使用语法：
+                cd ${name}: 进入下一级目录,参数${name}为当前路径下的目录名称
+                cd ..:返回上一级目录，参数".."代表为上一级目录
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            if name == "..":
+                if not self.path_depth:
+                    raise SomeError(u"用户已经在最上级目录")
+                self.path_depth.pop()
+            else:
+                self.path_depth.append(name)
+            code = 200
+            msg = "cd切换目录命令执行成功"
+        except SomeError as e:
+            code = 400
+            msg = "cd切换目录命令执行失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def cmd_ls(self):
+        """
+        功能描述：查看当前路径下的文件与目录名称
+        使用语法：ls
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            current_path, dir_lst, file_lst = next(os.walk(self.current_path))
+            data = dir_lst, file_lst
+            code = 200
+            msg = "ls命令执行成功"
+        except SomeError as e:
+            code = 400
+            msg = "ls命令执行失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    def cmd_pwd(self):
+        """
+        功能描述：查看用户当前所在ftp系统的路径
+        使用语法：pwd
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            path = "/" + "/".join(self.path_depth)
+            msg = "pwd命令执行成功"
+            code = 200
+        except SomeError as e:
+            code = 400
+            msg = "pwd命令执行失败，详情：{0}".format(str(e))
+            path = None
+        logger.debug(ResponseData(code, path).__dict__)
+
+        return ResponseData(code, msg, path)
+
+    def cmd_put(self, name, tmp_file):
+        """
+        功能描述：上传文件，上传到用户当前所在路径
+        使用语法：put ${name}
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            file_path = os.path.join(self.current_path, name)
+            if os.path.exists(file_path):
+                raise SomeError(u"文件名{0}不能重复".format(name))
+            # socket程序已经先将文件数据存储在临时文件内，这里只需拷贝临时文件内容
+            shutil.move(tmp_file, file_path)
+            code = 200
+            msg = "上传文件成功"
+        except SomeError as e:
+            code = 400
+            msg = "上传文件失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def cmd_get(self, name):
+        """
+        功能描述：下载文件,文件必须在用户当前路径下存在
+        使用语法：get ${file_name}
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            file_path = os.path.join(self.current_path, name)
+            if not os.path.exists(file_path):
+                raise SomeError(u"文件名{0}不存在".format(name))
+            # 这里只检查文件是否存在和返回文件的绝对路径，发送文件数据的操作，交给socket程序
+            code = 200
+            msg = "下载文件成功"
+            data = {"file_name": name,
+                    "file_path": file_path}
+        except SomeError as e:
+            code = 400
+            msg = "下载文件失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    def cmd_help(self, cmd):
+        """
+        功能描述：查询执行某个命令的帮助信息
+        使用语法：help ${command_name}
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            self.validate_cmd(cmd)
+            method_name = "cmd_{0}".format(cmd)
+            doc = getattr(self, method_name).__doc__
+            code = 200
+            msg = "help命令执行成功"
+        except SomeError as e:
+            code = 400
+            msg = "help命令执行失败，详情：{0}".format(str(e))
+            doc = None
+        logger.debug(ResponseData(code, doc).__dict__)
+
+        return ResponseData(code, msg, doc)
