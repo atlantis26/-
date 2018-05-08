@@ -14,6 +14,28 @@ class UserHandler(object):
         self.username = None
         self.is_authenticated = False
 
+    @staticmethod
+    def register(username, password1, password2, quota):
+        """创建新用户"""
+        try:
+            if UserHandler.user_is_exists(username):
+                raise SomeError(u"用户名{0}已被使用".format(username))
+            if password1 != password2:
+                raise SomeError(u"两次设置密码不一致".format(username))
+            user = User(username, password1, quota)
+            UserHandler.save_user(user)
+            UserHandler.create_or_get_user_home(username)
+            code = 200
+            msg = u"创建用户成功"
+            data = user.__dict__
+        except SomeError as e:
+            code = 400
+            msg = u"创建用户失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
     def login(self, username, password):
         """登录"""
         try:
@@ -48,28 +70,6 @@ class UserHandler(object):
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
-
-    @staticmethod
-    def register(username, password1, password2):
-        """创建新用户"""
-        try:
-            if UserHandler.user_is_exists(username):
-                raise SomeError(u"用户名{0}已被使用".format(username))
-            if password1 != password2:
-                raise SomeError(u"两次设置密码不一致".format(username))
-            user = User(username, password1)
-            UserHandler.save_user(user)
-            UserHandler.create_or_get_user_home(username)
-            code = 200
-            msg = u"创建用户成功"
-            data = user.__dict__
-        except SomeError as e:
-            code = 400
-            msg = u"创建用户失败，详情：{0}".format(str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
-
-        return ResponseData(code, msg, data)
 
     @staticmethod
     def user_is_exists(username):

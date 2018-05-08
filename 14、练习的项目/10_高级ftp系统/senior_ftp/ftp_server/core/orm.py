@@ -3,9 +3,10 @@
 
 class User(object):
     """用户orm模型"""
-    def __init__(self, username, password):
+    def __init__(self, username, password, quota):
         self.username = username
         self.password = password
+        self.quota = quota
 
 
 class ResponseData(object):

@@ -1,5 +1,6 @@
 # coding:utf-8
 from core.orm import SomeError, ResponseData
+from core.user_handler import UserHandler
 from conf.settings import DB_STORAGE
 import shutil
 import os
@@ -25,6 +26,10 @@ class FtpCommands(object):
             logger.debug(ResponseData(400, msg).__dict__)
             return ResponseData(400, msg)
 
+    def get_cmd_list(self):
+        """查询系统可用命令列表"""
+        return [attr.split("_")[1] for attr in dir(self) if attr.startswith("cmd_")]
+
     def update_user_status(self, username):
         """设置用户登录状态"""
         if not username:
@@ -36,6 +41,10 @@ class FtpCommands(object):
         if not hasattr(self, "cmd_{0}".format(cmd)):
             raise SomeError(u"{0}命令不存在".format(cmd))
         return True
+
+    def validate_file_md5(self, file_path, md5num):
+        """检查文件md5校验是否被支持"""
+        pass
 
     def is_authenticated(self):
         """判断是否是已登录状态"""
@@ -210,23 +219,62 @@ class FtpCommands(object):
 
         return ResponseData(code, msg, data)
 
-    def cmd_help(self, cmd):
+    def get_user_quota_detail(self):
+        """功能描述：查询登录用户已使用的存储配额(GB)"""
+        size = 0
+        for root, dirs, files in os.walk(self.user_home):
+            size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
+        used_quota = round((size/(1024**2)), 2)
+
+        user = UserHandler.load_user(self.username)
+        total_quota = user["quota"]
+        residual_quota = total_quota - used_quota
+
+        return total_quota, used_quota, residual_quota
+
+    def cmd_quota(self):
         """
-        功能描述：查询执行某个命令的帮助信息
-        使用语法：help ${command_name}
+        功能描述：查询用户存储总配额、可用配额、已用配额信息
+        使用语法：quota
         返回值：命令执行结果
         """
         try:
             self.is_authenticated()
-            self.validate_cmd(cmd)
-            method_name = "cmd_{0}".format(cmd)
-            doc = getattr(self, method_name).__doc__
+            total_quota, used_quota, residual_quota = self.get_user_quota_detail()
+            code = 200
+            msg = "查询用户存储配额信息成功"
+            data = {"total_quota": total_quota,
+                    "used_quota": used_quota,
+                    "residual_quota": residual_quota}
+        except SomeError as e:
+            code = 400
+            msg = "查询用户存储配额信息失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    def cmd_help(self, cmd):
+        """
+        功能描述：查询命令列表或者查询某个命令的使用帮助信息
+        使用语法：help  ：查询命令列表
+                help ${command_name} ： 查询命令${command_name}的使用帮助信息
+        返回值：命令执行结果
+        """
+        try:
+            self.is_authenticated()
+            if cmd:
+                self.validate_cmd(cmd)
+                method_name = "cmd_{0}".format(cmd)
+                data = getattr(self, method_name).__doc__
+            else:
+                data = self.get_cmd_list()
             code = 200
             msg = "help命令执行成功"
         except SomeError as e:
             code = 400
             msg = "help命令执行失败，详情：{0}".format(str(e))
-            doc = None
-        logger.debug(ResponseData(code, doc).__dict__)
+            data = None
+        logger.debug(ResponseData(code, data).__dict__)
 
-        return ResponseData(code, msg, doc)
+        return ResponseData(code, msg, data)

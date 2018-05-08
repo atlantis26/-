@@ -7,5 +7,5 @@ init_logging()
 
 if __name__ == "__main__":
 
-    server = FtpServer("localhost", 4396)
-    server.console()
+    server = FtpServer("0.0.0.0", 4396)
+    server.run()

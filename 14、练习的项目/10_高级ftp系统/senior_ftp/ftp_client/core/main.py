@@ -39,13 +39,13 @@ class FtpPortal(object):
         else:
             print(rsp.msg)
 
-    def upload(self):
+    def put(self):
         """上传文件"""
         file_path = input(u"请输入上传文件的文件路径：").strip()
         rsp = self.client.upload(file_path)
         print(rsp.msg)
 
-    def download(self):
+    def get(self):
         """下载文件"""
         file_name = input(u"请输入下载文件的名称：").strip()
         directory = input(u"请输入保存文件的目录地址：").strip()

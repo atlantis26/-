@@ -11,20 +11,14 @@ if not os.path.exists(DB_Users):
     os.mkdir(DB_Users)
 
 # 用户FTP文件仓库
-DB_Storage = os.path.join(BASE_DIR, "db", "Storage")
-if not os.path.exists(DB_Storage):
-    os.mkdir(DB_Storage)
+DB_STORAGE = os.path.join(BASE_DIR, "db", "Storage")
+if not os.path.exists(DB_STORAGE):
+    os.mkdir(DB_STORAGE)
 
-# 用于暂时存放上传文件的临时文件
-DB_Temp = os.path.join(BASE_DIR, "db", "Temp")
-if not os.path.exists(DB_Temp):
-    os.mkdir(DB_Temp)
-
-# 标示字符串，用于发送文件与接收文件数据时的结束标示
-Label_Byte_String = b"---send file data has finished---"
-
-# 账户登录认证状态标示
-AUTH_FLAG = {"username": None, "is_authenticated": False}
+# 用于存放上传文件的临时文件的目录
+DB_TEMP = os.path.join(BASE_DIR, "db", "Temp")
+if not os.path.exists(DB_TEMP):
+    os.mkdir(DB_TEMP)
 
 # log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')

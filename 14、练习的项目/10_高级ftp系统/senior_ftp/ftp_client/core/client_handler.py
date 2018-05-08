@@ -1,7 +1,5 @@
 # coding:utf-8
-from core.orm import SocketMethods
 from core.orm import SomeError, ResponseData
-from conf.settings import Label_Byte_String
 import socket
 import json
 import os
@@ -169,3 +167,54 @@ class FtpClient(object):
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
+
+
+class SocketMethod(object):
+    @staticmethod
+    def receive_data(request):
+        """接收数据并进行解析，与客户端协议约定请求交互为json数据，格式：
+        {"cmd": "cmd_name", "kwargs":{"key1": "value1", "key2": "value2"} },
+        对上传文件请求（cmd=put）做单独处理
+        """
+        data = request.recv(1024)
+        payload = json.loads(data.decode("utf-8"))
+        cmd = payload["cmd"]
+        kwargs = payload["kwargs"]
+        if cmd == "put":
+            file_size = payload["file_size"]
+            temp_file = SocketMethod.receive_file_data(request, file_path, file_size)
+            kwargs["temp_file"] = temp_file
+        return cmd, kwargs
+
+    @staticmethod
+    def receive_file_data(request, file_path, file_size):
+        """接收文件数据"""
+        receive_size = 0
+        f = open(file_path, "wb")
+        while True:
+            diff = file_size - receive_size
+            if diff > 1024:
+                data = request.recv(1024)
+            elif diff == 0:
+                f.close()
+                break
+            else:
+                data = request.recv(diff)
+            f.write(data)
+            f.flush()
+            receive_size += len(data)
+        return file_path
+
+    @staticmethod
+    def sendall_data(request, cmd, response_obj):
+        """发送请求响应数据,对下载文件请求（cmd=get）做单独处理"""
+        response_body = json.dumps(response_obj.__dict__).encode("utf-8")
+        request.sendall(response_body)
+        if cmd == "get" and response_obj.code == 200:
+            file_path = response_obj.data["file_path"]
+            with open(file_path, "rb") as f:
+                while True:
+                    data = f.read(1024)
+                    if not data:
+                        break
+                    request.sendall(data)
