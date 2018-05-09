@@ -17,27 +17,26 @@ class FtpClient(object):
 
     def _get_response(self, req_data):
         """不带文件内容的请求，发送请求，并获取响应"""
-        data_json = bytes(json.dumps(req_data), encoding='utf-8')
+        data_json = json.dumps(req_data).encode("utf-8")
         self.client.send(data_json)
         rsp = self.client.recv(1024)
-        rsp = json.loads(str(rsp, encoding='utf-8'))
+        rsp = json.loads(rsp.decode("utf-8"))
         return rsp
 
     def _get_upload_file_response(self, req_data, file_path):
         """对于上传文件的请求，发送两次请求数据，第一次告诉服务端文件名称，第二次连续发送文件数据直到全部发送完成
         """
-        data_json = bytes(json.dumps(req_data), encoding='utf-8')
+        data_json = json.dumps(req_data).encode('utf-8')
         self.client.send(data_json)
         # 发送文件内容，并接收服务端响应
         with open(file_path, "rb") as f:
             while True:
                 file_data = f.read(1024)
                 if not file_data:
-                    self.client.send(Label_Byte_String)
                     break
                 self.client.send(file_data)
         rsp = self.client.recv(1024)
-        rsp = json.loads(str(rsp, encoding='utf-8'))
+        rsp = json.loads(rsp.decode("utf-8"))
         return rsp
 
     def _get_download_file_response(self, req_data, directory):
@@ -45,23 +44,45 @@ class FtpClient(object):
         """
         file_name = req_data["kwargs"]["file_name"]
         file_path = os.path.join(directory, file_name)
-        data_json = bytes(json.dumps(req_data), encoding='utf-8')
+        data_json = json.dumps(req_data).encode("utf-8")
         self.client.send(data_json)
         # 发送文件内容，并接收服务端响应
         rsp = self.client.recv(1024)
-        rsp = json.loads(str(rsp, encoding="utf-8"))
+        rsp = json.loads(rsp.decode("utf-8"))
         if rsp["code"] == 200:
-            SocketMethods.receive_file_by_label_string(self.client, file_path)
+            file_size = rsp["data"]["file_size"]
+            self._receive_file_data(file_size, file_path)
         return rsp
 
-    def register(self, username, password1, password2):
+    def _receive_file_data(self, file_size, file_path):
+        """根据文件size大小接收文件数据"""
+        receive_size = 0
+        f = open(file_path, "wb")
+        while True:
+            diff = file_size - receive_size
+            if diff > 1024:
+                data = self.client.recv(1024)
+            elif diff == 0:
+                f.close()
+                break
+            else:
+                data = self.client.recv(diff)
+            f.write(data)
+            f.flush()
+            receive_size += len(data)
+
+    def run_cmd(self):
+        pass
+
+    def register(self, username, password1, password2, quota):
         """注册用户"""
         try:
             data = dict()
-            data["action_id"] = "1"
+            data["cmd"] = "register"
             data["kwargs"] = {"username": username,
                               "password1": password1,
-                              "password2": password2}
+                              "password2": password2,
+                              "quota": quota}
             rsp = self._get_response(data)
             code = rsp["code"]
             msg = rsp["msg"]
@@ -78,7 +99,7 @@ class FtpClient(object):
         """用户登录"""
         try:
             data = dict()
-            data["action_id"] = "2"
+            data["cmd"] = "login"
             data["kwargs"] = {"username": username,
                               "password": password}
             rsp = self._get_response(data)
@@ -97,7 +118,7 @@ class FtpClient(object):
         """用户登出"""
         try:
             data = dict()
-            data["action_id"] = "3"
+            data["cmd"] = "logout"
             data["kwargs"] = {}
             rsp = self._get_response(data)
             code = rsp["code"]
@@ -112,25 +133,7 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
-    def show(self):
-        """显示个人FTP仓库信息"""
-        try:
-            req_body = dict()
-            req_body["action_id"] = "4"
-            req_body["kwargs"] = {}
-            rsp = self._get_response(req_body)
-            code = rsp["code"]
-            msg = rsp["msg"]
-            data = rsp["data"] if code == 200 else None
-        except SomeError as e:
-            code = 400
-            msg = u"查询个人文件列表失败, 原因：{0}".format(self.username, str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
-
-        return ResponseData(code, msg, data)
-
-    def upload(self, file_path):
+    def put(self, file_path):
         """上传文件到个人仓库"""
         try:
             if not os.path.exists(file_path):
@@ -149,7 +152,7 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
-    def download(self, file_name, directory):
+    def get(self, file_name, directory):
         """下载文件"""
         try:
             if not os.path.exists(directory):
@@ -168,53 +171,121 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
+    def mkdir(self, name):
+        """创建目录"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "mkdir"
+            req_body["kwargs"] = {"name": name}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"创建目录失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
 
-class SocketMethod(object):
-    @staticmethod
-    def receive_data(request):
-        """接收数据并进行解析，与客户端协议约定请求交互为json数据，格式：
-        {"cmd": "cmd_name", "kwargs":{"key1": "value1", "key2": "value2"} },
-        对上传文件请求（cmd=put）做单独处理
-        """
-        data = request.recv(1024)
-        payload = json.loads(data.decode("utf-8"))
-        cmd = payload["cmd"]
-        kwargs = payload["kwargs"]
-        if cmd == "put":
-            file_size = payload["file_size"]
-            temp_file = SocketMethod.receive_file_data(request, file_path, file_size)
-            kwargs["temp_file"] = temp_file
-        return cmd, kwargs
+        return ResponseData(code, msg)
 
-    @staticmethod
-    def receive_file_data(request, file_path, file_size):
-        """接收文件数据"""
-        receive_size = 0
-        f = open(file_path, "wb")
-        while True:
-            diff = file_size - receive_size
-            if diff > 1024:
-                data = request.recv(1024)
-            elif diff == 0:
-                f.close()
-                break
-            else:
-                data = request.recv(diff)
-            f.write(data)
-            f.flush()
-            receive_size += len(data)
-        return file_path
+    def rmdir(self, name):
+        """删除目录"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "rmdir"
+            req_body["kwargs"] = {"name": name}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"删除目录失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
 
-    @staticmethod
-    def sendall_data(request, cmd, response_obj):
-        """发送请求响应数据,对下载文件请求（cmd=get）做单独处理"""
-        response_body = json.dumps(response_obj.__dict__).encode("utf-8")
-        request.sendall(response_body)
-        if cmd == "get" and response_obj.code == 200:
-            file_path = response_obj.data["file_path"]
-            with open(file_path, "rb") as f:
-                while True:
-                    data = f.read(1024)
-                    if not data:
-                        break
-                    request.sendall(data)
+        return ResponseData(code, msg)
+
+    def cd(self, name):
+        """切换目录"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "cd"
+            req_body["kwargs"] = {"name": name}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"切换目录失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def ls(self):
+        """查询用户当前路径下文件目录信息"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "ls"
+            req_body["kwargs"] = {}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"查询当前路径下文件目录失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def pwd(self):
+        """查询用户当前路径"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "pwd"
+            req_body["kwargs"] = {}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"查询当前路径, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def quota(self):
+        """查询用户存储配额信息"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "quota"
+            req_body["kwargs"] = {}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"查询用户存储配额信息, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def help(self):
+        """查询命令列表，及命令使用信息"""
+        try:
+            req_body = dict()
+            req_body["cmd"] = "quota"
+            req_body["kwargs"] = {}
+            rsp = self._get_response(req_body)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except SomeError as e:
+            code = 400
+            msg = u"查询命令相关信息失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
