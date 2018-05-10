@@ -56,34 +56,18 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'user': {
+        'users': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'user.log'),
+            'filename': os.path.join(LOG_DIR, 'users.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
         },
-        'auth': {
+        'commands': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'auth.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'ftp_server': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'ftp_server.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'ftp_client': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'ftp_client.log'),
+            'filename': os.path.join(LOG_DIR, 'commands.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -96,23 +80,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'ftp.auth': {
-            'handlers': ['auth'],
+        'ftp.users': {
+            'handlers': ['users'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        'ftp.user': {
-            'handlers': ['user'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ftp.ftp_server': {
-            'handlers': ['ftp_server'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ftp.ftp_client': {
-            'handlers': ['ftp_client'],
+        'ftp.commands': {
+            'handlers': ['commands'],
             'level': 'DEBUG',
             'propagate': False,
         },

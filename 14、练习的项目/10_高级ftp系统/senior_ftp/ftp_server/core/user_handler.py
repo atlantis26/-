@@ -14,17 +14,16 @@ class UserHandler(object):
         self.username = None
         self.is_authenticated = False
 
-    @staticmethod
-    def register(username, password1, password2, quota):
+    def register(self, username, password1, password2, quota):
         """创建新用户"""
         try:
-            if UserHandler.user_is_exists(username):
+            if self.user_is_exists(username):
                 raise SomeError(u"用户名{0}已被使用".format(username))
             if password1 != password2:
                 raise SomeError(u"两次设置密码不一致".format(username))
             user = User(username, password1, quota)
-            UserHandler.save_user(user)
-            UserHandler.create_or_get_user_home(username)
+            self.save_user(user)
+            self.create_or_get_user_home(username)
             code = 200
             msg = u"创建用户成功"
             data = user.__dict__
@@ -45,7 +44,7 @@ class UserHandler(object):
             if user["password"] != password:
                 raise SomeError(u"密码错误")
             code = 200
-            msg = u"用户{0}登录成功, 欢迎您使用本系统".format(username)
+            msg = u"用户{0}登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令""".format(username)
             self.username = username
             self.is_authenticated = True
         except SomeError as e:

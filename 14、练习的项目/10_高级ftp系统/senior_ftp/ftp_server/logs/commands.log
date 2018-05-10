@@ -1,0 +1,13 @@
+2018-05-10 14:07:08 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:07:16 - command_handler.py:172(command_handler:cmd_pwd) - DEBUG - {'code': 400, 'msg': None}
+2018-05-10 14:08:53 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:10:02 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:10:59 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:12:42 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:13:03 - command_handler.py:172(command_handler:cmd_pwd) - DEBUG - {'code': 400, 'msg': None}
+2018-05-10 14:17:06 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:17:58 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:19:37 - command_handler.py:253(command_handler:cmd_quota) - DEBUG - {'code': 400, 'msg': '查询用户存储配额信息失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:30:02 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:31:35 - command_handler.py:253(command_handler:cmd_quota) - DEBUG - {'code': 400, 'msg': '查询用户存储配额信息失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 14:36:30 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'help命令执行失败，语法有误'}

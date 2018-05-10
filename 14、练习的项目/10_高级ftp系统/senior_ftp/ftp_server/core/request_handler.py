@@ -10,29 +10,33 @@ import os
 
 class FtpHandler(BaseRequestHandler):
     def __init__(self, request, client_address, server):
-        BaseRequestHandler.__init__(self, request, client_address, server)
         self.username = None
         self.user_handler = UserHandler()
         self.ftp_commands = FtpCommands()
+        BaseRequestHandler.__init__(self, request, client_address, server)
 
     def handle(self):
         """处理单个客户端连接与请求"""
+
         try:
-            cmd, kwargs = self.receive_data()
-            if cmd == "register":
-                response = self.user_handler.register(**kwargs)
-            elif cmd == "login":
-                response = self.user_handler.login(**kwargs)
-                if response.code == 200:
-                    self.username = self.user_handler.username
-            elif cmd == "logout":
-                response = self.user_handler.logout()
-                if response.code == 200:
-                    self.username = None
-            else:
-                self.ftp_commands.update_user_status(self.username)
-                response = self.ftp_commands.run(cmd, **kwargs)
-            self.sendall_data(cmd, response)
+            while True:
+                cmd, kwargs = self.receive_data()
+                print(cmd, kwargs)
+                print(self.__dict__)
+                if cmd == "register":
+                    response = self.user_handler.register(**kwargs)
+                elif cmd == "login":
+                    response = self.user_handler.login(**kwargs)
+                    if response.code == 200:
+                        self.username = self.user_handler.username
+                elif cmd == "logout":
+                    response = self.user_handler.logout()
+                    if response.code == 200:
+                        self.username = None
+                else:
+                    self.ftp_commands.update_user_status(self.username)
+                    response = self.ftp_commands.run(cmd, **kwargs)
+                self.sendall_data(cmd, response)
         except ConnectionResetError as e:
             msg = u"客户端{0}已经断开连接，详细：{1}".format(self.client_address, str(e))
             print(msg)
@@ -56,7 +60,7 @@ class FtpHandler(BaseRequestHandler):
         """接收文件数据，暂时存放在临时文件内"""
         now = datetime.now()
         time_stamp = now.strftime("%Y-%m-%d_%H%M%S")
-        temp_file = os.path.join(DB_TEMP, "temp_file_{0}".format(time_stamp))
+        temp_file = os.path.join(DB_TEMP, "temp_file_{0}_{1}".format(file_size, time_stamp))
         receive_size = 0
         f = open(temp_file, "wb")
         while True:
