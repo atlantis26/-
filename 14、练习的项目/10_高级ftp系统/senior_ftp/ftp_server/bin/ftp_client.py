@@ -36,8 +36,9 @@ class FtpPortal(object):
                 rsp = self.login()
                 print(rsp.msg)
                 if rsp.code == 200:
+                    username = rsp.data
                     while True:
-                        cmd_args = input(u"${0}>: ".format("zhangsan")).strip()
+                        cmd_args = input(u"${0}>: ".format(username)).strip()
                         cmd_args = [s.strip() for s in cmd_args.split(" ")]
                         rsp = self.client.run_cmd(cmd_args[0], *cmd_args[1:])
                         print(rsp.msg)

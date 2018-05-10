@@ -32,7 +32,9 @@ class FtpCommands(object):
 
     def update_user_status(self, username):
         """设置用户登录状态"""
-        if not username:
+        if username:
+            self.username = username
+        else:
             self.username = None
             self.path_depth = []
 
@@ -173,17 +175,17 @@ class FtpCommands(object):
 
         return ResponseData(code, msg, path)
 
-    def cmd_put(self, name, tmp_file):
+    def cmd_put(self, file_name, tmp_file):
         """
         功能描述：上传文件，上传到用户当前所在路径
-        使用语法：put ${name}
+        使用语法：put ${file_name}
         返回值：命令执行结果
         """
         try:
             self.is_authenticated()
-            file_path = os.path.join(self.current_path, name)
+            file_path = os.path.join(self.current_path, file_name)
             if os.path.exists(file_path):
-                raise SomeError(u"文件名{0}不能重复".format(name))
+                raise SomeError(u"文件名{0}不能重复".format(file_name))
             # socket程序已经先将文件数据存储在临时文件内，这里只需拷贝临时文件内容
             shutil.move(tmp_file, file_path)
             code = 200
@@ -275,6 +277,6 @@ class FtpCommands(object):
             code = 400
             msg = "help命令执行失败，详情：{0}".format(str(e))
             data = None
-        logger.debug(ResponseData(code, data).__dict__)
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)

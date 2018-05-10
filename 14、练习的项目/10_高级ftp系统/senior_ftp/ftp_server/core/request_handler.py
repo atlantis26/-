@@ -21,8 +21,6 @@ class FtpHandler(BaseRequestHandler):
         try:
             while True:
                 cmd, kwargs = self.receive_data()
-                print(cmd, kwargs)
-                print(self.__dict__)
                 if cmd == "register":
                     response = self.user_handler.register(**kwargs)
                 elif cmd == "login":
@@ -51,9 +49,9 @@ class FtpHandler(BaseRequestHandler):
         cmd = payload["cmd"]
         kwargs = payload["kwargs"]
         if cmd == "put":
-            file_size = payload["file_size"]
+            file_size = kwargs.pop("file_size")
             temp_file = self._receive_file_data(file_size)
-            kwargs["temp_file"] = temp_file
+            kwargs["tmp_file"] = temp_file
         return cmd, kwargs
 
     def _receive_file_data(self, file_size):

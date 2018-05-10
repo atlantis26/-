@@ -19,19 +19,15 @@ class FtpClient(object):
         """命令执行统一入口"""
         try:
             attr = "cmd_{0}".format(cmd)
-            rsp = getattr(self, attr)(*kwargs)
-            code = rsp.code
-            msg = rsp.msg
-        except AttributeError as e:
+            rsp = getattr(self, attr)(*kwargs).__dict__
+            code = rsp.get("code")
+            msg = rsp.get("msg")
+        except SomeError as e:
             code = 400
             msg = "{0}不是系统支持的命令".format(cmd)
             logger.debug(msg + "详情：{0}".format(str(e)))
 
         return ResponseData(code, msg)
-
-    def get_cmd_list(self):
-        """查询系统可用命令列表"""
-        return [attr.split("_")[1] for attr in dir(self) if attr.startswith("cmd_")]
 
     def _get_response(self, req_data):
         """不带文件内容的请求，发送请求，并获取响应"""
@@ -101,14 +97,12 @@ class FtpClient(object):
             rsp = self._get_response(data)
             code = rsp["code"]
             msg = rsp["msg"]
-            data = rsp["data"] if code == 200 else None
         except SomeError as e:
             code = 400
             msg = u"注册用户失败，原因：{1}".format(username, str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
-        return ResponseData(code, msg, data)
+        return ResponseData(code, msg)
 
     def login(self, username, password):
         """用户登录"""
@@ -122,12 +116,14 @@ class FtpClient(object):
             msg = rsp["msg"]
             self.username = username
             self.password = password
+            data = username
         except SomeError as e:
             code = 400
             msg = u"登录失败，原因：{1}".format(username, str(e))
-        logger.debug(ResponseData(code, msg).__dict__)
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
-        return ResponseData(code, msg)
+        return ResponseData(code, msg, data)
 
     def logout(self):
         """用户登出"""
@@ -154,9 +150,11 @@ class FtpClient(object):
             if not os.path.exists(file_path):
                 raise SomeError(u"文件{0}不存在".format(file_path))
             file_name = os.path.split(file_path)[-1]
+            file_size = os.path.getsize(file_path)
             req_body = dict()
             req_body["cmd"] = "put"
-            req_body["kwargs"] = {"file_name": file_name}
+            req_body["kwargs"] = {"file_name": file_name,
+                                  "file_size": file_size}
             rsp = self._get_upload_file_response(req_body, file_path)
             code = rsp["code"]
             msg = rsp["msg"]
@@ -203,11 +201,11 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
-    def cmd_rmdir(self, name):
-        """删除目录"""
+    def cmd_remove(self, name):
+        """删除文件目录"""
         try:
             req_body = dict()
-            req_body["cmd"] = "rmdir"
+            req_body["cmd"] = "remove"
             req_body["kwargs"] = {"name": name}
             rsp = self._get_response(req_body)
             logger.debug(rsp)
@@ -247,6 +245,9 @@ class FtpClient(object):
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
+            if code == 200:
+                dirs, files = rsp.get("data")
+                print(u"目录列表：{0} \n文件列表:{1}".format(dirs, files))
         except SomeError as e:
             code = 400
             msg = u"查询当前路径下文件目录失败, 原因：{0}".format(str(e))
@@ -255,7 +256,7 @@ class FtpClient(object):
         return ResponseData(code, msg)
 
     def cmd_pwd(self):
-        """查询用户当前路径"""
+        """查询用户当前ftp目录路径"""
         try:
             req_body = dict()
             req_body["cmd"] = "pwd"
@@ -264,9 +265,12 @@ class FtpClient(object):
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
+            if code == 200:
+                data = rsp.get("data")
+                print(u"您当前ftp目录路径：{0}".format(data))
         except SomeError as e:
             code = 400
-            msg = u"查询当前路径, 原因：{0}".format(str(e))
+            msg = u"查询当前ftp目录路径, 原因：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -281,6 +285,14 @@ class FtpClient(object):
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
+            if code == 200:
+                total_quota, used_quota, residual_quota = rsp.get("data")
+                msg = u"""
+                您的存储配额详情为：
+                    总配额：{0}GB 
+                    已使用配额：{1}GB
+                    剩余配额：{2}GB""".format(total_quota, used_quota, residual_quota)
+                print(msg)
         except SomeError as e:
             code = 400
             msg = u"查询用户存储配额信息, 原因：{0}".format(str(e))
@@ -288,16 +300,19 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
-    def cmd_help(self, **kwargs):
+    def cmd_help(self, cmd=""):
         """查询命令列表，及命令使用信息"""
         try:
             req_body = dict()
             req_body["cmd"] = "help"
-            req_body["kwargs"] = kwargs
+            req_body["kwargs"] = {"cmd": cmd}
             rsp = self._get_response(req_body)
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
+            if code == 200:
+                data = rsp.get("data")
+                print(data)
         except SomeError as e:
             code = 400
             msg = u"查询命令相关信息失败, 原因：{0}".format(str(e))

@@ -11,3 +11,62 @@
 2018-05-10 14:30:02 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
 2018-05-10 14:31:35 - command_handler.py:253(command_handler:cmd_quota) - DEBUG - {'code': 400, 'msg': '查询用户存储配额信息失败，详情：认证失败,当前是未登录状态,请先登录用户'}
 2018-05-10 14:36:30 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'help命令执行失败，语法有误'}
+2018-05-10 21:59:59 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'help命令执行失败，语法有误'}
+2018-05-10 22:01:28 - command_handler.py:153(command_handler:cmd_ls) - DEBUG - {'code': 400, 'msg': 'ls命令执行失败，详情：认证失败,当前是未登录状态,请先登录用户'}
+2018-05-10 22:06:15 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'help命令执行失败，语法有误'}
+2018-05-10 22:16:06 - command_handler.py:278(command_handler:cmd_help) - DEBUG - {'code': 400, 'msg': None}
+2018-05-10 22:19:20 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:23:19 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:41:25 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:45:08 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:46:49 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:47:05 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：切换用户所在目录\n        使用语法：\n                cd ${name}: 进入下一级目录,参数${name}为当前路径下的目录名称\n                cd ..:返回上一级目录，参数".."代表为上一级目录\n        返回值：命令执行结果\n        '}
+2018-05-10 22:47:39 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-10 22:48:06 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：查询命令列表或者查询某个命令的使用帮助信息\n        使用语法：help  ：查询命令列表\n                help ${command_name} ： 查询命令${command_name}的使用帮助信息\n        返回值：命令执行结果\n        '}
+2018-05-10 22:48:49 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:49:07 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：创建一个新目录；\n        使用语法：mkdir ${name};\n        返回值：命令执行结果\n        '}
+2018-05-10 22:49:35 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：上传文件，上传到用户当前所在路径\n        使用语法：put ${name}\n        返回值：命令执行结果\n        '}
+2018-05-10 22:49:54 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：查看用户当前所在ftp系统的路径\n        使用语法：pwd\n        返回值：命令执行结果\n        '}
+2018-05-10 22:50:06 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 22:50:16 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：查询用户存储总配额、可用配额、已用配额信息\n        使用语法：quota\n        返回值：命令执行结果\n        '}
+2018-05-10 22:50:24 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：删除目录或文件，如果目标是非空目录，那么会递归删除其子文件、子目录\n        使用语法：remove ${name}; 参数${name}为当前路径下的目录或文件的名称\n        返回值：命令执行结果\n        '}
+2018-05-10 22:50:37 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-10 22:52:03 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-10 22:52:39 - command_handler.py:84(command_handler:cmd_mkdir) - DEBUG - {'code': 200, 'msg': 'mkdir命令执行成功'}
+2018-05-10 22:55:13 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-10 22:55:21 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-10 22:55:40 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-10 22:57:21 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-10 22:57:27 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-10 22:59:47 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 23:00:04 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-10 23:00:22 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-10 23:21:09 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-10 23:21:36 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-10 23:22:01 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-10 23:29:42 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-10 23:33:53 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-10 23:34:01 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:09:11 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 00:09:27 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-11 00:09:41 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 00:10:17 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:10:23 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:15:48 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 00:15:51 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': (['testdir'], [])}
+2018-05-11 00:15:56 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:15:58 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:18:22 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:18:24 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:18:49 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'put命令执行失败，语法有误'}
+2018-05-11 00:22:22 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:22:24 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:22:41 - command_handler.py:26(command_handler:run) - DEBUG - {'code': 400, 'msg': 'put命令执行失败，语法有误'}
+2018-05-11 00:24:36 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:24:39 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:24:59 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 00:26:54 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/testdir'}
+2018-05-11 00:26:58 - command_handler.py:135(command_handler:cmd_cd) - DEBUG - {'code': 200, 'msg': 'cd切换目录命令执行成功'}
+2018-05-11 00:27:00 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 00:27:11 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
+2018-05-11 00:27:14 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
