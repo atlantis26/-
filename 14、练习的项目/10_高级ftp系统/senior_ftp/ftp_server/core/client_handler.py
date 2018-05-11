@@ -3,6 +3,7 @@ from core.orm import SomeError, ResponseData
 import socket
 import json
 import os
+import sys
 import logging
 
 logger = logging.getLogger("ftp.ftp_client")
@@ -29,6 +30,16 @@ class FtpClient(object):
 
         return ResponseData(code, msg)
 
+    @staticmethod
+    def show_process(total_size, sub_size, total_arrow=50):
+        print(total_size, sub_size)
+        percent = float(sub_size)/float(total_size)
+        arrow_num = int(total_arrow * percent)
+        line_num = total_arrow - arrow_num
+        process_bar = "[{0}{1}]{2}%\n".format(">" * arrow_num, "-" * line_num, "%.2f" % (percent*100))
+        sys.stdout.write(process_bar)
+        sys.stdout.flush()
+
     def _get_response(self, req_data):
         """不带文件内容的请求，发送请求，并获取响应"""
         data_json = json.dumps(req_data).encode("utf-8")
@@ -43,12 +54,16 @@ class FtpClient(object):
         data_json = json.dumps(req_data).encode('utf-8')
         self.client.send(data_json)
         # 发送文件内容，并接收服务端响应
+        file_size = os.path.getsize(file_path)
+        send_size = 0
         with open(file_path, "rb") as f:
             while True:
                 file_data = f.read(1024)
                 if not file_data:
                     break
                 self.client.send(file_data)
+                send_size += len(file_data)
+                self.show_process(file_size, send_size)
         rsp = self.client.recv(1024)
         rsp = json.loads(rsp.decode("utf-8"))
         return rsp
@@ -84,6 +99,7 @@ class FtpClient(object):
             f.write(data)
             f.flush()
             receive_size += len(data)
+            self.show_process(file_size, receive_size)
 
     def register(self, username, password1, password2, quota):
         """注册用户"""
@@ -312,7 +328,12 @@ class FtpClient(object):
             msg = rsp["msg"]
             if code == 200:
                 data = rsp.get("data")
-                print(data)
+                if cmd == "":
+                    print("系统支持的命令列表：{0}".format(data))
+                    print("您可以使用 help ${command_name}的语法方式，查询某个命令的具体用法")
+                else:
+                    print(u"{0}命令的使用详情：".format(cmd))
+                    print(data)
         except SomeError as e:
             code = 400
             msg = u"查询命令相关信息失败, 原因：{0}".format(str(e))

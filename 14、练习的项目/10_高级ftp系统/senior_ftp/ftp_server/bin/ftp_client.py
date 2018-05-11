@@ -1,6 +1,5 @@
 # coding=utf-8
 from core.client_handler import FtpClient
-from core.orm import SomeError
 
 
 class FtpPortal(object):
@@ -23,7 +22,7 @@ class FtpPortal(object):
     def console(self):
         home_page = """
         --------------------欢迎访问无忧FTP云盘系统---------------------
-        请先根据操作编号进行注册\登录操作：
+        请选择输入操作编号进行操作：
         <\033[36;1m1\033[0m>.用户注册                      <\033[36;1m2\033[0m>.用户登录
         """
         while True:
@@ -42,8 +41,9 @@ class FtpPortal(object):
                         cmd_args = [s.strip() for s in cmd_args.split(" ")]
                         rsp = self.client.run_cmd(cmd_args[0], *cmd_args[1:])
                         print(rsp.msg)
+                        print("-------------------------------------------")
             else:
-                raise SomeError(u"输入的操作项编号{0}不存在，请核对后再试".format(action))
+                print(u"输入的操作项编号{0}不存在，请核对后再试".format(action))
 
 
 if __name__ == "__main__":

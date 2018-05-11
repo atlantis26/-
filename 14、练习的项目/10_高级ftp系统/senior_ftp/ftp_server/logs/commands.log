@@ -70,3 +70,31 @@
 2018-05-11 00:27:00 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
 2018-05-11 00:27:11 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
 2018-05-11 00:27:14 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-11 12:30:28 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:32:25 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:33:05 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：切换用户所在目录\n        使用语法：\n                cd ${name}: 进入下一级目录,参数${name}为当前路径下的目录名称\n                cd ..:返回上一级目录，参数".."代表为上一级目录\n        返回值：命令执行结果\n        '}
+2018-05-11 12:40:00 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:41:13 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:41:51 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：切换用户所在目录\n        使用语法：\n                cd ${name}: 进入下一级目录,参数${name}为当前路径下的目录名称\n                cd ..:返回上一级目录，参数".."代表为上一级目录\n        返回值：命令执行结果\n        '}
+2018-05-11 12:42:07 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-11 12:42:34 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:43:41 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 12:43:54 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 12:44:08 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-11 12:45:08 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 12:45:39 - command_handler.py:280(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-11 17:31:59 - command_handler.py:174(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-11 17:33:07 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:45:24 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:45:44 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
+2018-05-11 17:46:00 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:46:47 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
+2018-05-11 17:46:51 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 400, 'msg': 'remove命令执行失败，详情：文件目录Mindmanager_9.1.157.rar不存在'}
+2018-05-11 17:47:38 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:50:58 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
+2018-05-11 17:51:17 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:53:38 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], ['Mindmanager_9.1.157.rar'])}
+2018-05-11 17:53:50 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
+2018-05-11 17:53:52 - command_handler.py:155(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-11 17:54:13 - command_handler.py:196(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-11 17:55:47 - command_handler.py:110(command_handler:cmd_remove) - DEBUG - {'code': 200, 'msg': 'remove命令执行成功'}
