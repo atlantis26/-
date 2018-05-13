@@ -30,3 +30,6 @@
 
 percent = round(float(send_size)/float(file_size), 2)
 arrow = 50
+
+
+ctrl + C 捕获异常

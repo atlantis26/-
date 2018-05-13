@@ -197,22 +197,27 @@ class FtpCommands(object):
 
         return ResponseData(code, msg)
 
-    def cmd_get(self, name):
+    def cmd_get(self, **kwargs):
         """
         功能描述：下载文件,文件必须在用户当前路径下存在
-        使用语法：get ${file_name}
+        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；
+                 get -r ${file_name} ${download_directory}: 下载文件（断点续传下载）
         返回值：命令执行结果
         """
         try:
             self.is_authenticated()
-            file_path = os.path.join(self.current_path, name)
+            file_name = kwargs.get("file_name")
+            tmp_size = kwargs.get("tmp_size", 0)
+            file_path = os.path.join(self.current_path, file_name)
             if not os.path.exists(file_path):
-                raise SomeError(u"文件名{0}不存在".format(name))
+                raise SomeError(u"文件名{0}不存在".format(file_name))
+            trans_size = os.path.getsize(file_path) - tmp_size
             # 这里只检查文件是否存在和返回文件的绝对路径，发送文件数据的操作，交给socket程序
             code = 200
             msg = "下载文件成功"
-            data = {"file_name": name,
-                    "file_path": file_path}
+            data = {"file_path": file_path,
+                    "tmp_size": tmp_size,
+                    "trans_size": trans_size,}
         except SomeError as e:
             code = 400
             msg = "下载文件失败，详情：{0}".format(str(e))

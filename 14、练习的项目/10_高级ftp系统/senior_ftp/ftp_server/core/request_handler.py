@@ -75,13 +75,15 @@ class FtpHandler(BaseRequestHandler):
             receive_size += len(data)
         return temp_file
 
-    def sendall_data(self, cmd, response_obj):
+    def sendall_data(self, cmd, response):
         """发送请求响应数据,对下载文件请求（cmd=get）做单独处理"""
-        response_body = json.dumps(response_obj.__dict__).encode("utf-8")
+        response_body = json.dumps(response.__dict__).encode("utf-8")
         self.request.sendall(response_body)
-        if cmd == "get" and response_obj.code == 200:
-            file_path = response_obj.data["file_path"]
+        if cmd == "get" and response.code == 200:
+            tmp_size = response.data.get("tmp_size")
+            file_path = response.data.get("file_path")
             with open(file_path, "rb") as f:
+                f.seek(tmp_size)
                 while True:
                     data = f.read(1024)
                     if not data:

@@ -4,6 +4,7 @@ import socket
 import json
 import os
 import sys
+import shutil
 import logging
 
 logger = logging.getLogger("ftp.ftp_client")
@@ -16,27 +17,40 @@ class FtpClient(object):
         self.username = None
         self.password = None
 
-    def run_cmd(self, cmd, *kwargs):
+    def run_cmd(self, cmd, *args):
         """命令执行统一入口"""
         try:
-            attr = "cmd_{0}".format(cmd)
-            rsp = getattr(self, attr)(*kwargs).__dict__
+            if cmd == "get":
+                if len(args) == 2:
+                    attr = "cmd_get"
+                elif len(args) == 3:
+                    attr = "cmd_resume_get"
+                else:
+                    raise TypeError("get命令使用有误，请使用'help get'命令查询语法详细")
+            else:
+                attr = "cmd_{0}".format(cmd)
+            rsp = getattr(self, attr)(*args).__dict__
             code = rsp.get("code")
             msg = rsp.get("msg")
-        except SomeError as e:
+        except AttributeError:
             code = 400
-            msg = "{0}不是系统支持的命令".format(cmd)
-            logger.debug(msg + "详情：{0}".format(str(e)))
+            msg = "命令执行失败，{0}不是系统支持的命令".format(cmd)
+        except TypeError:
+            code = 400
+            msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
 
         return ResponseData(code, msg)
 
     @staticmethod
     def show_process(total_size, sub_size, total_arrow=50):
-        print(total_size, sub_size)
+        """打印进度条"""
         percent = float(sub_size)/float(total_size)
         arrow_num = int(total_arrow * percent)
         line_num = total_arrow - arrow_num
-        process_bar = "[{0}{1}]{2}%\n".format(">" * arrow_num, "-" * line_num, "%.2f" % (percent*100))
+        process_bar = "[{0}{1}]{2}%".format(">" * arrow_num, "-" * line_num, "%.2f" % (percent*100))
+        sys.stdout.write("\r")
+        sys.stdout.flush()
+        # 先输入\r移动光标到最左侧且不会换行，再输入进度条字符串
         sys.stdout.write(process_bar)
         sys.stdout.flush()
 
@@ -71,22 +85,27 @@ class FtpClient(object):
     def _get_download_file_response(self, req_data, directory):
         """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称，第二次连续接收文件数据直到完成
         """
-        file_name = req_data["kwargs"]["file_name"]
-        file_path = os.path.join(directory, file_name)
         data_json = json.dumps(req_data).encode("utf-8")
         self.client.send(data_json)
         # 发送文件内容，并接收服务端响应
         rsp = self.client.recv(1024)
         rsp = json.loads(rsp.decode("utf-8"))
         if rsp["code"] == 200:
-            file_size = rsp["data"]["file_size"]
-            self._receive_file_data(file_size, file_path)
+            file_name = req_data["kwargs"]["file_name"]
+            file_path = os.path.join(directory, file_name)
+            # 先将文件数据存到临时文件
+            trans_size = rsp["data"]["trans_size"]
+            tmp_file_name = "{0}.ftp.tmp".format(file_name)
+            tmp_file_path = os.path.join(directory, tmp_file_name)
+            self._receive_file_data(trans_size, tmp_file_path)
+            # 接收文件数据完成后，将临时文件名变更为原文件名称
+            shutil.move(tmp_file_path, file_path)
         return rsp
 
     def _receive_file_data(self, file_size, file_path):
         """根据文件size大小接收文件数据"""
         receive_size = 0
-        f = open(file_path, "wb")
+        f = open(file_path, "ab")
         while True:
             diff = file_size - receive_size
             if diff > 1024:
@@ -184,15 +203,49 @@ class FtpClient(object):
     def cmd_get(self, file_name, directory):
         """下载文件"""
         try:
-            if not os.path.exists(directory):
-                raise SomeError(u"存放文件的目录{0}不存在".format(directory))
             req_body = dict()
             req_body["cmd"] = "get"
             req_body["kwargs"] = {"file_name": file_name}
+            if not os.path.exists(directory):
+                raise SomeError(u"存放文件的目录{0}不存在".format(directory))
             rsp = self._get_download_file_response(req_body, directory)
             logger.debug(rsp)
             code = rsp["code"]
             msg = rsp["msg"]
+        except KeyboardInterrupt:
+            code = 200
+            msg = u"下载文件已被成功暂停，系统支持文件断点续传完成文件的下载"
+        except SomeError as e:
+            code = 400
+            msg = u"下载文件失败, 原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    def cmd_resume_get(self, param, file_name, directory):
+        """下载文件（断点续传）"""
+        try:
+            if param != "-r":
+                raise SomeError(u"get命令使用有误，请使用'help get'命令查询语法详细")
+            if not os.path.exists(directory):
+                raise SomeError(u"存放文件的目录{0}不存在".format(directory))
+            tmp_file = os.path.join(directory, "{0}.ftp.tmp".format(file_name))
+            if not os.path.exists(tmp_file):
+                raise SomeError(u"断点下载文件失败，缓存文件不存在")
+            tmp_size = os.path.getsize(tmp_file)
+
+            req_body = dict()
+            req_body["cmd"] = "get"
+            req_body["kwargs"] = {"file_name": file_name,
+                                  "param": param,
+                                  "tmp_size": tmp_size}
+            rsp = self._get_download_file_response(req_body, directory)
+            logger.debug(rsp)
+            code = rsp["code"]
+            msg = rsp["msg"]
+        except KeyboardInterrupt:
+            code = 200
+            msg = u"下载文件已被成功暂停，系统支持文件断点续传完成文件的下载"
         except SomeError as e:
             code = 400
             msg = u"下载文件失败, 原因：{0}".format(str(e))
