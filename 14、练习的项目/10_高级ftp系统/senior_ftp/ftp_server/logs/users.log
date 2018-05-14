@@ -1,0 +1,20 @@
+2018-05-14 23:03:09 - user_handler.py:34(user_handler:register) - DEBUG - {'code': 200, 'msg': '创建用户成功', 'data': {'username': 'zhangsan', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'quota': 50}}
+2018-05-14 23:03:23 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:08:14 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:28:08 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:36:32 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:41:53 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:50:48 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:52:44 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-14 23:55:58 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 00:00:29 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 00:03:34 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 00:17:48 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:01:51 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:03:23 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 400, 'msg': '用户zhansgan登录失败，详情：用户不存在'}
+2018-05-15 01:03:36 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:07:11 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:09:32 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:13:16 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:17:49 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}
+2018-05-15 01:25:41 - user_handler.py:53(user_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令"}

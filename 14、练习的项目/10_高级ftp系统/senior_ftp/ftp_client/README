@@ -27,3 +27,4 @@
 判断是否支持输入的支持操作（使用反射判断， hasattr(self, cmd_name, "not support"),-> func = getattr(self, cmd_{action})，-> rsp = func()）
 
 方法函数命名时需以cmd_开头
+

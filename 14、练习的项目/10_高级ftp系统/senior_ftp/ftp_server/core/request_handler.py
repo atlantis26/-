@@ -2,10 +2,8 @@
 from socketserver import BaseRequestHandler
 from core.command_handler import FtpCommands
 from core.user_handler import UserHandler
-from core.orm import SomeError
 from conf.settings import DB_TEMP
 from datetime import datetime
-import hashlib
 import json
 import os
 
@@ -19,7 +17,6 @@ class FtpHandler(BaseRequestHandler):
 
     def handle(self):
         """处理单个客户端连接与请求"""
-
         try:
             while True:
                 cmd, kwargs = self.receive_data()
@@ -52,17 +49,15 @@ class FtpHandler(BaseRequestHandler):
         kwargs = payload["kwargs"]
         if cmd == "put":
             file_size = kwargs.pop("file_size")
-            md5_code = kwargs.pop("md5_code")
-            temp_file = self._receive_file_data(file_size, md5_code)
-            kwargs["tmp_file"] = temp_file
+            temp_file_path = self._receive_file_data(file_size)
+            kwargs["temp_file_path"] = temp_file_path
         return cmd, kwargs
 
-    def _receive_file_data(self, file_size, md5_code):
+    def _receive_file_data(self, file_size):
         """接收文件数据，暂时存放在临时文件内"""
         now = datetime.now()
         time_stamp = now.strftime("%Y-%m-%d_%H%M%S")
         temp_file = os.path.join(DB_TEMP, "temp_file_{0}_{1}".format(file_size, time_stamp))
-        md5 = hashlib.md5()
         receive_size = 0
         f = open(temp_file, "wb")
         while True:
@@ -77,10 +72,6 @@ class FtpHandler(BaseRequestHandler):
             f.write(data)
             f.flush()
             receive_size += len(data)
-            md5.update(data)
-        md5_code1 = md5.hexdigest()
-        if md5_code1 != md5_code:
-            raise SomeError("md5校验失败,传输接收数据有错误")
         return temp_file
 
     def sendall_data(self, cmd, response):
@@ -88,10 +79,10 @@ class FtpHandler(BaseRequestHandler):
         response_body = json.dumps(response.__dict__).encode("utf-8")
         self.request.sendall(response_body)
         if cmd == "get" and response.code == 200:
-            tmp_size = response.data.get("tmp_size")
-            file_path = response.data.get("file_path")
+            file_path = response.data.pop("file_path")
+            seek_size = response.data.get("seek_size")
             with open(file_path, "rb") as f:
-                f.seek(tmp_size)
+                f.seek(seek_size)
                 while True:
                     data = f.read(1024)
                     if not data:

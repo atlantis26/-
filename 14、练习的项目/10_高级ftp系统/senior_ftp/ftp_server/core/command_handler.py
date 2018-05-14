@@ -2,6 +2,7 @@
 from core.orm import SomeError, ResponseData
 from core.user_handler import UserHandler
 from conf.settings import DB_STORAGE
+import hashlib
 import shutil
 import os
 import logging
@@ -25,6 +26,26 @@ class FtpCommands(object):
             msg = u"{0}命令执行失败，语法有误".format(command)
             logger.debug(ResponseData(400, msg).__dict__)
             return ResponseData(400, msg)
+
+    @staticmethod
+    def get_file_md5(file_path):
+        """计算获取文件md5 code"""
+        md5 = hashlib.md5()
+        with open(file_path, "rb") as f:
+            for line in f:
+                md5.update(line)
+        return md5.hexdigest()
+
+    @property
+    def current_path(self):
+        """返回当前登录用户所在的绝对路径"""
+        return os.path.join(self.user_home, *self.path_depth)
+
+    @property
+    def user_home(self):
+        """返回当前登录用户的家目录"""
+        self.is_authenticated()
+        return os.path.join(DB_STORAGE, self.username)
 
     def get_cmd_list(self):
         """查询系统可用命令列表"""
@@ -52,17 +73,6 @@ class FtpCommands(object):
         """判断是否是已登录状态"""
         if not self.username:
             raise SomeError(u"认证失败,当前是未登录状态,请先登录用户")
-
-    @property
-    def current_path(self):
-        """返回当前登录用户所在的绝对路径"""
-        return os.path.join(self.user_home, *self.path_depth)
-
-    @property
-    def user_home(self):
-        """返回当前登录用户的家目录"""
-        self.is_authenticated()
-        return os.path.join(DB_STORAGE, self.username)
 
     def cmd_mkdir(self, name):
         """
@@ -175,7 +185,7 @@ class FtpCommands(object):
 
         return ResponseData(code, msg, path)
 
-    def cmd_put(self, file_name, tmp_file):
+    def cmd_put(self, file_name, file_md5, temp_file_path):
         """
         功能描述：上传文件，上传到用户当前所在路径
         使用语法：put ${file_name}
@@ -187,7 +197,10 @@ class FtpCommands(object):
             if os.path.exists(file_path):
                 raise SomeError(u"文件名{0}不能重复".format(file_name))
             # socket程序已经先将文件数据存储在临时文件内，这里只需拷贝临时文件内容
-            shutil.move(tmp_file, file_path)
+            shutil.move(temp_file_path, file_path)
+            file_md51 = self.get_file_md5(file_path)
+            if file_md51 != file_md5:
+                raise SomeError(u"md5校验失败,传输接收数据有错误")
             code = 200
             msg = "上传文件成功"
         except SomeError as e:
@@ -201,23 +214,25 @@ class FtpCommands(object):
         """
         功能描述：下载文件,文件必须在用户当前路径下存在
         使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；
-                 get -r ${file_name} ${download_directory}: 下载文件（断点续传下载）
+                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径
         返回值：命令执行结果
         """
         try:
             self.is_authenticated()
             file_name = kwargs.get("file_name")
-            tmp_size = kwargs.get("tmp_size", 0)
+            seek_size = kwargs.get("tmp_size", 0)
             file_path = os.path.join(self.current_path, file_name)
             if not os.path.exists(file_path):
                 raise SomeError(u"文件名{0}不存在".format(file_name))
-            trans_size = os.path.getsize(file_path) - tmp_size
+            file_md5 = self.get_file_md5(file_path)
+            file_size = os.path.getsize(file_path)
             # 这里只检查文件是否存在和返回文件的绝对路径，发送文件数据的操作，交给socket程序
             code = 200
             msg = "下载文件成功"
             data = {"file_path": file_path,
-                    "tmp_size": tmp_size,
-                    "trans_size": trans_size,}
+                    "file_md5": file_md5,
+                    "file_size": file_size,
+                    "seek_size": seek_size}
         except SomeError as e:
             code = 400
             msg = "下载文件失败，详情：{0}".format(str(e))

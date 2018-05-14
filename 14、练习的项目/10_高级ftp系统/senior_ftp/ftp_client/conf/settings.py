@@ -5,21 +5,6 @@ import os
 # 项目根目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 文件目录，存储用户信息相关配置
-DB_Users = os.path.join(BASE_DIR, "db", "Users")
-if not os.path.exists(DB_Users):
-    os.mkdir(DB_Users)
-
-# 用户FTP文件仓库
-DB_STORAGE = os.path.join(BASE_DIR, "db", "Storage")
-if not os.path.exists(DB_STORAGE):
-    os.mkdir(DB_STORAGE)
-
-# 用于存放上传文件的临时文件的目录
-DB_TEMP = os.path.join(BASE_DIR, "db", "Temp")
-if not os.path.exists(DB_TEMP):
-    os.mkdir(DB_TEMP)
-
 # log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
@@ -56,34 +41,18 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'user': {
+        'users': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'user.log'),
+            'filename': os.path.join(LOG_DIR, 'users.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
         },
-        'auth': {
+        'commands': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'auth.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'ftp_server': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'ftp_server.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'ftp_client': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'ftp_client.log'),
+            'filename': os.path.join(LOG_DIR, 'commands.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -96,23 +65,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'ftp.auth': {
-            'handlers': ['auth'],
+        'ftp.users': {
+            'handlers': ['users'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        'ftp.user': {
-            'handlers': ['user'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ftp.ftp_server': {
-            'handlers': ['ftp_server'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ftp.ftp_client': {
-            'handlers': ['ftp_client'],
+        'ftp.commands': {
+            'handlers': ['commands'],
             'level': 'DEBUG',
             'propagate': False,
         },
