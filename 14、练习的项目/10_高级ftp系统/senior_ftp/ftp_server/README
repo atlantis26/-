@@ -28,8 +28,3 @@
 
 方法函数命名时需以cmd_开头
 
-percent = round(float(send_size)/float(file_size), 2)
-arrow = 50
-
-
-ctrl + C 捕获异常

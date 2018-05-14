@@ -2,8 +2,10 @@
 from socketserver import BaseRequestHandler
 from core.command_handler import FtpCommands
 from core.user_handler import UserHandler
+from core.orm import SomeError
 from conf.settings import DB_TEMP
 from datetime import datetime
+import hashlib
 import json
 import os
 
@@ -50,15 +52,17 @@ class FtpHandler(BaseRequestHandler):
         kwargs = payload["kwargs"]
         if cmd == "put":
             file_size = kwargs.pop("file_size")
-            temp_file = self._receive_file_data(file_size)
+            md5_code = kwargs.pop("md5_code")
+            temp_file = self._receive_file_data(file_size, md5_code)
             kwargs["tmp_file"] = temp_file
         return cmd, kwargs
 
-    def _receive_file_data(self, file_size):
+    def _receive_file_data(self, file_size, md5_code):
         """接收文件数据，暂时存放在临时文件内"""
         now = datetime.now()
         time_stamp = now.strftime("%Y-%m-%d_%H%M%S")
         temp_file = os.path.join(DB_TEMP, "temp_file_{0}_{1}".format(file_size, time_stamp))
+        md5 = hashlib.md5()
         receive_size = 0
         f = open(temp_file, "wb")
         while True:
@@ -73,6 +77,10 @@ class FtpHandler(BaseRequestHandler):
             f.write(data)
             f.flush()
             receive_size += len(data)
+            md5.update(data)
+        md5_code1 = md5.hexdigest()
+        if md5_code1 != md5_code:
+            raise SomeError("md5校验失败,传输接收数据有错误")
         return temp_file
 
     def sendall_data(self, cmd, response):

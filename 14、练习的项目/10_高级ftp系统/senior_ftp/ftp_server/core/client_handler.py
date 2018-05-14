@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import shutil
+import hashlib
 import logging
 
 logger = logging.getLogger("ftp.ftp_client")
@@ -100,10 +101,13 @@ class FtpClient(object):
             self._receive_file_data(trans_size, tmp_file_path)
             # 接收文件数据完成后，将临时文件名变更为原文件名称
             shutil.move(tmp_file_path, file_path)
+            # md5 校验
+
         return rsp
 
-    def _receive_file_data(self, file_size, file_path):
+    def _receive_file_data(self, file_size, file_path, md5_code):
         """根据文件size大小接收文件数据"""
+        md5 = hashlib.md5()
         receive_size = 0
         f = open(file_path, "ab")
         while True:
@@ -118,13 +122,24 @@ class FtpClient(object):
             f.write(data)
             f.flush()
             receive_size += len(data)
+            md5.update(data)
             self.show_process(file_size, receive_size)
+        md5_code1 = md5.hexdigest()
+        if md5_code != md5_code1:
+            raise SomeError("md5校验失败,传输接收数据有错误")
+
+    @staticmethod
+    def md5_password(password):
+        """密码通过MD5加密"""
+        return hashlib.md5(password.encode("utf-8")).hexdigest()
 
     def register(self, username, password1, password2, quota):
         """注册用户"""
         try:
             data = dict()
             data["cmd"] = "register"
+            password1 = self.md5_password(password1)
+            password2 = self.md5_password(password2)
             data["kwargs"] = {"username": username,
                               "password1": password1,
                               "password2": password2,
@@ -144,6 +159,7 @@ class FtpClient(object):
         try:
             data = dict()
             data["cmd"] = "login"
+            password = self.md5_password(password)
             data["kwargs"] = {"username": username,
                               "password": password}
             rsp = self._get_response(data)
@@ -186,10 +202,16 @@ class FtpClient(object):
                 raise SomeError(u"文件{0}不存在".format(file_path))
             file_name = os.path.split(file_path)[-1]
             file_size = os.path.getsize(file_path)
+            md5 = hashlib.md5()
+            with open(file_path, "rb") as f:
+                for line in f:
+                    md5.update(line)
+                md5_code = md5.hexdigest()
             req_body = dict()
             req_body["cmd"] = "put"
             req_body["kwargs"] = {"file_name": file_name,
-                                  "file_size": file_size}
+                                  "file_size": file_size,
+                                  "md5_code": md5_code}
             rsp = self._get_upload_file_response(req_body, file_path)
             code = rsp["code"]
             msg = rsp["msg"]
