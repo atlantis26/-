@@ -18,6 +18,15 @@ class FtpClient(object):
         self.username = None
         self.password = None
 
+    def clear_buffer(self):
+        """清空socket连接的缓存内数据"""
+        try:
+            self.client.setblocking(False)
+            while True:
+                self.client.recv(1)
+        except BlockingIOError:
+            self.client.setblocking(True)
+
     def run_cmd(self, cmd, *args):
         """命令执行统一入口"""
         try:
@@ -44,6 +53,7 @@ class FtpClient(object):
         data_json = json.dumps(req_data).encode("utf-8")
         self.client.send(data_json)
         rsp = self.client.recv(1024)
+        print(2222, rsp.decode("utf-8"))
         rsp = json.loads(rsp.decode("utf-8"))
         return rsp
 
@@ -83,7 +93,6 @@ class FtpClient(object):
             # 先将文件数据存到临时文件
             tmp_file_name = "{0}.ftp.tmp".format(file_name)
             tmp_file_path = os.path.join(directory, tmp_file_name)
-            # self._receive_file_data(trans_size, tmp_file_path)
             self._receive_file_data(file_size, seek_size, tmp_file_path)
             # 接收文件数据完成后，将临时文件名变更为原文件名称
             file_path = os.path.join(directory, file_name)
@@ -224,6 +233,8 @@ class FtpClient(object):
             msg = rsp["msg"]
         except KeyboardInterrupt:
             code = 200
+            # 清空缓存中剩余的文件内容
+            self.clear_buffer()
             msg = u"下载文件被中止，系统支持文件断点续传，请使用‘help get’命令查询详细"
         except SomeError as e:
             code = 400

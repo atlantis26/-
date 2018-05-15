@@ -65,10 +65,6 @@ class FtpCommands(object):
             raise SomeError(u"{0}命令不存在".format(cmd))
         return True
 
-    def validate_file_md5(self, file_path, md5num):
-        """检查文件md5校验是否被支持"""
-        pass
-
     def is_authenticated(self):
         """判断是否是已登录状态"""
         if not self.username:

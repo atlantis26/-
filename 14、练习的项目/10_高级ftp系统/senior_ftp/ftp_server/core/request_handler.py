@@ -44,6 +44,7 @@ class FtpHandler(BaseRequestHandler):
         对上传文件请求（cmd=put）做单独处理
         """
         data = self.request.recv(1024)
+        print(1111, data.decode("utf-8"))
         payload = json.loads(data.decode("utf-8"))
         cmd = payload["cmd"]
         kwargs = payload["kwargs"]
