@@ -13,10 +13,17 @@ logger = logging.getLogger("ftp.ftp_client")
 
 class FtpClient(object):
     def __init__(self, host, port):
+        self.host = host
+        self.port = port
         self.client = socket.socket()
         self.client.connect((host, port))
         self.username = None
         self.password = None
+
+    def restart(self):
+        """重新建立socket连接"""
+        self.client.close()
+        self.__init__(self.host, self.port)
 
     def clear_buffer(self):
         """清空socket连接的缓存内数据"""
@@ -37,7 +44,7 @@ class FtpClient(object):
         except AttributeError:
             code = 400
             msg = "命令执行失败，{0}不是系统支持的命令".format(cmd)
-        except SomeError:
+        except TypeError:
             code = 400
             msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
 
@@ -53,7 +60,6 @@ class FtpClient(object):
         data_json = json.dumps(req_data).encode("utf-8")
         self.client.send(data_json)
         rsp = self.client.recv(1024)
-        print(2222, rsp.decode("utf-8"))
         rsp = json.loads(rsp.decode("utf-8"))
         return rsp
 
@@ -232,10 +238,9 @@ class FtpClient(object):
             code = rsp["code"]
             msg = rsp["msg"]
         except KeyboardInterrupt:
-            code = 200
-            # 清空缓存中剩余的文件内容
-            self.clear_buffer()
-            msg = u"下载文件被中止，系统支持文件断点续传，请使用‘help get’命令查询详细"
+            msg = u"执行下载文件命令过程中被中止，部分文件数据已下载写入到下载目录下的缓存文件内；" \
+                  u"系统支持文件断点续传，您可使用‘help get’命令了解详情"
+            raise KeyboardInterrupt(msg)
         except SomeError as e:
             code = 400
             msg = u"下载文件失败, 原因：{0}".format(str(e))
@@ -345,12 +350,12 @@ class FtpClient(object):
             code = rsp["code"]
             msg = rsp["msg"]
             if code == 200:
-                total_quota, used_quota, residual_quota = rsp.get("data")
+                data = rsp.get("data")
                 msg = u"""
                 您的存储配额详情为：
                     总配额：{0}GB 
                     已使用配额：{1}GB
-                    剩余配额：{2}GB""".format(total_quota, used_quota, residual_quota)
+                    剩余配额：{2}GB""".format(data["total_quota"], data["used_quota"], data["residual_quota"])
                 print(msg)
         except SomeError as e:
             code = 400

@@ -30,9 +30,11 @@ class FtpPortal(object):
                 cmd_args = [s.strip() for s in cmd_args.split(" ")]
                 rsp = self.client.run_cmd(cmd_args[0], *cmd_args[1:])
                 print(rsp.msg + "\n" + "-" * 40)
-            except (KeyboardInterrupt, EOFError):
-                msg = u"\n当前客户端shell命令运行被中止, 用户若想退出shell，请执行命令'exit'"
+            except (KeyboardInterrupt, EOFError) as e:
+                msg = u"\n当前客户端shell连接被终止。{0}".format(str(e))
                 print(msg)
+                self.client.restart()
+                break
 
     def console(self):
         home_page = """
@@ -40,7 +42,6 @@ class FtpPortal(object):
         请选择输入操作编号进行操作：
         <\033[36;1m1\033[0m>.用户注册                      <\033[36;1m2\033[0m>.用户登录
         """
-
         while True:
             print(home_page)
             action = input(u"请输入您选择的操作编号：").strip()

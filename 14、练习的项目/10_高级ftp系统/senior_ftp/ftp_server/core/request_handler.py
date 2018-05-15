@@ -2,6 +2,7 @@
 from socketserver import BaseRequestHandler
 from core.command_handler import FtpCommands
 from core.user_handler import UserHandler
+from core.orm import SomeError
 from conf.settings import DB_TEMP
 from datetime import datetime
 import json
@@ -34,7 +35,7 @@ class FtpHandler(BaseRequestHandler):
                     self.ftp_commands.update_user_status(self.username)
                     response = self.ftp_commands.run(cmd, **kwargs)
                 self.sendall_data(cmd, response)
-        except ConnectionResetError as e:
+        except (ConnectionResetError, SomeError) as e:
             msg = u"客户端{0}已经断开连接，详细：{1}".format(self.client_address, str(e))
             print(msg)
 
@@ -44,12 +45,15 @@ class FtpHandler(BaseRequestHandler):
         对上传文件请求（cmd=put）做单独处理
         """
         data = self.request.recv(1024)
-        print(1111, data.decode("utf-8"))
+        if not data:
+            raise SomeError("客户端主动关闭连接")
         payload = json.loads(data.decode("utf-8"))
+        print(payload)
         cmd = payload["cmd"]
         kwargs = payload["kwargs"]
         if cmd == "put":
             file_size = kwargs.pop("file_size")
+            self.ftp_commands.validate_quota(file_size)
             temp_file_path = self._receive_file_data(file_size)
             kwargs["temp_file_path"] = temp_file_path
         return cmd, kwargs

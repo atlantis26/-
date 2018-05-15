@@ -41,18 +41,10 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'users': {
+        'ftp_client': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'users.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'commands': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'commands.log'),
+            'filename': os.path.join(LOG_DIR, 'ftp_client.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -65,13 +57,8 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'ftp.users': {
-            'handlers': ['users'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ftp.commands': {
-            'handlers': ['commands'],
+        'ftp.ftp_client': {
+            'handlers': ['ftp_client'],
             'level': 'DEBUG',
             'propagate': False,
         },

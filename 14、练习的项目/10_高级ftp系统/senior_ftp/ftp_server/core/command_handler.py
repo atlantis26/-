@@ -65,6 +65,12 @@ class FtpCommands(object):
             raise SomeError(u"{0}命令不存在".format(cmd))
         return True
 
+    def validate_quota(self, file_size):
+        """检查用户剩余quota配额是否满足文件上传的条件"""
+        total_quota, used_quota, residual_quota = self.get_user_quota_detail()
+        if residual_quota < file_size:
+            raise SomeError("用户存储配额不足")
+
     def is_authenticated(self):
         """判断是否是已登录状态"""
         if not self.username:
@@ -132,6 +138,10 @@ class FtpCommands(object):
                     raise SomeError(u"用户已经在最上级目录")
                 self.path_depth.pop()
             else:
+                current_path, dir_lst, file_lst = next(os.walk(self.current_path))
+                print(dir_lst)
+                if name not in dir_lst:
+                    raise SomeError("当前路径下不存在'{0}'文件目录".format(name))
                 self.path_depth.append(name)
             code = 200
             msg = "cd切换目录命令执行成功"
@@ -242,7 +252,7 @@ class FtpCommands(object):
         size = 0
         for root, dirs, files in os.walk(self.user_home):
             size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
-        used_quota = round((size/(1024**2)), 2)
+        used_quota = round((size/(1024*1024*1024)), 2)
 
         user = UserHandler.load_user(self.username)
         total_quota = user["quota"]
