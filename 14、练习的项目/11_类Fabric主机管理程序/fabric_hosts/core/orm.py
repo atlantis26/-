@@ -1,0 +1,28 @@
+# coding:utf-8
+
+
+class Host(object):
+    def __init__(self, host_id, ip, port, username, password):
+        self.host_id = host_id
+        self.ip = ip
+        self.port = port
+        self.username = username
+        self.password = password
+
+
+class HostGroup(object):
+    def __init__(self, group_id, host_id):
+        self.group_id = group_id
+        self.host_id = host_id
+
+
+class ResponseData(object):
+    def __init__(self, code, msg, data=None):
+        self.code = code
+        self.msg = msg
+        if data:
+            self.data = data
+
+
+class SomeError(Exception):
+    pass
