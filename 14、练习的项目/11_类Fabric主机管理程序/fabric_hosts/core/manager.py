@@ -1,6 +1,7 @@
 # coding:utf-8
-from core.db_handler import create_host, query_host, create_host_group, query_host_host
+from core.db_handler import create_host, query_host, create_host_group, query_host_group
 from core.orm import Host, HostGroup, SomeError, ResponseData
+import threading
 import paramiko
 import logging
 
@@ -9,11 +10,11 @@ class HostsManager(object):
     @property
     def host(self):
         """"""
-        return _Host()
+        return _Host
 
     @property
     def host_group(self):
-        return _HostGroup()
+        return _HostGroup
 
 
 class _Host(object):
@@ -29,6 +30,7 @@ class _Host(object):
 
     @staticmethod
     def create(host_id, ip, port, username, password):
+        """添加新主机信息"""
         try:
             host = Host(host_id, ip, port, username, password)
             create_host(host)
@@ -43,6 +45,7 @@ class _Host(object):
 
     @staticmethod
     def detail(hostname):
+        """查询主机信息详情"""
         try:
             host = query_host(hostname)
             code = 200
@@ -58,43 +61,66 @@ class _Host(object):
 class _HostGroup(object):
     @staticmethod
     def create(group_id, host_ids):
-        """创建服务器主机组信息"""
+        """创建主机组信息"""
         try:
             host_group = HostGroup(group_id, host_ids)
             create_host_group(host_group)
             code = 200
-            msg = "添加服务器主机组信息成功"
+            msg = "添加主机组信息成功"
             data = host_group.__dict__
         except SomeError as e:
             code = 400
-            msg = "添加服务器主机组信息失败，详情：{0}".format(str(e))
+            msg = "添加主机组信息失败，详情：{0}".format(str(e))
             data = None
         return ResponseData(code, msg, data)
 
     @staticmethod
-    def detail(host_group_name):
+    def detail(group_id):
+        """查询主机组信息详情"""
         try:
-            host = query_host_host(host_group_name)
+            host_group = query_host_group(group_id)
             code = 200
-            msg = "查询服务器主机组信息成功"
-            data = host.__dict__
+            msg = "查询主机组信息成功"
+            data = host_group.__dict__
         except SomeError as e:
             code = 400
-            msg = "查询服务器主机组信息失败，详情：{0}".format(str(e))
+            msg = "查询主机组信息失败，详情：{0}".format(str(e))
             data = None
         return ResponseData(code, msg, data)
 
     @staticmethod
-    def execute_cmd(cmd):
-        pass
+    def _execute_job(group_id, action, **kwargs):
+        """批量在主机组内的全部主机上都执行任务"""
+        host_group = query_host_group(group_id)
+        hosts = [query_host(host_id) for host_id in host_group.host_ids]
+        result = {}
+        threads = []
+        for host in hosts:
+            thread = HostThread(host, action, **kwargs)
+            threads.append(thread)
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        for thread in threads:
+            result[thread.host_id] = thread.get_result()
+
+        return result
 
     @staticmethod
-    def get(remote_path, local_path):
-        pass
+    def execute_cmd(group_id, cmd):
+        """批量在主机组内的全部主机上都执行命令"""
+        return _HostGroup._execute_job(group_id, "cmd", cmd=cmd)
 
     @staticmethod
-    def put(local_path, remote_path):
-        pass
+    def get(group_id, remote_path, local_path):
+        """批量在主机组内的全部主机上都执行下载"""
+        return _HostGroup._execute_job(group_id, "get", remote_path=remote_path,  local_path=local_path)
+
+    @staticmethod
+    def put(group_id, local_path, remote_path):
+        """批量在主机组内的全部主机上都执行上传"""
+        return _HostGroup._execute_job(group_id, "put", local_path=local_path, remote_path=remote_path)
 
 
 class _Shell(object):
@@ -166,3 +192,32 @@ class _TransPort(object):
     def close(self):
         """sftp关闭连接"""
         self.client.close()
+
+
+class HostThread(threading.Thread):
+    def __init__(self, host, action, **kwargs):
+        self.host = host
+        self.action = action
+        self.kwargs = kwargs
+        self.result = None
+        threading.Thread.__init__(self)
+
+    def run(self):
+        if self.action == "cmd":
+            client = _Shell(**self.host)
+            self.result = client.execute(**self.kwargs)
+            client.close()
+        elif self.action == "get":
+            client = _TransPort(**self.host)
+            self.result = client.get(**self.kwargs)
+            client.close()
+        elif self.action == "put":
+            client = _TransPort(**self.host)
+            self.result = client.put(**self.kwargs)
+            client.close()
+        else:
+            msg = u"不支持'{0}'类型任务job,请联系管理员核实".format(self.action)
+            self.result = ResponseData(400, msg)
+
+    def get_result(self):
+        return self.result
