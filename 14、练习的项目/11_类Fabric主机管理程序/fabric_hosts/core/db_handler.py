@@ -9,6 +9,10 @@ def query_host(host_id):
     pass
 
 
+def list_hosts():
+    pass
+
+
 def create_host_group(host_group):
     pass
 
@@ -16,3 +20,6 @@ def create_host_group(host_group):
 def query_host_group(host_group_id):
     pass
 
+
+def list_host_groups():
+    pass

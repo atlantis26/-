@@ -1,20 +1,10 @@
 # coding:utf-8
-from core.db_handler import create_host, query_host, create_host_group, query_host_group
+from core.db_handler import create_host, query_host, list_hosts
+from core.db_handler import create_host_group, query_host_group
 from core.orm import Host, HostGroup, SomeError, ResponseData
 import threading
 import paramiko
 import logging
-
-
-class HostsManager(object):
-    @property
-    def host(self):
-        """"""
-        return _Host
-
-    @property
-    def host_group(self):
-        return _HostGroup
 
 
 class _Host(object):
