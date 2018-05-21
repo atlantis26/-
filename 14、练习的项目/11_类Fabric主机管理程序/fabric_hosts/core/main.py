@@ -2,7 +2,6 @@
 from core.manager import _Host, _HostGroup
 from core.db_handler import create_host, query_host, list_hosts
 from core.db_handler import create_host_group, query_host_group, list_host_groups
-from core.orm import SomeError
 
 
 class Fabric(object):
@@ -24,12 +23,7 @@ class Fabric(object):
         else:
             print(u"主机组列表: ")
             for group in host_group_list:
-                print("{0}       {1}        {2}".format(group.id))
-
-    @staticmethod
-    def show():
-        key = input(u"请输入你的选项编号（1.主机；2：主机组）： ").strip()
-        if key in 
+                print("{0}".format(group.id))
 
     @staticmethod
     def host_execute():
@@ -110,6 +104,56 @@ class Fabric(object):
         print(rsp.msg)
 
     @staticmethod
+    def create():
+        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
+        if key == "1":
+            Fabric.host_create()
+        elif key == "2":
+            Fabric.host_group_create()
+        else:
+            print(u"输入的选项编号不存在，请核对再试")
+
+    @staticmethod
+    def show():
+        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
+        if key == "1":
+            Fabric.show_hosts()
+        elif key == "2":
+            Fabric.show_host_groups()
+        else:
+            print(u"输入的选项编号不存在，请核对再试")
+
+    @staticmethod
+    def execute():
+        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
+        if key == "1":
+            Fabric.host_execute()
+        elif key == "2":
+            Fabric.host_group_execute()
+        else:
+            print(u"输入的选项编号不存在，请核对再试")
+
+    @staticmethod
+    def get():
+        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
+        if key == "1":
+            Fabric.host_get()
+        elif key == "2":
+            Fabric.host_group_get()
+        else:
+            print(u"输入的选项编号不存在，请核对再试")
+
+    @staticmethod
+    def put():
+        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
+        if key == "1":
+            Fabric.host_put()
+        elif key == "2":
+            Fabric.host_group_put()
+        else:
+            print(u"输入的选项编号不存在，请核对再试")
+
+    @staticmethod
     def console():
         while True:
             info = u"""---------欢迎使用Fabric运维管理系统---------
@@ -120,12 +164,12 @@ class Fabric(object):
             """
             print(info)
             action = input(u"请输入操作编号：").strip()
-            actions = {"1": Fabric.execute,
-                       "2": Fabric.put,
-                       "3": Fabric.get,
-                       "4": Fabric.create,
-                       "5": Fabric.detail}
-            if action == "8":
+            actions = {"1": Fabric.create,
+                       "2": Fabric.show,
+                       "3": Fabric.execute,
+                       "4": Fabric.put,
+                       "5": Fabric.get}
+            if action == "6":
                 break
             elif action in actions:
                 actions[action]()
