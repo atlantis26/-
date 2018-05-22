@@ -1,6 +1,6 @@
 # coding:utf-8
-from core.db_handler import create_host, query_host, list_hosts
-from core.db_handler import create_host_group, query_host_group
+from core.db_handler import save_host, query_host, list_hosts, get_new_host_id
+from core.db_handler import save_host_group, query_host_group, list_host_groups, get_new_host_group_id
 from core.orm import Host, HostGroup, SomeError, ResponseData
 import threading
 import paramiko
@@ -19,11 +19,12 @@ class _Host(object):
         return _TransPort(hostname, port, username, password)
 
     @staticmethod
-    def create(host_id, ip, port, username, password):
+    def create(ip, port, username, password):
         """添加新主机信息"""
         try:
+            host_id = get_new_host_id()
             host = Host(host_id, ip, port, username, password)
-            create_host(host)
+            save_host(host)
             code = 200
             msg = "添加服务器主机信息成功"
             data = host.__dict__
@@ -37,10 +38,9 @@ class _Host(object):
     def detail(hostname):
         """查询主机信息详情"""
         try:
-            host = query_host(hostname)
+            data = query_host(hostname)
             code = 200
             msg = "查询服务器主机信息成功"
-            data = host.__dict__
         except SomeError as e:
             code = 400
             msg = "查询服务器主机信息失败，详情：{0}".format(str(e))
@@ -50,11 +50,13 @@ class _Host(object):
 
 class _HostGroup(object):
     @staticmethod
-    def create(group_id, host_ids):
+    def create(group_name, host_ids):
         """创建主机组信息"""
         try:
-            host_group = HostGroup(group_id, host_ids)
-            create_host_group(host_group)
+            host_ids = host_ids.split(",")
+            group_id = get_new_host_group_id()
+            host_group = HostGroup(group_id, group_name,  host_ids)
+            save_host_group(host_group)
             code = 200
             msg = "添加主机组信息成功"
             data = host_group.__dict__
@@ -68,10 +70,9 @@ class _HostGroup(object):
     def detail(group_id):
         """查询主机组信息详情"""
         try:
-            host_group = query_host_group(group_id)
+            data = query_host_group(group_id)
             code = 200
             msg = "查询主机组信息成功"
-            data = host_group.__dict__
         except SomeError as e:
             code = 400
             msg = "查询主机组信息失败，详情：{0}".format(str(e))

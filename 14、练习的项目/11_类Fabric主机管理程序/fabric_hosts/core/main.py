@@ -1,7 +1,7 @@
 # coding:utf-8
 from core.manager import _Host, _HostGroup
-from core.db_handler import create_host, query_host, list_hosts
-from core.db_handler import create_host_group, query_host_group, list_host_groups
+from core.db_handler import save_host, query_host, list_hosts
+from core.db_handler import save_host_group, query_host_group, list_host_groups
 
 
 class Fabric(object):
@@ -88,19 +88,18 @@ class Fabric(object):
 
     @staticmethod
     def host_create():
-        host_id = input(u"请输入主机的编号：")
         ip = input(u"请输入主机的ip地址：")
         port = input(u"请输入主机的通信端口：")
         username = input(u"请输入主机的登录用户：")
         password = input(u"请输入主机的登录密码：")
-        rsp = _Host.create(host_id, ip, port, username, password)
+        rsp = _Host.create(ip, port, username, password)
         print(rsp.msg)
 
     @staticmethod
     def host_group_create():
-        group_id = input(u"请输入主机组的编号：")
-        group_id = input(u"请输入主机的通信端口：")
-        rsp = _HostGroup.create(group_id, group_id)
+        group_name = input(u"请输入主机组的名称：")
+        group_id = input(u"请输入被管理的主机的id(输入多个主机id以逗号连接)：")
+        rsp = _HostGroup.create(group_name, group_id)
         print(rsp.msg)
 
     @staticmethod
@@ -158,7 +157,7 @@ class Fabric(object):
         while True:
             info = u"""---------欢迎使用Fabric运维管理系统---------
             你可以选择如下操作：
-                1.新增主机/主机组信息             2.查询主机/主机组列表
+                1.管理主机信息                   2.管理主机组信息
                 3.执行命令                       4.上传文件
                 5.下载文件                       6.退出系统
             """
