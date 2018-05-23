@@ -1,23 +1,151 @@
 # coding:utf-8
-from core.manager import _Host, _HostGroup
-from core.db_handler import save_host, query_host, list_hosts
-from core.db_handler import save_host_group, query_host_group, list_host_groups
+from core.host_handler import HostHandler
+from core.host_group_handler import HostGroupHandler
+import os
 
 
-class Fabric(object):
+class _FabricHost(object):
     @staticmethod
-    def show_hosts():
-        host_list = list_hosts()
-        if not host_list:
-            print(u"系统中还未录入任何主机信息")
+    def console():
+        info = u"""你可以选择如下操作：
+                    1.新增                    2.删除
+                    3.修改                    4.查询
+        """
+        print(info)
+        action = input(u"请输入操作编号：").strip()
+        actions = {"1": _FabricHost.create,
+                   "2": _FabricHost.delete,
+                   "3": _FabricHost.modify,
+                   "4": _FabricHost.show}
+        if action in actions:
+            actions[action]()
         else:
-            print(u"主机列表: ")
-            for host in host_list:
-                print("{0}       {1}        {2}".format(host.host_id, host.username, host.ip))
+            print(u"输入的操作编号不存在，请核对后再试")
 
     @staticmethod
-    def show_host_groups():
-        host_group_list = list_host_groups()
+    def create():
+        ip = input(u"请输入主机的ip地址：").strip()
+        port = input(u"请输入主机的通信端口：").strip()
+        username = input(u"请输入主机的登录用户：").strip()
+        password = input(u"请输入主机的登录密码：").strip()
+        rsp = HostHandler.create(ip, port, username, password)
+        print(rsp.msg)
+
+    @staticmethod
+    def delete():
+        host_id = input(u"请输入主机的id编号：").strip()
+        rsp = HostHandler.delete(host_id)
+        print(rsp.msg)
+
+    @staticmethod
+    def modify():
+        host_id = input(u"请输入主机的id编号：").strip()
+        ip = input(u"请输入主机的ip地址：").strip()
+        port = input(u"请输入主机的通信端口：").strip()
+        username = input(u"请输入主机的登录用户：").strip()
+        password = input(u"请输入主机的登录密码：").strip()
+        rsp = HostHandler.modify(host_id, ip, port, username, password)
+        print(rsp.msg)
+
+    @staticmethod
+    def show():
+        rsp = HostHandler.list()
+        if rsp.code == 200:
+            host_list = rsp.data
+            if not host_list:
+                print(u"系统中还未录入任何主机信息")
+            else:
+                print(u"主机列表: ")
+                for host in host_list:
+                    print("主机编号：{0}       主机ip：{1}        主机端口号：{2}"
+                          .format(host["host_id"], host["ip"], host["port"]))
+        else:
+            print(rsp.msg)
+
+    @staticmethod
+    def execute():
+        host_id = input(u"请输入远程目标主机的id：").strip()
+        cmd = input(u"请输入需要执行的命令：").strip()
+        rsp = HostHandler.detail(host_id)
+        if rsp.code == 200:
+            host = rsp.data
+            client = HostHandler.create_session(host["ip"], host["port"], host["username"], host["password"])
+            rsp = client.execute(cmd)
+            client.close()
+            print(rsp.msg)
+            if rsp.code == 200:
+                print(rsp.data)
+        else:
+            print(u"主机id编号{0}不存在，请核对后再试".format(host_id))
+
+    @staticmethod
+    def put():
+        host_id = input(u"请输入远程目标主机的id：").strip()
+        local_path = input(u"请输入本地上传文件的路径：").strip()
+        remote_dir = input(u"请输入远程主机存放文件的目录路径：").strip()
+        file_name = os.path.split(local_path)[-1]
+        remote_path = os.path.join(remote_dir, file_name)
+        rsp = HostHandler.detail(host_id)
+        if rsp.code == 200:
+            host = rsp.data
+            client = HostHandler.create_sftp_session(host["ip"], host["port"], host["username"], host["password"])
+            rsp = client.put(local_path, remote_path)
+            client.close()
+            print(rsp.msg)
+        else:
+            print(u"主机id编号{0}不存在，请核对后再试".format(host_id))
+
+    @staticmethod
+    def get():
+        host_id = input(u"请输入远程目标主机的id：").strip()
+        remote_path = input(u"请输入远程主机上文件的路径：").strip()
+        local_dir = input(u"请输入本地存放文件的目录路径：").strip()
+        file_name = os.path.split(remote_path)[-1]
+        local_path = os.path.join(local_dir, file_name)
+        rsp = HostHandler.detail(host_id)
+        if rsp.code == 200:
+            host = rsp.data
+            client = HostHandler.create_sftp_session(host["ip"], host["port"], host["username"], host["password"])
+            rsp = client.get(remote_path, local_path)
+            client.close()
+            print(rsp.msg)
+        else:
+            print(u"主机id编号{0}不存在，请核对后再试".format(host_id))
+
+
+class _FabricHostGroup(object):
+    @staticmethod
+    def console():
+        info = u"""你可以选择如下操作：
+                    1.新增                    2.删除
+                    3.修改                    4.查询
+        """
+        print(info)
+        action = input(u"请输入操作编号：").strip()
+        actions = {"1": _FabricHostGroup.create,
+                   "2": _FabricHostGroup.delete,
+                   "3": _FabricHostGroup.modify,
+                   "4": _FabricHostGroup.show}
+        if action in actions:
+            actions[action]()
+        else:
+            print(u"输入的操作编号不存在，请核对后再试")
+
+    @staticmethod
+    def create():
+        pass
+
+    @staticmethod
+    def delete():
+        pass
+
+    @staticmethod
+    def modify():
+        pass
+
+    @staticmethod
+    def show():
+        host_group_list = HostGroupHandler.list()
         if not host_group_list:
             print(u"系统中还未录入任何主机组信息")
         else:
@@ -26,109 +154,26 @@ class Fabric(object):
                 print("{0}".format(group.id))
 
     @staticmethod
-    def host_execute():
-        host_id = input(u"请输入远程目标主机的id：")
-        cmd = input(u"请输入需要执行的命令：")
-        host = query_host(host_id)
-        client = _Host.create_session(host.ip, host.port, host.username, host.password)
-        rsp = client.execute(cmd)
-        client.close()
-        print(rsp.msg)
+    def execute():
+        pass
 
     @staticmethod
-    def host_group_execute():
-        host_id = input(u"请输入远程目标主机组的id：")
-        cmd = input(u"请输入需要执行的命令：")
-        rsp = _HostGroup.execute_cmd(host_id, cmd)
-        print(rsp.msg)
+    def get():
+        pass
 
     @staticmethod
-    def host_put():
-        host_id = input(u"请输入远程目标主机的id：")
-        local_path = input(u"请输入本地上传文件的路径")
-        remote_path = input(u"请输入远程主机存放文件的路径")
-        host = query_host(host_id)
-        client = _Host.create_sftp_session(host.ip, host.port, host.username, host.password)
-        rsp = client.put(local_path, remote_path)
-        client.close()
-        print(rsp.msg)
+    def put():
+        pass
 
-    @staticmethod
-    def host_group_put():
-        host_id = input(u"请输入目标主机组的id：")
-        local_path = input(u"请输入本地上传文件的路径")
-        remote_path = input(u"请输入远程主机存放文件的路径")
-        rsp = _HostGroup.put(host_id, local_path, remote_path)
-        print(rsp.msg)
 
-    @staticmethod
-    def host_get():
-        host_id = input(u"请输入远程目标主机的id：")
-        remote_path = input(u"请输入远程主机上文件的路径")
-        local_path = input(u"请输入本地存放文件的路径")
-        host = query_host(host_id)
-        client = _Host.create_sftp_session(host.ip, host.port, host.username, host.password)
-        rsp = client.get(remote_path, local_path)
-        client.close()
-        print(rsp.msg)
-
-    @staticmethod
-    def host_group_get():
-        group_id = input(u"请输入目标主机组的id：")
-        remote_path = input(u"请输入远程主机上文件的路径")
-        local_path = input(u"请输入本地存放文件的路径")
-        rsp = _HostGroup.put(group_id, remote_path, local_path)
-        print(rsp.msg)
-
-    @staticmethod
-    def detail():
-        host_id = input(u"请输入目标主机的id：")
-        rsp = _Host.detail(host_id)
-        print(rsp.msg)
-
-    @staticmethod
-    def host_create():
-        ip = input(u"请输入主机的ip地址：")
-        port = input(u"请输入主机的通信端口：")
-        username = input(u"请输入主机的登录用户：")
-        password = input(u"请输入主机的登录密码：")
-        rsp = _Host.create(ip, port, username, password)
-        print(rsp.msg)
-
-    @staticmethod
-    def host_group_create():
-        group_name = input(u"请输入主机组的名称：")
-        group_id = input(u"请输入被管理的主机的id(输入多个主机id以逗号连接)：")
-        rsp = _HostGroup.create(group_name, group_id)
-        print(rsp.msg)
-
-    @staticmethod
-    def create():
-        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
-        if key == "1":
-            Fabric.host_create()
-        elif key == "2":
-            Fabric.host_group_create()
-        else:
-            print(u"输入的选项编号不存在，请核对再试")
-
-    @staticmethod
-    def show():
-        key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
-        if key == "1":
-            Fabric.show_hosts()
-        elif key == "2":
-            Fabric.show_host_groups()
-        else:
-            print(u"输入的选项编号不存在，请核对再试")
-
+class Fabric(object):
     @staticmethod
     def execute():
         key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
         if key == "1":
-            Fabric.host_execute()
+            _FabricHost.execute()
         elif key == "2":
-            Fabric.host_group_execute()
+            _FabricHostGroup.execute()
         else:
             print(u"输入的选项编号不存在，请核对再试")
 
@@ -136,9 +181,9 @@ class Fabric(object):
     def get():
         key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
         if key == "1":
-            Fabric.host_get()
+            _FabricHost.get()
         elif key == "2":
-            Fabric.host_group_get()
+            _FabricHostGroup.get()
         else:
             print(u"输入的选项编号不存在，请核对再试")
 
@@ -146,9 +191,9 @@ class Fabric(object):
     def put():
         key = input(u"请输入操作对象的类型编号（1.主机；2：主机组）： ").strip()
         if key == "1":
-            Fabric.host_put()
+            _FabricHost.put()
         elif key == "2":
-            Fabric.host_group_put()
+            _FabricHostGroup.put()
         else:
             print(u"输入的选项编号不存在，请核对再试")
 
@@ -157,18 +202,14 @@ class Fabric(object):
         while True:
             info = u"""---------欢迎使用Fabric运维管理系统---------
             你可以选择如下操作：
-                1.管理主机信息                   2.管理主机组信息
-                3.执行命令                       4.上传文件
-                5.下载文件                       6.退出系统
+                1.主机视图                   2.主机组视图
+                3.退出系统
             """
             print(info)
             action = input(u"请输入操作编号：").strip()
-            actions = {"1": Fabric.create,
-                       "2": Fabric.show,
-                       "3": Fabric.execute,
-                       "4": Fabric.put,
-                       "5": Fabric.get}
-            if action == "6":
+            actions = {"1": _FabricHost.console,
+                       "2": _FabricHostGroup.console}
+            if action == "3":
                 break
             elif action in actions:
                 actions[action]()

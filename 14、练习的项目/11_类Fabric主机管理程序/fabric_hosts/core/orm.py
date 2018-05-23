@@ -11,10 +11,10 @@ class Host(object):
 
 
 class HostGroup(object):
-    def __init__(self, group_id, group_name, host_id):
+    def __init__(self, group_id, group_name, host_id_list):
         self.group_id = group_id
         self.group_name = group_name
-        self.host_id = host_id
+        self.host_id_list = host_id_list
 
 
 class ResponseData(object):
