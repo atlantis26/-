@@ -7,20 +7,22 @@ import os
 class _FabricHost(object):
     @staticmethod
     def console():
-        info = u"""你可以选择如下操作：
-                    1.新增                    2.删除
-                    3.修改                    4.查询
-        """
-        print(info)
-        action = input(u"请输入操作编号：").strip()
-        actions = {"1": _FabricHost.create,
-                   "2": _FabricHost.delete,
-                   "3": _FabricHost.modify,
-                   "4": _FabricHost.show}
-        if action in actions:
-            actions[action]()
-        else:
-            print(u"输入的操作编号不存在，请核对后再试")
+        while True:
+            info = u"""你可以选择如下操作：
+                        1.新增主机信息                    2.删除主机信息
+                        3.修改主机信息                    4.查询主机列表信息
+            """
+            print(info)
+            action = input(u"请输入操作编号：").strip()
+            actions = {"1": _FabricHost.create,
+                       "2": _FabricHost.delete,
+                       "3": _FabricHost.modify,
+                       "4": _FabricHost.show}
+            if action in actions:
+                actions[action]()
+            else:
+                print(u"输入的操作编号不存在，请核对后再试")
+            print("----------------------------------------------------")
 
     @staticmethod
     def create():
@@ -116,20 +118,22 @@ class _FabricHost(object):
 class _FabricHostGroup(object):
     @staticmethod
     def console():
-        info = u"""你可以选择如下操作：
-                    1.新增                    2.删除
-                    3.修改                    4.查询
-        """
-        print(info)
-        action = input(u"请输入操作编号：").strip()
-        actions = {"1": _FabricHostGroup.create,
-                   "2": _FabricHostGroup.delete,
-                   "3": _FabricHostGroup.modify,
-                   "4": _FabricHostGroup.show}
-        if action in actions:
-            actions[action]()
-        else:
-            print(u"输入的操作编号不存在，请核对后再试")
+        while True:
+            info = u"""你可以选择如下操作：
+                        1.新增主机组信息                    2.删除主机组信息
+                        3.修改主机组信息                    4.查询主机组列表信息
+            """
+            print(info)
+            action = input(u"请输入操作编号：").strip()
+            actions = {"1": _FabricHostGroup.create,
+                       "2": _FabricHostGroup.delete,
+                       "3": _FabricHostGroup.modify,
+                       "4": _FabricHostGroup.show}
+            if action in actions:
+                actions[action]()
+            else:
+                print(u"输入的操作编号不存在，请核对后再试")
+            print("----------------------------------------------------")
 
     @staticmethod
     def create():
@@ -199,13 +203,14 @@ class Fabric(object):
 
     @staticmethod
     def console():
+        info = u"""---------欢迎使用Fabric运维管理系统---------
+        你可以选择如下操作：
+            1.管理主机信息                   2.管理主机组信息
+            3.执行命令                       4.上传文件
+            5.下载文件                       6.退出系统
+        """
+        print(info)
         while True:
-            info = u"""---------欢迎使用Fabric运维管理系统---------
-            你可以选择如下操作：
-                1.主机视图                   2.主机组视图
-                3.退出系统
-            """
-            print(info)
             action = input(u"请输入操作编号：").strip()
             actions = {"1": _FabricHost.console,
                        "2": _FabricHostGroup.console}
