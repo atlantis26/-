@@ -1,0 +1,1 @@
+2018-05-24 16:29:47 - host_handler.py:81(host_handler:detail) - DEBUG - {'code': 200, 'msg': '查询主机信息成功', 'data': {'host_id': 'hostCode1', 'ip': '172.20.78.99', 'port': '22', 'username': 'test1', 'password': '123456'}}

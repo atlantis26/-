@@ -21,7 +21,7 @@ class ResponseData(object):
     def __init__(self, code, msg, data=None):
         self.code = code
         self.msg = msg
-        if data:
+        if data is not None:
             self.data = data
 
 

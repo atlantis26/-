@@ -2,6 +2,9 @@
 from core.db_handler import save_host, modify_host, delete_host, query_host, list_hosts, get_new_host_id
 from core.rpc_handler import Shell, TransPort
 from core.orm import Host, SomeError, ResponseData
+import logging
+
+logger = logging.getLogger("fabric.host")
 
 
 class HostHandler(object):
@@ -29,6 +32,8 @@ class HostHandler(object):
             code = 400
             msg = "添加服务器主机信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -41,6 +46,8 @@ class HostHandler(object):
         except SomeError as e:
             code = 400
             msg = "删除主机信息失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
         return ResponseData(code, msg)
 
     @staticmethod
@@ -56,6 +63,8 @@ class HostHandler(object):
             code = 400
             msg = "修改主机信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -69,6 +78,8 @@ class HostHandler(object):
             code = 400
             msg = "查询主机信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -82,4 +93,6 @@ class HostHandler(object):
             code = 400
             msg = "查询主机列表信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)

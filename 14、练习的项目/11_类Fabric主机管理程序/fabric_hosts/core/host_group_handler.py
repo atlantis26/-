@@ -3,6 +3,9 @@ from core.db_handler import save_host_group, delete_host_group, query_host_group
 from core.db_handler import list_host_groups, get_new_host_group_id, modify_host_group
 from core.orm import HostGroup, SomeError, ResponseData
 from core.rpc_handler import HostThread
+import logging
+
+logger = logging.getLogger("fabric.host_group")
 
 
 class HostGroupHandler(object):
@@ -21,6 +24,8 @@ class HostGroupHandler(object):
             code = 400
             msg = "添加主机组信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -33,13 +38,15 @@ class HostGroupHandler(object):
         except SomeError as e:
             code = 400
             msg = "删除主机组信息失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
 
     @staticmethod
-    def modify(group_id, group_name, host_id_list):
+    def modify(group_id, group_name, host_ids):
         """修改主机组信息"""
         try:
+            host_id_list = host_ids.split(",")
             host_group = HostGroup(group_id, group_name, host_id_list)
             modify_host_group(group_id, host_group)
             code = 200
@@ -49,6 +56,8 @@ class HostGroupHandler(object):
             code = 400
             msg = "修改主机组信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -62,6 +71,8 @@ class HostGroupHandler(object):
             code = 400
             msg = "查询主机组信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
@@ -75,13 +86,15 @@ class HostGroupHandler(object):
             code = 400
             msg = "查询主机组列表信息失败，详情：{0}".format(str(e))
             data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
         return ResponseData(code, msg, data)
 
     @staticmethod
     def _execute_job(group_id, action, **kwargs):
         """批量在主机组内的全部主机上都执行任务"""
         host_group = query_host_group(group_id)
-        hosts = [query_host(host_id) for host_id in host_group.host_id_list]
+        hosts = [query_host(host_id) for host_id in host_group["host_id_list"]]
         result = {}
         threads = []
         for host in hosts:
@@ -92,18 +105,18 @@ class HostGroupHandler(object):
         for thread in threads:
             thread.join()
         for thread in threads:
-            result[thread.host.host_id] = thread.get_result()
+            result[thread.host["host_id"]] = thread.get_result()
         return result
 
     @staticmethod
-    def execute_cmd(group_id, cmd):
+    def execute_cmd(group_id, commands):
         """批量在主机组内的全部主机上都执行命令"""
-        return HostGroupHandler._execute_job(group_id, "cmd", cmd=cmd)
+        return HostGroupHandler._execute_job(group_id, "commands", commands=commands)
 
     @staticmethod
-    def get(group_id, remote_path, local_path):
+    def get(group_id, remote_path, local_dir):
         """批量在主机组内的全部主机上都执行下载"""
-        return HostGroupHandler._execute_job(group_id, "get", remote_path=remote_path,  local_path=local_path)
+        return HostGroupHandler._execute_job(group_id, "get", remote_path=remote_path,  local_dir=local_dir)
 
     @staticmethod
     def put(group_id, local_path, remote_path):

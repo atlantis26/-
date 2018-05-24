@@ -47,7 +47,7 @@ def list_hosts():
 
 def save_host_group(host_group):
     """添加/修改后，保存主机组信息"""
-    json_file = os.path.join(DB_Host, "{0}.json".format(host_group.group_id))
+    json_file = os.path.join(DB_HostGroups, "{0}.json".format(host_group.group_id))
     with open(json_file, "w") as f:
         f.write(json.dumps(host_group.__dict__))
 

@@ -51,10 +51,26 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'manager': {
+        'host': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'manager.log'),
+            'filename': os.path.join(LOG_DIR, 'host.log'),
+            'maxBytes': 1024 * 1024 * 100,
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'host_group': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'host_group.log'),
+            'maxBytes': 1024 * 1024 * 100,
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'rpc': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'rpc.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -66,8 +82,18 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'fabric.manager': {
-            'handlers': ['manager'],
+        'fabric.host': {
+            'handlers': ['host'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'fabric.host_group': {
+            'handlers': ['host_group'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'fabric.rpc': {
+            'handlers': ['rpc'],
             'level': 'DEBUG',
             'propagate': False,
         },
