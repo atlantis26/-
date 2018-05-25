@@ -1,2 +1,0 @@
-2018-05-24 22:13:15 - host_group_handler.py:89(host_group_handler:list) - DEBUG - {'code': 200, 'msg': '查询主机组列表信息成功', 'data': [{'group_id': 'hostGroupCode0', 'group_name': 'groupname1', 'host_id_list': ['hostCode0', 'hostCode1']}]}
-2018-05-24 22:17:25 - host_group_handler.py:89(host_group_handler:list) - DEBUG - {'code': 200, 'msg': '查询主机组列表信息成功', 'data': [{'group_id': 'hostGroupCode0', 'group_name': 'groupname1', 'host_id_list': ['hostCode0', 'hostCode1']}]}

@@ -30,7 +30,7 @@ class Shell(object):
             code = 400
             msg = "执行命令失败，详情：{0}".format(str(e))
             data = None
-        logging.debug(ResponseData(code, msg, data).__dict__)
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)
 
@@ -63,7 +63,7 @@ class TransPort(object):
         except SomeError as e:
             code = 400
             msg = "文件上传失败，详情：{0}".format(str(e))
-        logging.debug(ResponseData(code, msg).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
 
@@ -79,7 +79,7 @@ class TransPort(object):
         except SomeError as e:
             code = 400
             msg = "文件下载失败，详情：{0}".format(str(e))
-        logging.debug(ResponseData(code, msg).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
 
@@ -97,36 +97,43 @@ class HostThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        if self.action == "commands":
-            client = Shell(hostname=self.host["ip"],
-                           port=self.host["port"],
-                           username=self.host["username"],
-                           password=self.host["password"])
-            self.result = client.execute(**self.kwargs).__dict__
-            client.close()
-        elif self.action == "get":
-            local_dir = self.kwargs["local_dir"]
-            local_host_id_dir = os.path.join(local_dir, str(self.host["host_id"]))
-            if not os.path.exists(local_host_id_dir):
-                os.mkdir(local_host_id_dir)
-            remote_path = self.kwargs["remote_path"]
-            file_name = os.path.split(remote_path)[-1]
-            local_path = os.path.join(local_host_id_dir, file_name)
-            client = TransPort(hostname=self.host["ip"],
+        try:
+            if self.action == "commands":
+                client = Shell(hostname=self.host["ip"],
                                port=self.host["port"],
                                username=self.host["username"],
                                password=self.host["password"])
-            self.result = client.get(remote_path, local_path).__dict__
-            client.close()
-        elif self.action == "put":
-            client = TransPort(hostname=self.host["ip"],
-                               port=self.host["port"],
-                               username=self.host["username"],
-                               password=self.host["password"])
-            self.result = client.put(**self.kwargs).__dict__
-            client.close()
-        else:
-            msg = u"不支持'{0}'类型任务job,请联系管理员核实".format(self.action)
+                self.result = client.execute(**self.kwargs).__dict__
+                client.close()
+            elif self.action == "get":
+                local_dir = self.kwargs["local_dir"]
+                local_host_id_dir = os.path.join(local_dir, str(self.host["host_id"]))
+                if not os.path.exists(local_host_id_dir):
+                    os.mkdir(local_host_id_dir)
+                remote_path = self.kwargs["remote_path"]
+                file_name = os.path.split(remote_path)[-1]
+                local_path = os.path.join(local_host_id_dir, file_name)
+                client = TransPort(hostname=self.host["ip"],
+                                   port=self.host["port"],
+                                   username=self.host["username"],
+                                   password=self.host["password"])
+                self.result = client.get(remote_path, local_path).__dict__
+                client.close()
+            elif self.action == "put":
+                client = TransPort(hostname=self.host["ip"],
+                                   port=self.host["port"],
+                                   username=self.host["username"],
+                                   password=self.host["password"])
+                self.result = client.put(**self.kwargs).__dict__
+                client.close()
+            else:
+                msg = u"不支持'{0}'类型任务job,请联系管理员核实".format(self.action)
+                self.result = ResponseData(400, msg).__dict__
+        except paramiko.ssh_exception.AuthenticationException:
+            msg = u"执行失败，原因：登录失败，请检查目标主机的连接配置信息中账号密码是否正确"
+            self.result = ResponseData(400, msg).__dict__
+        except TimeoutError:
+            msg = u"执行失败，原因：连接超时，请检查目标主机的网络是否连通"
             self.result = ResponseData(400, msg).__dict__
 
     def get_result(self):

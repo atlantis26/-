@@ -13,7 +13,7 @@ class HostGroupHandler(object):
     def create(group_name, host_ids):
         """创建主机组信息"""
         try:
-            host_ids = host_ids.split(",")
+            host_ids = host_ids.split(",") if host_ids else []
             group_id = get_new_host_group_id()
             host_group = HostGroup(group_id, group_name,  host_ids)
             save_host_group(host_group)
@@ -43,11 +43,22 @@ class HostGroupHandler(object):
         return ResponseData(code, msg)
 
     @staticmethod
-    def modify(group_id, group_name, host_ids):
+    def modify(group_id, group_name, add_hosts, delete_hosts):
         """修改主机组信息"""
         try:
-            host_id_list = host_ids.split(",")
-            host_group = HostGroup(group_id, group_name, host_id_list)
+            host = query_host_group(group_id)
+            host_ids = host["host_id_list"]
+            group_name = group_name if group_name else host["group_name"]
+            add_host_ids = add_hosts.split(",") if add_hosts else []
+            [query_host(host_id) for host_id in add_host_ids]
+            delete_hosts = delete_hosts.split(",") if delete_hosts else []
+            not_member_host = [host_id for host_id in delete_hosts if host_id not in host_ids]
+            if not_member_host:
+                raise SomeError(u"下列Id号的主机{0}不是组成员，移出失败".format(",".join(not_member_host)))
+            [host_ids.remove(host_id) for host_id in delete_hosts]
+            host_ids.extend(add_host_ids)
+            new_host_id_list = list(set(host_ids))
+            host_group = HostGroup(group_id, group_name, new_host_id_list)
             modify_host_group(group_id, host_group)
             code = 200
             msg = "修改主机组信息成功"
