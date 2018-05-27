@@ -21,6 +21,11 @@ class FtpCommands(object):
             self.validate_cmd(command)
             method_name = "cmd_{0}".format(command)
             return getattr(self, method_name)(**kwargs)
+        except SomeError as e:
+            print(str(e))
+            msg = u"{0}命令执行失败，详情：{1}".format(command, str(e))
+            logger.debug(ResponseData(400, msg).__dict__)
+            return ResponseData(400, msg)
         except TypeError as e:
             print(str(e))
             msg = u"{0}命令执行失败，语法有误".format(command)
@@ -68,7 +73,7 @@ class FtpCommands(object):
     def validate_quota(self, file_size):
         """检查用户剩余quota配额是否满足文件上传的条件"""
         total_quota, used_quota, residual_quota = self.get_user_quota_detail()
-        if residual_quota < file_size:
+        if residual_quota < round((file_size/(1024*1024*1024)), 2):
             raise SomeError("用户存储配额不足")
 
     def is_authenticated(self):

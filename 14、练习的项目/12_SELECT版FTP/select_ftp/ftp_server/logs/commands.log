@@ -1,0 +1,25 @@
+2018-05-27 21:06:31 - command_handler.py:306(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': ['cd', 'get', 'help', 'ls', 'mkdir', 'put', 'pwd', 'quota', 'remove']}
+2018-05-27 21:07:15 - command_handler.py:190(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:07:19 - command_handler.py:190(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:07:43 - command_handler.py:171(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-27 21:07:53 - command_handler.py:306(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：上传文件，上传到用户当前所在路径\n        使用语法：put ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-27 21:15:22 - command_handler.py:190(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:26:10 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-27 21:26:13 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:26:17 - command_handler.py:286(command_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '查询用户存储配额信息成功', 'data': {'total_quota': 50, 'used_quota': 0.0, 'residual_quota': 50.0}}
+2018-05-27 21:33:49 - command_handler.py:287(command_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '查询用户存储配额信息成功', 'data': {'total_quota': 50, 'used_quota': 0.0, 'residual_quota': 50.0}}
+2018-05-27 21:40:02 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-27 21:50:49 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:54:35 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:55:41 - command_handler.py:220(command_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-27 21:55:45 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-27 21:55:47 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], ['VMware-workstation-full-14.1.1.28517.exe'])}
+2018-05-27 21:56:03 - command_handler.py:311(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；\n                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径\n        返回值：命令执行结果\n        '}
+2018-05-27 21:56:42 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-27 22:11:32 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'F:/VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-27 22:11:38 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'F:/VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-27 22:16:05 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-27 22:16:09 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 400, 'msg': '下载文件失败，详情：文件名VMware-workstation-full-14.1.1.28517.exe不存在'}
+2018-05-27 22:18:08 - command_handler.py:311(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；\n                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径\n        返回值：命令执行结果\n        '}
+2018-05-27 22:18:26 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-27 22:25:34 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
