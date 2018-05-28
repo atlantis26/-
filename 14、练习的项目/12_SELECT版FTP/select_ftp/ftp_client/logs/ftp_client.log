@@ -52,3 +52,5 @@
 2018-05-27 22:18:08 - client_handler.py:374(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；\n                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径\n        返回值：命令执行结果\n        '}
 2018-05-27 22:18:08 - client_handler.py:388(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功'}
 2018-05-27 22:24:58 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-28 15:26:08 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-28 17:55:19 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
