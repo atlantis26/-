@@ -196,7 +196,7 @@ class FtpCommands(object):
 
         return ResponseData(code, msg, path)
 
-    def cmd_put(self, file_name, file_md5, temp_file_path):
+    def cmd_put(self, file_name, file_md5, temp_file_path=None):
         """
         功能描述：上传文件，上传到用户当前所在路径
         使用语法：put ${file_name}
@@ -207,13 +207,17 @@ class FtpCommands(object):
             file_path = os.path.join(self.current_path, file_name)
             if os.path.exists(file_path):
                 raise SomeError(u"文件名{0}不能重复".format(file_name))
-            # socket程序已经先将文件数据存储在临时文件内，这里只需拷贝临时文件内容
-            shutil.move(temp_file_path, file_path)
-            file_md51 = self.get_file_md5(file_path)
-            if file_md51 != file_md5:
-                raise SomeError(u"md5校验失败,传输接收数据有错误")
-            code = 200
-            msg = "上传文件成功"
+            if temp_file_path:
+                # socket程序已经先将文件数据存储在临时文件内，这里只需拷贝临时文件内容
+                shutil.move(temp_file_path, file_path)
+                file_md51 = self.get_file_md5(file_path)
+                if file_md51 != file_md5:
+                    raise SomeError(u"md5校验失败,传输接收数据有错误")
+                code = 200
+                msg = "上传文件成功"
+            else:
+                code = 201
+                msg = "部分文件内容已接收"
         except SomeError as e:
             code = 400
             msg = "上传文件失败，详情：{0}".format(str(e))

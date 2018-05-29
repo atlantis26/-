@@ -64,24 +64,26 @@ class FtpClient(object):
         return rsp
 
     def _put_file_response(self, req_data, file_path):
-        """对于上传文件的请求，发送两次请求数据，第一次告诉服务端文件名称，第二次连续发送文件数据直到全部发送完成
+        """对于上传文件的请求
         """
-        data_json = json.dumps(req_data).encode('utf-8')
-        self.client.send(data_json)
-        # 发送文件内容，并接收服务端响应
         file_size = os.path.getsize(file_path)
         send_size = 0
-        with open(file_path, "rb") as f:
+        with open(file_path, "r") as f:
             while True:
                 file_data = f.read(1024)
                 if not file_data:
                     break
-                self.client.send(file_data)
-                send_size += len(file_data)
-                show_process(file_size, send_size)
-        rsp = self.client.recv(1024)
-        rsp = json.loads(rsp.decode("utf-8"))
-        return rsp
+                req_data["file_data"] = file_data
+                data_json = json.dumps(req_data).encode('utf-8')
+                self.client.send(data_json)
+                response = self.client.recv(1024)
+                if response["code"] == 201:
+                    time_stamp = response["time_stamp"]
+                    req_data["time_stamp"] = time_stamp
+                    send_size += len(file_data)
+                    show_process(file_size, send_size)
+                else:
+                    return response
 
     def _get_file_response(self, req_data, directory):
         """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称，第二次连续接收文件数据直到完成
