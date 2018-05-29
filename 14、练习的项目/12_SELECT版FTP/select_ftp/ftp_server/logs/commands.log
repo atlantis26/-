@@ -23,3 +23,18 @@
 2018-05-27 22:18:08 - command_handler.py:311(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；\n                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径\n        返回值：命令执行结果\n        '}
 2018-05-27 22:18:26 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
 2018-05-27 22:25:34 - command_handler.py:251(command_handler:cmd_get) - DEBUG - {'code': 200, 'msg': '下载文件成功', 'data': {'file_path': 'E:\\my_it_skill_stlas\\14、练习的项目\\12_SELECT版FTP\\select_ftp\\ftp_server\\db\\Storage\\zhangsan\\VMware-workstation-full-14.1.1.28517.exe', 'file_md5': '40356030561a11c5387e32e239f74cab', 'file_size': 487805144, 'seek_size': 0}}
+2018-05-29 23:44:50 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-29 23:44:52 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-29 23:48:34 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-29 23:48:36 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-29 23:48:44 - command_handler.py:290(command_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '查询用户存储配额信息成功', 'data': {'total_quota': 50, 'used_quota': 0.0, 'residual_quota': 50.0}}
+2018-05-30 00:16:23 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-30 00:16:24 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-30 00:18:16 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-30 00:18:18 - command_handler.py:195(command_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': '/'}
+2018-05-30 00:20:30 - command_handler.py:176(command_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': ([], [])}
+2018-05-30 00:20:48 - command_handler.py:315(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：上传文件，上传到用户当前所在路径\n        使用语法：put ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-30 00:21:10 - command_handler.py:32(command_handler:run) - DEBUG - {'code': 400, 'msg': 'put命令执行失败，语法有误'}
+2018-05-30 00:22:53 - command_handler.py:224(command_handler:cmd_put) - DEBUG - {'code': 201, 'msg': '部分文件内容已接收'}
+2018-05-30 00:23:09 - command_handler.py:315(command_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：上传文件，上传到用户当前所在路径\n        使用语法：put ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-30 00:23:37 - command_handler.py:224(command_handler:cmd_put) - DEBUG - {'code': 201, 'msg': '部分文件内容已接收'}

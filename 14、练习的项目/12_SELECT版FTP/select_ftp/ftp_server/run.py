@@ -1,5 +1,5 @@
 # coding:utf-8
-from core.select_server_handler import SelectSocketServer
+from core.server_handler import SelectSocketServer
 from conf.settings import init_logging
 
 init_logging()

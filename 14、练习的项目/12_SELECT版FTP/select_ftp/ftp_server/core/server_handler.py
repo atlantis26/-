@@ -34,15 +34,15 @@ class SelectSocketServer(object):
                     if r not in self.client_cache:
                         ftp = FtpHandler(r)
                         self.client_cache[r] = ftp
-                    data = r.recv(1024)
+                    data = r.recv(2048)
                     self.queue_dict[r].put(data)
                     self.outputs.append(r)
 
             for w in writeable:
                 data = self.queue_dict[w].get()
                 ftp = self.client_cache[w]
-                cmd, response = ftp.get_response(data)
-                ftp.sendall_data(cmd, response)
+                cmd, rsp = ftp.get_response(data)
+                ftp.sendall_data(cmd, rsp)
                 self.outputs.remove(w)
 
             for e in exceptional:
@@ -63,61 +63,61 @@ class FtpHandler(object):
 
     def get_response(self, data):
         """处理单个客户端连接与请求"""
-        try:
-            while True:
-                cmd, kwargs = self.receive_data(data)
-                if cmd == "register":
-                    response = self.user_handler.register(**kwargs)
-                elif cmd == "login":
-                    response = self.user_handler.login(**kwargs)
-                    if response.code == 200:
-                        self.username = self.user_handler.username
-                elif cmd == "logout":
-                    response = self.user_handler.logout()
-                    if response.code == 200:
-                        self.username = None
-                else:
-                    self.ftp_commands.update_user_status(self.username)
-                    response = self.ftp_commands.run(cmd, **kwargs)
-                return cmd, response
-        except ConnectionResetError as e:
-            msg = u"客户端连接{0}已经断开连接，详细：{1}".format(self.request, str(e))
-            print(msg)
+        cmd, kwargs = self.parse_data(data)
+        if cmd == "register":
+            response = self.user_handler.register(**kwargs)
+        elif cmd == "login":
+            response = self.user_handler.login(**kwargs)
+            if response.code == 200:
+                self.username = self.user_handler.username
+        elif cmd == "logout":
+            response = self.user_handler.logout()
+            if response.code == 200:
+                self.username = None
+        else:
+            self.ftp_commands.update_user_status(self.username)
+            response = self.ftp_commands.run(cmd, **kwargs)
+        return cmd, response
 
-    def receive_data(self, data):
-        """接收数据并进行解析，与客户端协议约定请求交互为json数据，格式：
-        {"cmd": "cmd_name", "kwargs":{"key1": "value1", "key2": "value2"}, "file_size":"" },
-        对上传文件请求（cmd=put）做单独处理
-        """
-        payload = json.loads(data.decode("utf-8"))
-        print(payload)
+    def parse_data(self, data):
+        separator = b"---woshifenggefu---"
+        data_list = data.split(separator)
+        if len(data_list) == 1:
+            json_string = data_list[0]
+            file_data = None
+        else:
+            json_string = data_list[0]
+            file_data = data_list[1]
+        payload = json.loads(json_string.decode("utf-8"))
         cmd = payload["cmd"]
         kwargs = payload["kwargs"]
         if cmd == "put":
-            file_data = payload["data"]  # 部分文件内容
-            file_size = kwargs.pop("file_size")
-            time_stamp = kwargs.pop("time_stamp")
+            file_size = kwargs.pop("file_size", None)
+            time_stamp = kwargs.pop("time_stamp", None)
             temp_file = self.temp_file_cache.get(time_stamp, None)
             if not temp_file:
                 now = datetime.now()
                 time_stamp = now.strftime("%Y-%m-%d_%H%M%S")
                 temp_file = os.path.join(DB_TEMP, "temp_file_{0}_{1}".format(file_size, time_stamp))
                 self.temp_file_cache[time_stamp] = temp_file
-            status = self._receive_file_data(temp_file, file_size, file_data)
-            if status:
+            is_ok = self.save_data_and_check_is_ok(temp_file, file_size, file_data)
+            if is_ok:
                 kwargs["temp_file_path"] = temp_file
+                del self.temp_file_cache[time_stamp]
+            else:
+                kwargs["temp_file_path"] = None
         return cmd, kwargs
 
-    def _receive_file_data(self, temp_file, file_size, file_data):
+    @staticmethod
+    def save_data_and_check_is_ok(file_path, file_size, file_data):
         """接收文件数据，暂时存放在临时文件内"""
-        with open(temp_file, "rb") as f:
+        with open(file_path, "wb") as f:
             f.write(file_data)
             f.flush()
-        temp_file_size = os.path.getsize(temp_file)
-        if temp_file_size != file_size:
-            status = False
-        else:
-            status = True
-        return status
+        size = os.path.getsize(file_path)
+        if size == file_size:
+            return True
 
-
+    def sendall_data(self, cmd, response):
+        response_body = json.dumps(response.__dict__).encode("utf-8")
+        self.request.sendall(response_body)
