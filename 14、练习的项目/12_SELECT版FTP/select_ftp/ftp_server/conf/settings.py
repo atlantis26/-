@@ -25,6 +25,9 @@ LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.mkdir(LOG_DIR)
 
+# 分隔符,用于带文件内容的数据块传输，分割符前为文件描述，分隔符后为部分文件内容数据块
+Separator = b"---I'm a separator---"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

@@ -54,3 +54,95 @@
 2018-05-27 22:24:58 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
 2018-05-28 15:26:08 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
 2018-05-28 17:55:19 - client_handler.py:169(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:36:08 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:37:55 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:37:56 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:37:56 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 09:38:57 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:38:59 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:38:59 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 09:39:01 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:39:01 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 09:39:02 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:39:02 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 09:39:05 - client_handler.py:352(client_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '查询用户存储配额信息成功', 'data': {'total_quota': 50, 'used_quota': 0.0, 'residual_quota': 50.0}}
+2018-05-30 09:39:05 - client_handler.py:366(client_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '\n                您的存储配额详情为：\n                    总配额：50GB \n                    已使用配额：0.0GB\n                    剩余配额：50.0GB'}
+2018-05-30 09:39:08 - client_handler.py:352(client_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '查询用户存储配额信息成功', 'data': {'total_quota': 50, 'used_quota': 0.0, 'residual_quota': 50.0}}
+2018-05-30 09:39:08 - client_handler.py:366(client_handler:cmd_quota) - DEBUG - {'code': 200, 'msg': '\n                您的存储配额详情为：\n                    总配额：50GB \n                    已使用配额：0.0GB\n                    剩余配额：50.0GB'}
+2018-05-30 09:47:29 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 400, 'msg': '用户zhansgan登录失败，详情：用户不存在', 'data': {'username': 'zhansgan'}}
+2018-05-30 09:47:36 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:56:43 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:57:53 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 400, 'msg': '用户zhangsan登录失败，详情：密码错误', 'data': {'username': 'zhangsan'}}
+2018-05-30 09:58:03 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 09:58:05 - client_handler.py:312(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 09:58:05 - client_handler.py:321(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 09:58:08 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:58:08 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 09:58:09 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 09:58:09 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 10:01:26 - client_handler.py:173(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 10:04:17 - client_handler.py:173(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 10:05:52 - client_handler.py:173(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 12:40:58 - client_handler.py:172(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 12:40:59 - client_handler.py:312(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 12:40:59 - client_handler.py:321(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 12:41:01 - client_handler.py:332(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 12:41:01 - client_handler.py:341(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 12:43:15 - client_handler.py:163(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 12:43:21 - client_handler.py:303(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 12:43:21 - client_handler.py:312(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 12:46:56 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 12:46:58 - client_handler.py:304(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 12:46:58 - client_handler.py:313(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 12:48:33 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:00:43 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:06:07 - client_handler.py:165(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:06:20 - client_handler.py:207(client_handler:cmd_put) - DEBUG - {'code': 400, 'msg': '上传文件失败, 原因：文件E;/11/1.rar不存在'}
+2018-05-30 13:16:13 - client_handler.py:165(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:16:16 - client_handler.py:305(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 13:16:16 - client_handler.py:314(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 13:16:19 - client_handler.py:325(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功', 'data': '/'}
+2018-05-30 13:16:19 - client_handler.py:334(client_handler:cmd_pwd) - DEBUG - {'code': 200, 'msg': 'pwd命令执行成功'}
+2018-05-30 13:16:39 - client_handler.py:370(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：上传文件，上传到用户当前所在路径\n        使用语法：put ${file_name}\n        返回值：命令执行结果\n        '}
+2018-05-30 13:16:39 - client_handler.py:384(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功'}
+2018-05-30 13:20:37 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:20:39 - client_handler.py:304(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 13:20:39 - client_handler.py:313(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 13:24:38 - client_handler.py:165(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:24:41 - client_handler.py:305(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], []]}
+2018-05-30 13:24:41 - client_handler.py:314(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 13:29:54 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:31:02 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:35:06 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 13:35:18 - client_handler.py:164(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户lisi登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'lisi'}}
+2018-05-30 13:38:13 - client_handler.py:206(client_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-30 13:38:15 - client_handler.py:206(client_handler:cmd_put) - DEBUG - {'code': 200, 'msg': '上传文件成功'}
+2018-05-30 13:38:55 - client_handler.py:304(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['2.rar']]}
+2018-05-30 13:38:55 - client_handler.py:313(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 13:38:59 - client_handler.py:304(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['1.rar']]}
+2018-05-30 13:38:59 - client_handler.py:313(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 15:06:53 - client_handler.py:185(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:06:55 - client_handler.py:325(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['1.rar']]}
+2018-05-30 15:06:55 - client_handler.py:334(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 15:07:04 - client_handler.py:263(client_handler:cmd_get) - DEBUG - {'code': 400, 'msg': '下载文件失败, 原因：缓存文件名称格式有误，请核对后再试'}
+2018-05-30 15:07:13 - client_handler.py:390(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功', 'data': '\n        功能描述：下载文件,文件必须在用户当前路径下存在\n        使用语法：get ${file_name} ${download_directory}: 下载文件（全新下载）；\n                 get ${temp_file_path}: 下载文件（断点续传下载）, ${temp_file_path}是被中止下载的文件的缓存文件路径\n        返回值：命令执行结果\n        '}
+2018-05-30 15:07:13 - client_handler.py:404(client_handler:cmd_help) - DEBUG - {'code': 200, 'msg': 'help命令执行成功'}
+2018-05-30 15:09:39 - client_handler.py:185(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:09:41 - client_handler.py:325(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['1.rar']]}
+2018-05-30 15:09:41 - client_handler.py:334(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 15:10:56 - client_handler.py:185(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:14:20 - client_handler.py:185(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:17:17 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:17:20 - client_handler.py:326(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['1.rar']]}
+2018-05-30 15:17:20 - client_handler.py:335(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 15:19:44 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:25:56 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:28:47 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:33:29 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:36:20 - client_handler.py:186(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:45:13 - client_handler.py:188(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:46:56 - client_handler.py:187(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}
+2018-05-30 15:48:02 - client_handler.py:187(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户lisi登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'lisi'}}
+2018-05-30 15:48:06 - client_handler.py:328(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功', 'data': [[], ['2.rar']]}
+2018-05-30 15:48:06 - client_handler.py:337(client_handler:cmd_ls) - DEBUG - {'code': 200, 'msg': 'ls命令执行成功'}
+2018-05-30 15:49:09 - client_handler.py:187(client_handler:login) - DEBUG - {'code': 200, 'msg': "用户zhangsan登录成功, 欢迎您使用本系统, 使用'help'命令了解更多系统操作命令", 'data': {'username': 'zhangsan'}}

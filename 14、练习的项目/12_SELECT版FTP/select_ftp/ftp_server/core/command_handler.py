@@ -2,6 +2,7 @@
 from core.orm import SomeError, ResponseData
 from core.user_handler import UserHandler
 from conf.settings import DB_STORAGE
+import json
 import hashlib
 import shutil
 import os
@@ -196,7 +197,7 @@ class FtpCommands(object):
 
         return ResponseData(code, msg, path)
 
-    def cmd_put(self, file_name, file_md5, temp_file_path=None):
+    def cmd_put(self, file_name, file_md5, temp_file_path=None, time_stamp=None):
         """
         功能描述：上传文件，上传到用户当前所在路径
         使用语法：put ${file_name}
@@ -215,15 +216,19 @@ class FtpCommands(object):
                     raise SomeError(u"md5校验失败,传输接收数据有错误")
                 code = 200
                 msg = "上传文件成功"
+                data = None
+                logger.debug(ResponseData(code, msg).__dict__)
             else:
                 code = 201
-                msg = "部分文件内容已接收"
+                msg = "还未完成文件内容的全部接收"
+                data = {"time_stamp": time_stamp}
         except SomeError as e:
             code = 400
             msg = "上传文件失败，详情：{0}".format(str(e))
-        logger.debug(ResponseData(code, msg).__dict__)
+            data = None
+            logger.debug(ResponseData(code, msg).__dict__)
 
-        return ResponseData(code, msg)
+        return ResponseData(code, msg, data)
 
     def cmd_get(self, **kwargs):
         """
@@ -241,13 +246,20 @@ class FtpCommands(object):
                 raise SomeError(u"文件名{0}不存在".format(file_name))
             file_md5 = self.get_file_md5(file_path)
             file_size = os.path.getsize(file_path)
-            # 这里只检查文件是否存在和返回文件的绝对路径，发送文件数据的操作，交给socket程序
-            code = 200
-            msg = "下载文件成功"
-            data = {"file_path": file_path,
-                    "file_md5": file_md5,
+            data = {"file_md5": file_md5,
                     "file_size": file_size,
-                    "seek_size": seek_size}
+                    "file_name": file_name}
+            # 每次只发出一部分文件内容数据块
+            with open(file_path, "rb") as f:
+                f.seek(seek_size)
+                file_data = f.read(1024)
+            if file_data:
+                code = 201
+                msg = u"文件还未完成下载"
+                return ResponseData(code, msg, data), file_data
+            else:
+                code = 200
+                msg = u"下载文件成功"
         except SomeError as e:
             code = 400
             msg = "下载文件失败，详情：{0}".format(str(e))

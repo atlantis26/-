@@ -1,6 +1,7 @@
 # coding:utf-8
 from core.utils import SomeError, ResponseData
 from core.utils import show_process, get_file_md5
+from conf.settings import Separator
 import socket
 import json
 import os
@@ -25,15 +26,6 @@ class FtpClient(object):
         self.client.close()
         self.__init__(self.host, self.port)
 
-    def clear_buffer(self):
-        """清空socket连接的缓存内数据"""
-        try:
-            self.client.setblocking(False)
-            while True:
-                self.client.recv(1)
-        except BlockingIOError:
-            self.client.setblocking(True)
-
     def run_cmd(self, cmd, *args):
         """命令执行统一入口"""
         try:
@@ -44,9 +36,9 @@ class FtpClient(object):
         except AttributeError:
             code = 400
             msg = "命令执行失败，{0}不是系统支持的命令".format(cmd)
-        except TypeError:
-            code = 400
-            msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
+        # except TypeError:
+        #     code = 400
+        #     msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
 
         return ResponseData(code, msg)
 
@@ -68,48 +60,72 @@ class FtpClient(object):
         """
         file_size = os.path.getsize(file_path)
         send_size = 0
-        with open(file_path, "r") as f:
+        with open(file_path, "rb") as f:
             while True:
                 file_data = f.read(1024)
                 if not file_data:
                     break
-                req_data["file_data"] = file_data
-                data_json = json.dumps(req_data).encode('utf-8')
-                self.client.send(data_json)
-                response = self.client.recv(1024)
-                if response["code"] == 201:
-                    time_stamp = response["time_stamp"]
-                    req_data["time_stamp"] = time_stamp
-                    send_size += len(file_data)
-                    show_process(file_size, send_size)
+                request_json = json.dumps(req_data).encode('utf-8')
+                b_str = request_json + Separator + file_data
+                self.client.send(b_str)
+                send_size += len(file_data)
+                show_process(file_size, send_size)
+                # 每发送一段文件数据块后，服务端都会有一次响应
+                rsp = self.client.recv(1024)
+                rsp = json.loads(rsp.decode("utf-8"))
+                if rsp["code"] == 201:
+                    req_data["kwargs"]["time_stamp"] = rsp["data"]["time_stamp"]
                 else:
-                    return response
+                    return rsp
+
+    @staticmethod
+    def split_get_file_response_data(data):
+        """拆分请求数据"""
+        data_list = data.split(Separator)
+        if len(data_list) == 1:
+            json_string = data_list[0]
+            file_data = b""
+        elif len(data_list) == 2:
+            json_string = data_list[0]
+            file_data = data_list[1]
+        else:
+            raise SomeError("传输的请求数据包格式有误，请联系管理员")
+
+        return json_string, file_data
 
     def _get_file_response(self, req_data, directory):
         """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称，第二次连续接收文件数据直到完成
         """
-        data_json = json.dumps(req_data).encode("utf-8")
-        self.client.send(data_json)
-        # 发送文件内容，并接收服务端响应
-        rsp = self.client.recv(1024)
-        rsp = json.loads(rsp.decode("utf-8"))
-        if rsp["code"] == 200:
-            file_name = req_data["kwargs"]["file_name"]
-            seek_size = rsp["data"]["seek_size"]
-            file_md5 = rsp["data"]["file_md5"]
-            file_size = rsp["data"]["file_size"]
-            # 先将文件数据存到临时文件
-            tmp_file_name = "{0}.ftp.tmp".format(file_name)
-            tmp_file_path = os.path.join(directory, tmp_file_name)
-            self._receive_file_data(file_size, seek_size, tmp_file_path)
-            # 接收文件数据完成后，将临时文件名变更为原文件名称
-            file_path = os.path.join(directory, file_name)
-            shutil.move(tmp_file_path, file_path)
-            # md5校验失败
-            file_md51 = get_file_md5(file_path)
-            if file_md51 != file_md5:
-                raise SomeError("md5校验失败,传输接收数据有错误")
-        return rsp
+        file_name = req_data["kwargs"]["file_name"]
+        tmp_file_path = os.path.join(directory, "{0}.ftp.tmp".format(file_name))
+        while True:
+            data_json = json.dumps(req_data).encode("utf-8")
+            self.client.send(data_json)
+            # 发送文件内容，并接收服务端响应
+            data = self.client.recv(2048)
+            rsp, file_data = self.split_get_file_response_data(data)
+            rsp = json.loads(rsp.decode("utf-8"))
+            if rsp["code"] == 201:
+                with open(tmp_file_path, "ab") as f:
+                    f.write(file_data)
+                    f.flush()
+                # 更新缓存文件大小，告诉服务端seek的位置
+                receive_size = int(req_data["kwargs"]["tmp_size"]) + len(file_data)
+                req_data["kwargs"]["tmp_size"] = receive_size
+                file_size = rsp["data"]["file_size"]
+                show_process(file_size, receive_size)
+            elif rsp["code"] == 200:
+                file_md5 = rsp["data"]["file_md5"]
+                # 接收文件数据完成后，将临时文件名变更为原文件名称
+                file_path = os.path.join(directory, file_name)
+                shutil.move(tmp_file_path, file_path)
+                # md5校验失败
+                file_md51 = get_file_md5(file_path)
+                if file_md51 != file_md5:
+                    raise SomeError("md5校验失败,传输接收数据有错误")
+                return rsp
+            else:
+                return rsp
 
     def _receive_file_data(self, file_size, seek_size, file_path):
         """根据文件size大小接收文件数据"""
@@ -222,7 +238,8 @@ class FtpClient(object):
             if directory:
                 if not os.path.exists(directory):
                     raise SomeError(u"存放文件的目录{0}不存在".format(directory))
-                req_body["kwargs"] = {"file_name": file_name_or_tmp_path}
+                req_body["kwargs"] = {"file_name": file_name_or_tmp_path,
+                                      "tmp_size": 0}
             else:
                 if not file_name_or_tmp_path.endswith(".ftp.tmp"):
                     raise SomeError(u"缓存文件名称格式有误，请核对后再试")
