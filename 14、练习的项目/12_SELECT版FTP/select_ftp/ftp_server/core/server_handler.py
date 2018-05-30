@@ -20,7 +20,7 @@ class SelectSocketServer(object):
         self.server.setblocking(False)
         self.inputs = [self.server]
         self.outputs = []
-        self.queue_dict = {}
+        self.message_queues = {}
         self.client_cache = {}
 
     def run(self):
@@ -30,31 +30,41 @@ class SelectSocketServer(object):
                 if r is self.server:
                     conn, address = r.accept()
                     self.inputs.append(conn)
-                    self.queue_dict[conn] = queue.Queue()
+                    self.message_queues[conn] = queue.Queue()
                 else:
                     if r not in self.client_cache:
                         ftp = FtpHandler(r)
                         self.client_cache[r] = ftp
+                    # 每次请求的数据包data都会小于2048，接收到后放到队列中暂不处理，服务端只有等客户端发出recv请求时才处理
                     data = r.recv(2048)
-                    self.queue_dict[r].put(data)
-                    self.outputs.append(r)
+                    if data:
+                        self.message_queues[r].put(data)
+                        self.outputs.append(r)
+                    else:
+                        # 无数据表示，客户端已断开连接
+                        if r in self.outputs:
+                            self.outputs.remove(r)
+                        self.inputs.remove(r)
+                        r.close()
+                        del self.message_queues[r]
 
             for w in writeable:
-                data = self.queue_dict[w].get()
-                ftp = self.client_cache[w]
-                cmd, rsp = ftp.get_response(data)
-                if cmd == "get" and rsp[0].code == 201:
-                    ftp.sendall_data(*rsp)
+                # 当客户端发出recv请求时，才取出队列中数据，进行处理，并发送响应数据
+                try:
+                    data = self.message_queues[w].get_nowait()
+                except queue.Empty:
+                    print(u"队列为空，无请求数据")
                     self.outputs.remove(w)
                 else:
-                    ftp.sendall_data(rsp)
+                    ftp = self.client_cache[w]
+                    cmd, rsp = ftp.get_response(data)
+                    ftp.sendall_data(cmd, rsp)
                     self.outputs.remove(w)
 
             for e in exceptional:
                 if e in self.outputs:
                     self.outputs.remove(e)
-                    self.inputs.remove(e)
-                del self.queue_dict[e]
+                del self.message_queues[e]
                 del self.client_cache[e]
 
 
@@ -86,7 +96,7 @@ class FtpHandler(object):
 
     @staticmethod
     def split_request_data(data):
-        """拆分请求数据"""
+        """根据分隔符拆分请求数据"""
         data_list = data.split(Separator)
         if len(data_list) == 1:
             json_string = data_list[0]
@@ -145,20 +155,16 @@ class FtpHandler(object):
             kwargs.update(ret_dict)
         return cmd, kwargs
 
-    @staticmethod
-    def save_data_and_check_is_ok(file_path, file_size, file_data):
-        """接收文件数据，暂时存放在临时文件内"""
-        with open(file_path, "wb") as f:
-            f.write(file_data)
-            f.flush()
-        size = os.path.getsize(file_path)
-        if size == file_size:
-            return True
-
-    def sendall_data(self, response, file_data=None):
-        response_body = json.dumps(response.__dict__).encode("utf-8")
-        if file_data:
+    def sendall_data(self, cmd, response):
+        """发送请求响应数据，对get下载文件的请求单独请求"""
+        if cmd == "get" and response.code == 201:
+            file_path = response.data.pop("file_path")
+            tmp_size = response.data.pop("tmp_size")
+            with open(file_path, "rb") as f:
+                f.seek(tmp_size)
+                file_data = f.read(1024)
+            response_body = json.dumps(response.__dict__).encode("utf-8")
             b_str = response_body + Separator + file_data
         else:
-            b_str = response_body
+            b_str = json.dumps(response.__dict__).encode("utf-8")
         self.request.sendall(b_str)

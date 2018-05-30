@@ -36,9 +36,9 @@ class FtpClient(object):
         except AttributeError:
             code = 400
             msg = "命令执行失败，{0}不是系统支持的命令".format(cmd)
-        # except TypeError:
-        #     code = 400
-        #     msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
+        except TypeError:
+            code = 400
+            msg = "{0}命令使用有误，请使用'help {1}'命令查询语法详细".format(cmd, cmd)
 
         return ResponseData(code, msg)
 
@@ -46,6 +46,13 @@ class FtpClient(object):
     def md5_password(password):
         """密码通过MD5加密"""
         return hashlib.md5(password.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def validate_md5(file_path, md5_code):
+        # md5校验失败
+        file_md5 = get_file_md5(file_path)
+        if file_md5 != md5_code:
+            raise SomeError("md5校验失败,传输接收数据有错误")
 
     def _get_response(self, req_data):
         """不带文件内容的请求，发送请求，并获取响应"""
@@ -56,7 +63,7 @@ class FtpClient(object):
         return rsp
 
     def _put_file_response(self, req_data, file_path):
-        """对于上传文件的请求
+        """对于上传文件的请求，分数据块发送，以时间戳作为服务端缓存文件的标示
         """
         file_size = os.path.getsize(file_path)
         send_size = 0
@@ -94,7 +101,7 @@ class FtpClient(object):
         return json_string, file_data
 
     def _get_file_response(self, req_data, directory):
-        """对于下载文件的请求，接收两次请求数据，第一次获得服务端文件名称，第二次连续接收文件数据直到完成
+        """对于下载文件的请求，分多次发送请求下载数据，每次请求下载一部分内容
         """
         file_name = req_data["kwargs"]["file_name"]
         tmp_file_path = os.path.join(directory, "{0}.ftp.tmp".format(file_name))
@@ -105,45 +112,29 @@ class FtpClient(object):
             data = self.client.recv(2048)
             rsp, file_data = self.split_get_file_response_data(data)
             rsp = json.loads(rsp.decode("utf-8"))
+
             if rsp["code"] == 201:
+                # code=201表示未完成文件下载，更新本地临时文件内容后继续发送请求
                 with open(tmp_file_path, "ab") as f:
                     f.write(file_data)
                     f.flush()
-                # 更新缓存文件大小，告诉服务端seek的位置
+                # 更新缓存文件大小，告诉服务端从何处开始发送文件数据，标示seek的位置
                 receive_size = int(req_data["kwargs"]["tmp_size"]) + len(file_data)
                 req_data["kwargs"]["tmp_size"] = receive_size
+                # 打印下载进度条
                 file_size = rsp["data"]["file_size"]
                 show_process(file_size, receive_size)
             elif rsp["code"] == 200:
-                file_md5 = rsp["data"]["file_md5"]
-                # 接收文件数据完成后，将临时文件名变更为原文件名称
+                # code=200表示文件数据下载完成，后续将临时文件名变更为原文件名和md5内容一致性校验
                 file_path = os.path.join(directory, file_name)
                 shutil.move(tmp_file_path, file_path)
-                # md5校验失败
-                file_md51 = get_file_md5(file_path)
-                if file_md51 != file_md5:
-                    raise SomeError("md5校验失败,传输接收数据有错误")
+                # 校验MD5文件内容一致性
+                print(rsp)
+                file_md5 = rsp["data"]["file_md5"]
+                self.validate_md5(file_path, file_md5)
                 return rsp
             else:
                 return rsp
-
-    def _receive_file_data(self, file_size, seek_size, file_path):
-        """根据文件size大小接收文件数据"""
-        receive_size = seek_size
-        f = open(file_path, "ab")
-        while True:
-            diff = file_size - receive_size
-            if diff > 1024:
-                data = self.client.recv(1024)
-            elif diff == 0:
-                f.close()
-                break
-            else:
-                data = self.client.recv(diff)
-            f.write(data)
-            f.flush()
-            receive_size += len(data)
-            show_process(file_size, receive_size)
 
     def register(self, username, password1, password2, quota):
         """注册用户"""

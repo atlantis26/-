@@ -240,7 +240,7 @@ class FtpCommands(object):
         try:
             self.is_authenticated()
             file_name = kwargs.get("file_name")
-            seek_size = kwargs.get("tmp_size", 0)
+            tmp_size = kwargs.get("tmp_size", 0)
             file_path = os.path.join(self.current_path, file_name)
             if not os.path.exists(file_path):
                 raise SomeError(u"文件名{0}不存在".format(file_name))
@@ -249,14 +249,12 @@ class FtpCommands(object):
             data = {"file_md5": file_md5,
                     "file_size": file_size,
                     "file_name": file_name}
-            # 每次只发出一部分文件内容数据块
-            with open(file_path, "rb") as f:
-                f.seek(seek_size)
-                file_data = f.read(1024)
-            if file_data:
+            if tmp_size < file_size:
                 code = 201
                 msg = u"文件还未完成下载"
-                return ResponseData(code, msg, data), file_data
+                data["file_path"] = file_path
+                data["tmp_size"] = tmp_size
+                return ResponseData(code, msg, data)
             else:
                 code = 200
                 msg = u"下载文件成功"
