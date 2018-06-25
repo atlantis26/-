@@ -1,20 +1,11 @@
 # coding:utf-8
 
 
-class Host(object):
-    def __init__(self, host_id, ip, port, username, password):
-        self.host_id = host_id
-        self.ip = ip
-        self.port = port
-        self.username = username
-        self.password = password
-
-
-class HostGroup(object):
-    def __init__(self, group_id, group_name, host_id_list):
-        self.group_id = group_id
-        self.group_name = group_name
-        self.host_id_list = host_id_list
+class Task(object):
+    def __init__(self, task_id, queue, data):
+        self.task_id = task_id
+        self.queue = queue
+        self.data = data
 
 
 class ResponseData(object):

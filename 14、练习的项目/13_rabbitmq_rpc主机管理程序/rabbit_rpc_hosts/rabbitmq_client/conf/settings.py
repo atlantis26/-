@@ -2,6 +2,18 @@
 from logging.config import dictConfig
 import os
 
+# RabbitMq队列相关配置
+MQ_HOST = "127.0.0.1"
+MQ_PORT = 5672
+MQ_VIRTUAL_HOST = "/"
+MQ_USER = "alex"
+MQ_PASSWORD = "123456"
+
+# 支持的多mq server
+MQ_QUEUE_DICT = {"192.168.2.100": "rpc_queue_1",
+                 "192.168.2.105": "rpc_queue_2"
+                 }
+
 # 项目根目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

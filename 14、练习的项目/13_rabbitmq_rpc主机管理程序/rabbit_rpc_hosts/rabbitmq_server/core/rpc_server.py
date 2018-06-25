@@ -2,6 +2,7 @@
 from core.handler import run_cmd
 from conf.settings import MQ_QUEUE_NAME
 import pika
+import json
 
 
 class RpcServer(object):
@@ -24,7 +25,8 @@ class RpcServer(object):
         :return: 请求返回结果，命令的执行结果
         """
         commands = commands.decode(encoding="utf-8")
-        return run_cmd(task_id, commands)
+        rsp = run_cmd(task_id, commands)
+        return json.dumps(rsp.__dict__)
 
     def get_response(self, ch, method, props, body):
         """
