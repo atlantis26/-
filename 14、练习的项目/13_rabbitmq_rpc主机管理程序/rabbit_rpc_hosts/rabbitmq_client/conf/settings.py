@@ -11,9 +11,9 @@ if not os.path.exists(DB_Host):
     os.mkdir(DB_Host)
 
 # 主机组目录，存储主机组信息的相关配置
-DB_HostGroups = os.path.join(BASE_DIR, "db", "HostGroups")
-if not os.path.exists(DB_HostGroups):
-    os.mkdir(DB_HostGroups)
+DB_Task = os.path.join(BASE_DIR, "db", "Task")
+if not os.path.exists(DB_Task):
+    os.mkdir(DB_Task)
 
 # log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
@@ -59,14 +59,6 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard',
         },
-        'host_group': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'host_group.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
         'rpc': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -84,11 +76,6 @@ LOGGING = {
         },
         'fabric.host': {
             'handlers': ['host'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'fabric.host_group': {
-            'handlers': ['host_group'],
             'level': 'DEBUG',
             'propagate': False,
         },
