@@ -8,25 +8,10 @@ MQ_PORT = 5672
 MQ_VIRTUAL_HOST = "/"
 MQ_USER = "alex"
 MQ_PASSWORD = "123456"
-CLIENT_QUEUE = "client_queue_1"
-
-# 支持的多mq server
-MQ_QUEUE_DICT = {"127.0.0.1": "rpc_queue_1",
-                 "192.168.2.105": "rpc_queue_2"
-                 }
+MQ_QUEUE_NAME = "server_queue_1"
 
 # 项目根目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# 主机目录，存储主机信息的相关配置
-DB_Host = os.path.join(BASE_DIR, "db", "Host")
-if not os.path.exists(DB_Host):
-    os.mkdir(DB_Host)
-
-# 主机组目录，存储主机组信息的相关配置
-DB_Task = os.path.join(BASE_DIR, "db", "Task")
-if not os.path.exists(DB_Task):
-    os.mkdir(DB_Task)
 
 # log日志相关设置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
@@ -64,36 +49,23 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'host': {
+        'task': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'host.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'rpc': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'rpc.log'),
+            'filename': os.path.join(LOG_DIR, 'task.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'fabric': {
+        'rabbit_mq': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False
         },
-        'fabric.host': {
-            'handlers': ['host'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'fabric.rpc': {
-            'handlers': ['rpc'],
+        'rabbit_mq.task': {
+            'handlers': ['task'],
             'level': 'DEBUG',
             'propagate': False,
         },

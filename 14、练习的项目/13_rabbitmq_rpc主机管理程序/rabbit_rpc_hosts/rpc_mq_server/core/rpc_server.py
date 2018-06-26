@@ -1,8 +1,11 @@
 # _*_coding:utf-8_*_
-from core.handler import run_cmd
 from conf.settings import MQ_QUEUE_NAME
+from core.handler import run_cmd
 import pika
 import json
+import logging
+
+logger = logging.getLogger("rabbit_mq.task")
 
 
 class RpcServer(object):
@@ -14,7 +17,7 @@ class RpcServer(object):
                                                                        virtual_host=virtual_host,
                                                                        credentials=credentials))
         self.channel = connection.channel()
-        self.channel.queue_declare(queue=MQ_QUEUE_NAME, durable=True)
+        self.channel.queue_declare(queue=MQ_QUEUE_NAME, durable=True)  # durable=True队列持久化
         self.channel.basic_consume(self.get_response, queue=MQ_QUEUE_NAME)
 
     @staticmethod
@@ -25,7 +28,9 @@ class RpcServer(object):
         :return: 请求返回结果，命令的执行结果
         """
         commands = commands.decode(encoding="utf-8")
+        logger.debug("开始执行命令{0}".format(commands))
         rsp = run_cmd(task_id, commands)
+        logger.debug("执行命令{0}结束，结果：{1}".format(commands, rsp.__dict__))
         return json.dumps(rsp.__dict__)
 
     def get_response(self, ch, method, props, body):
@@ -43,13 +48,12 @@ class RpcServer(object):
         # 请求返回数据通过客户端指定的队列（reply_to）返回给客户端
         response_queue = props.reply_to
 
-        print(task_id, body)
-        # 执行推送消息
+        # 执行推送消息，delivery_mode=2消息持久化
         ch.basic_publish(exchange='',
                          routing_key=response_queue,
                          properties=pika.BasicProperties(correlation_id=task_id, delivery_mode=2),
                          body=response)
-        # 确认推送的消息被处理完成ack
+        # 如果发送端设置了需ack验证，则处理完消息后，要发送确认信息。否则，不会移除队列中的该条消息
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def run(self):

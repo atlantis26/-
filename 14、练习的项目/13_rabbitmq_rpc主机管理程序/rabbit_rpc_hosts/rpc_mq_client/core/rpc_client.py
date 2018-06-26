@@ -1,6 +1,7 @@
 # coding:utf-8
 from conf.settings import MQ_QUEUE_DICT, CLIENT_QUEUE
 from core.db_handler import save_task, load_task
+from core.orm import SomeError
 import pika
 import uuid
 
@@ -60,13 +61,13 @@ class RpcClient(object):
 
     def response(self, task_id):
         """
-        用于执行返回任务执行结果的任务，不新生成队列，而是使用之前创建任务时，生成的随机队列
+         向客户端的返回消息队列发送非阻塞式消息请求,如果有消息则在callback函数中，将获取的消息body，写入到数据库文件和返回
         """
-        # 随机排它队列，不能手动声明，即不能声明名称为“amq.*”的队列，已存在的队列直接使用就可以了
-        # self.channel.queue_declare(queue=random_queue)
-        data = load_task(task_id)["data"]
-        if data is None:
-            # 非阻塞发送请求,如果有请求返回结果，则在callback函数中，将返回结果，写入到数据库文件
-            self.connection.process_data_events()
+        try:
             data = load_task(task_id)["data"]
+            if data is None:
+                self.connection.process_data_events()
+                data = load_task(task_id)["data"]
+        except SomeError as e:
+            data = str(e)
         return data
