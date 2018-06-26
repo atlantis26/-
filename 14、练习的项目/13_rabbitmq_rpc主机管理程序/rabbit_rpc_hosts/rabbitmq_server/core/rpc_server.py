@@ -14,7 +14,7 @@ class RpcServer(object):
                                                                        virtual_host=virtual_host,
                                                                        credentials=credentials))
         self.channel = connection.channel()
-        self.channel.queue_declare(queue=MQ_QUEUE_NAME)
+        self.channel.queue_declare(queue=MQ_QUEUE_NAME, durable=True)
         self.channel.basic_consume(self.get_response, queue=MQ_QUEUE_NAME)
 
     @staticmethod
@@ -47,7 +47,7 @@ class RpcServer(object):
         # 执行推送消息
         ch.basic_publish(exchange='',
                          routing_key=response_queue,
-                         properties=pika.BasicProperties(correlation_id=task_id),
+                         properties=pika.BasicProperties(correlation_id=task_id, delivery_mode=2),
                          body=response)
         # 确认推送的消息被处理完成ack
         ch.basic_ack(delivery_tag=method.delivery_tag)
