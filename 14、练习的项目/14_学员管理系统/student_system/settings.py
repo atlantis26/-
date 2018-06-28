@@ -6,7 +6,7 @@ import os
 # 初始化配置
 config = configparser.ConfigParser()
 ROOT = os.path.dirname(os.path.abspath(__file__))
-CONF_FILE = os.path.join(ROOT, "conf/storage_sdk.conf")
+CONF_FILE = os.path.join(ROOT, "conf/server_properties.conf")
 config.read(CONF_FILE)
 
 # 数据库设置
