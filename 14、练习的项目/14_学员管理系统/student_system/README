@@ -14,14 +14,18 @@
     3、一个学员可以同时属于多个班级，就像报了Linux的同时也可以报名Python一样， 所以提交作业时需先选择班级，再选择具体上课的节数
     4、学员可以查看自己的班级成绩排名
 
-student
-    id,name,qq
-    1   zhangsan  3292801923
-    2   lisi      3874788477
+user
+    id,username,password,qq, role_id
+    1   zhangsan  123456    3292801923   2
+    2   lisi      123456    3874788477   2
+    3   alex      123456    657588588    1
+    4   admin     admin     null         3
 
-teacher
-    id,name
-    1 alex
+role
+    id, role
+    1    teacher
+    2    student
+    3    administrator
 
 course
     id,name
