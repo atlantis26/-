@@ -1,11 +1,12 @@
 # coding:utf-8
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship
-from model import BaseModel
+from db import BaseModel
 from datetime import datetime
 
+
 # 创建多对多关系表，在数据中实体存在的表，在另外两个主表中一个表中删除某条数据，关系标中对应的关系也会自动删除
-user_m2m_class = Table("user_m2m_class", BaseModel,
+user_m2m_class = Table("user_m2m_class", BaseModel.metadata,
                        Column("class_id", Integer, ForeignKey("class.id")),
                        Column("user_id", Integer, ForeignKey("user.id")))
 
@@ -49,9 +50,9 @@ class CourseRecord(BaseModel):
     __tablename__ = "course_record"
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime, default=datetime.now())
-    teacher_id = Column(Integer, Column(Integer, ForeignKey('user.id')))
+    teacher_id = Column(Integer, ForeignKey('user.id'))
     # 外键ForeignKey的设置，以class_id为例，只是方便反向的查询班级class表时，查询返回对象包含了关联的class_record
-    class_id = Column(Integer, Column(Integer, ForeignKey('class.id')))
+    class_id = Column(Integer, ForeignKey('class.id'))
     description = Column(String(100))
 
     def __repr__(self):
