@@ -21,15 +21,16 @@ class User(BaseModel):
     role_id = Column(Integer, ForeignKey('role.id'))
     # relationship用于快捷查询关联的所有班级对象，不会在表中建立实体对象
     class1 = relationship('Class', secondary=user_m2m_class, backref='user')
+    role = relationship('Role', backref='user')
 
     def __repr__(self):
         return self.name
 
 
-class Rule(BaseModel):
+class Role(BaseModel):
     __tablename__ = "role"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    role = Column(String(50))
+    name = Column(String(50))
 
     def __repr__(self):
         return self.name

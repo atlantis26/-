@@ -10,6 +10,6 @@ class ResponseData(object):
             self.data = data
 
 
-class SomeError(Exception):
+class SomethingError(Exception):
     """自定义异常错误"""
     pass
