@@ -5,6 +5,7 @@ from sqlalchemy import and_
 from core.utils import SomethingError
 from datetime import datetime
 
+
 class DatabaseHandler(object):
     @staticmethod
     def create_user(name, account, password, qq, role_id):
@@ -130,6 +131,17 @@ class DatabaseHandler(object):
             session.query(Class).filter(Class.id == class_id).update({"name": name})
             session.commit()
             session.close()
+        except Exception as e:
+            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def query_class_by_name(name):
+        try:
+            session = DBSession()
+            class1 = session.query(Class).filter(Class.name == name).first()
+            session.commit()
+            session.close()
+            return class1
         except Exception as e:
             raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
 

@@ -118,3 +118,107 @@ class Handler(object):
         logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)
+
+    @staticmethod
+    def create_class(name):
+        try:
+            if DatabaseHandler.query_class_by_name(name):
+                raise SomethingError(u"班级名称'{0}'已被使用".format(name))
+            class1 = DatabaseHandler.create_class(name)
+            code = 200
+            msg = "创建班级成功"
+            data = class1.__dict__
+        except SomethingError as e:
+            code = 400
+            msg = "创建班级失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def delete_class(class_id):
+        try:
+            if not DatabaseHandler.query_class_by_id(class_id):
+                raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
+            DatabaseHandler.delete_class_by_id(class_id)
+            code = 200
+            msg = "删除班级成功"
+        except SomethingError as e:
+            code = 400
+            msg = "删除班级失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    @staticmethod
+    def update_class(class_id, name):
+        try:
+            if not DatabaseHandler.query_class_by_id(class_id):
+                raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
+            class1 = DatabaseHandler.query_class_by_name(name)
+            if class1 and class1.name != name:
+                raise SomethingError(u"名称'{0}'已被使用".format(name))
+            DatabaseHandler.delete_class_by_id(class_id)
+            code = 200
+            msg = "修改班级成功"
+        except SomethingError as e:
+            code = 400
+            msg = "修改班级失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    @staticmethod
+    def query_class(class_id):
+        try:
+            class1 = DatabaseHandler.query_class_by_id(class_id)
+            if not class1:
+                raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
+            code = 200
+            msg = "查询班级详情成功"
+            data = class1.__dict__
+        except SomethingError as e:
+            code = 400
+            msg = "查询班级详情失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def list_class():
+        try:
+            class_list = DatabaseHandler.list_class()
+            code = 200
+            msg = "查询班级列表成功"
+            data = class_list
+        except SomethingError as e:
+            code = 400
+            msg = "查询班级列表失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def create_record(username, class_id, description):
+        try:
+            teacher = DatabaseHandler.query_user_by_account(username)
+            if not teacher:
+                raise SomethingError(u"账号为'{0}'的教师不存在".format(username))
+            class1 = DatabaseHandler.query_class_by_id(class_id)
+            student_list = class1.User
+            if class1:
+                raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
+            record = DatabaseHandler.create_record(teacher.id, class_id, description)
+            # 同时为班级的所有学生创建本次课程的家庭作业
+
+            code = 200
+            msg = "创建上课记录成功"
+        except SomethingError as e:
+            code = 400
+            msg = "创建上课记录失败，详情：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
