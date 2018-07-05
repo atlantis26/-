@@ -1,7 +1,5 @@
 # coding:utf-8
-import logging
-
-logger = logging.getLogger("system.student_view")
+from core.handler import Handler
 
 
 class StudentView(object):
@@ -14,7 +12,8 @@ class StudentView(object):
         while True:
             msg = u"""-------------------------------------------------
                 您可以选择如下操作：
-                    <\033[36;1m1\033[0m>.提交作业                   <\033[36;1m2\033[0m>.查询分数
+                    <\033[36;1m1\033[0m>.我的个人信息               <\033[36;1m1\033[0m>.我的作业
+                    <\033[36;1m2\033[0m>.提交作业
                     <\033[36;1m3\033[0m>.查看成绩排名               <\033[36;1m4\033[0m>.退出视图
             """
             print(msg)
@@ -28,8 +27,16 @@ class StudentView(object):
                 continue
             actions[num]()
 
-    def commit_homework(self, student_id, record_id, file_path):
-        pass
+    @staticmethod
+    def commit_homework():
+        class_id = input(u"请输入班级的id:").strip()
+        record_id = input(u"请输入上课课程id:").strip()
+        file_path = input(u"请输入您的课程作业上传文件:").strip()
+        rsp = Handler.commit_homework(class_id, record_id, file_path)
+        if rsp.code == 200:
+            print(rsp.data)
+        print(rsp.msg)
+
 
     def query_score(self):
         pass

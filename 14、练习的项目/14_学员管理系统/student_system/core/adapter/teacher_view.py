@@ -15,8 +15,8 @@ class TeacherView(object):
                     <\033[36;1m1\033[0m>.创建班级                   <\033[36;1m2\033[0m>.删除班级
                     <\033[36;1m3\033[0m>.修改班级                   <\033[36;1m4\033[0m>.查询班级信息
                     <\033[36;1m5\033[0m>.查询班级列表               <\033[36;1m6\033[0m>.创建上课记录  
-                    <\033[36;1m7\033[0m>.根据上课记录查询作业       <\033[36;1m8\033[0m>.修改学员作业成绩  
-                    <\033[36;1m9\033[0m>.退出视图
+                    <\033[36;1m7\033[0m>.查询上课记录列表            <\033[36;1m8\033[0m>.根据上课记录查询作业
+                    <\033[36;1m9\033[0m>.修改学员作业成绩            <\033[36;1m10\033[0m>.退出视图
             """
             print(msg)
             actions = {"1": self.create_class,
@@ -25,9 +25,10 @@ class TeacherView(object):
                        "4": self.query_class,
                        "5": self.list_class,
                        "6": self.create_record,
-                       "7": self.list_homework_by_record_id,
-                       "8": self.update_homework_score,
-                       "9": self.logout}
+                       "7": self.list_record,
+                       "8": self.list_homework_by_record_id,
+                       "9": self.update_homework_score,
+                       "10": self.logout}
             num = input(u"请输入您选择的操作的编号:").strip()
             if num not in actions:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
@@ -76,19 +77,37 @@ class TeacherView(object):
 
     def create_record(self):
         class_id = input(u"请输入班级的id：").strip()
-        description = input(u"请输入课程信息：").strip()
+        description = input(u"请输入课程|作业的描述信息：").strip()
         rsp = Handler.create_record(self.username, class_id, description)
         if rsp.code == 200:
             print(rsp.data)
         print(rsp.msg)
 
+    @staticmethod
+    def list_record():
+        rsp = Handler.list_record()
+        if rsp.code == 200:
+            print(rsp.data)
+        print(rsp.msg)
 
-    def list_homework_by_record_id(self):
-        pass
+    @staticmethod
+    def list_homework_by_record_id():
+        record_id = input(u"请输入上课记录的id：").strip()
+        rsp = Handler.list_homework_by_record_id(record_id)
+        if rsp.code == 200:
+            print(rsp.data)
+        print(rsp.msg)
 
-    def update_homework_score(self):
-        pass
+    @staticmethod
+    def update_homework_score():
+        homework_id = input(u"请输入学员的家庭作业记录id：").strip()
+        score = eval(input(u"请输入该作业的成绩分数：").strip())
+        rsp = Handler.update_homework_score(homework_id, score)
+        if rsp.code == 200:
+            print(rsp.data)
+        print(rsp.msg)
 
-    def logout(self):
-        pass
-
+    @staticmethod
+    def logout():
+        print("欢迎您再次访问本系统，再见")
+        exit()

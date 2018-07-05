@@ -207,18 +207,102 @@ class Handler(object):
             teacher = DatabaseHandler.query_user_by_account(username)
             if not teacher:
                 raise SomethingError(u"账号为'{0}'的教师不存在".format(username))
-            class1 = DatabaseHandler.query_class_by_id(class_id)
-            student_list = class1.User
-            if class1:
+            if DatabaseHandler.query_class_by_id(class_id):
                 raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
             record = DatabaseHandler.create_record(teacher.id, class_id, description)
-            # 同时为班级的所有学生创建本次课程的家庭作业
-
+            # 上课班级所属的同学添加家庭作业记录
+            student_list = DatabaseHandler.list_students_by_class_id(class_id)
+            for student_id in student_list:
+                DatabaseHandler.create_homework(record.id, student_id, score=None, homework_path=None)
             code = 200
             msg = "创建上课记录成功"
+            data = record.__dict__
         except SomethingError as e:
             code = 400
             msg = "创建上课记录失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def list_record():
+        try:
+            record_list = DatabaseHandler.list_record()
+            code = 200
+            msg = "查询上课记录列表成功"
+            data = record_list
+        except SomethingError as e:
+            code = 400
+            msg = "查询上课记录列表失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def create_homework(record_id, student_id, score=None, homework_path=None):
+        try:
+            if not DatabaseHandler.query_record_by_id(record_id):
+                raise SomethingError(u"上课记录id'{0}'不存在".format(record_id))
+            if not DatabaseHandler.query_user_by_id(student_id):
+                raise SomethingError(u"学员id'{0}'不存在".format(student_id))
+            homework = DatabaseHandler.create_homework(record_id, student_id, score, homework_path)
+
+            code = 200
+            msg = "创建学员家庭作业记录成功"
+            data = homework.__dict__
+        except SomethingError as e:
+            code = 400
+            msg = "创建学员家庭作业记录失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def list_homework_by_record_id(record_id):
+        try:
+            home_list = DatabaseHandler.list_homework_by_record_id(record_id)
+            code = 200
+            msg = "查询上课作业列表成功"
+            data = home_list.__dict__
+        except SomethingError as e:
+            code = 400
+            msg = "查询上课作业列表失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def update_homework_score(homework_id, score):
+        try:
+            if not (isinstance(score, (int, float)) and 0 <= score <= 100):
+                raise SomethingError("成绩分数必须是大于等于0小于等于100的数值")
+            home_list = DatabaseHandler.update_homework_score(homework_id, score)
+            code = 200
+            msg = "更新学员作业成绩成功"
+            data = home_list.__dict__
+        except SomethingError as e:
+            code = 400
+            msg = "更新学员作业成绩失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def commit_homework(student_id, class_id, record_id, file_path):
+        try:
+            homework = DatabaseHandler.query_homework(student_id, record_id)
+            DatabaseHandler.update_homework_path(homework.student_id, file_path)
+            code = 200
+            msg = "上传作业文件成功"
+        except SomethingError as e:
+            code = 400
+            msg = "上传作业文件失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
+

@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from db.orm import User, Role, Class, CourseRecord, Homework
+from db.orm import User, Role, Class, CourseRecord, Homework, user_m2m_class
 from db import DBSession
 from sqlalchemy import and_
 from core.utils import SomethingError
@@ -28,7 +28,6 @@ class DatabaseHandler(object):
                 user = session.query(User).filter(and_(User.account == account, User.password == password)).first()
             else:
                 user = session.query(User).filter(User.account == account).first()
-            session.commit()
             session.close()
             return user
         except Exception as e:
@@ -39,7 +38,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             user = session.query(User).filter(User.qq == qq).first()
-            session.commit()
             session.close()
             return user
         except Exception as e:
@@ -50,7 +48,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             user = session.query(User).filter(User.user_id == user_id).first()
-            session.commit()
             session.close()
             return user
         except Exception as e:
@@ -61,7 +58,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             role = session.query(Role).filter(Role.name == name).first()
-            session.commit()
             session.close()
             return role
         except Exception as e:
@@ -95,7 +91,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             user_list = session.query(User).all()
-            session.commit()
             session.close()
             return [user.__dict__ for user in user_list]
         except Exception as e:
@@ -139,7 +134,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             class1 = session.query(Class).filter(Class.name == name).first()
-            session.commit()
             session.close()
             return class1
         except Exception as e:
@@ -150,7 +144,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             class1 = session.query(Class).filter(Class.id == class_id).first()
-            session.commit()
             session.close()
             return class1
         except Exception as e:
@@ -161,7 +154,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             class_list = session.query(Class).all()
-            session.commit()
             session.close()
             return [class1.__dict__ for class1 in class_list]
         except Exception as e:
@@ -187,7 +179,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             record = session.query(CourseRecord).filter(CourseRecord.id == record_id).first()
-            session.commit()
             session.close()
             return record
         except Exception as e:
@@ -198,7 +189,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             record_list = session.query(CourseRecord).all()
-            session.commit()
             session.close()
             return [record.__dict__ for record in record_list]
         except Exception as e:
@@ -224,6 +214,7 @@ class DatabaseHandler(object):
             session = DBSession()
             session.query(Homework).filter(Homework.id == homework_id).update(
                 {"homework_path": homework_path})
+            session.commit()
             session.close()
         except Exception as e:
             raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
@@ -242,7 +233,6 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             homework_list = session.query(Homework).filter(Homework.student_id == student_id).all()
-            session.commit()
             session.close()
             return [homework.__dict__ for homework in homework_list]
         except Exception as e:
@@ -253,8 +243,29 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             homework_list = session.query(Homework).filter(Homework.record_id == record_id).all()
-            session.commit()
             session.close()
             return [homework.__dict__ for homework in homework_list]
+        except Exception as e:
+            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_students_by_class_id(class_id):
+        try:
+            session = DBSession()
+            lst = session.query(user_m2m_class).filter(user_m2m_class.class_id == class_id).all()
+            student_list = [st.user_id for st in lst]
+            session.close()
+            return student_list
+        except Exception as e:
+            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def query_homework(student_id, record_id):
+        try:
+            session = DBSession()
+            homework = session.query(Homework).filter(and_(Homework.student_id == student_id,
+                                                         Homework.record_id == record_id)).first()
+            session.close()
+            return homework
         except Exception as e:
             raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
