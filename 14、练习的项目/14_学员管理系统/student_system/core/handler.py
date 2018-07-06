@@ -306,3 +306,33 @@ class Handler(object):
 
         return ResponseData(code, msg)
 
+    @staticmethod
+    def show_student_info(student_id):
+        try:
+            student = DatabaseHandler.query_user_by_id(student_id)
+            class_list = DatabaseHandler.list_class_by_student_id(student_id)
+            code = 200
+            msg = "查询学员个人信息成功"
+            data = [student, class_list]
+        except SomethingError as e:
+            code = 400
+            msg = "查询学员个人信息失败，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def show_student_homework(student_id):
+        try:
+            homework_list = DatabaseHandler.list_homework_by_student_id(student_id)
+            code = 200
+            msg = "查询学员个人家庭作业信息成功"
+            data = homework_list
+        except SomethingError as e:
+            code = 400
+            msg = "查询学员个人家庭作业信息成功，详情：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)

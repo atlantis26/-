@@ -264,8 +264,19 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             homework = session.query(Homework).filter(and_(Homework.student_id == student_id,
-                                                         Homework.record_id == record_id)).first()
+                                                           Homework.record_id == record_id)).first()
             session.close()
             return homework
+        except Exception as e:
+            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_class_by_student_id(student_id):
+        try:
+            session = DBSession()
+            lst = session.query(user_m2m_class).filter(user_m2m_class.student_id == student_id).all()
+            class_list = [cla.__dict__ for cla in lst]
+            session.close()
+            return class_list
         except Exception as e:
             raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
