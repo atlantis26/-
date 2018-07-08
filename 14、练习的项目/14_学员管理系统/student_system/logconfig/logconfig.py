@@ -1,7 +1,4 @@
-# An extended version of the log_settings module from zamboni:
-# https://github.com/jbalogh/zamboni/blob/master/log_settings.py
-
-from __future__ import absolute_import
+# coding:utf-8
 from logging.config import dictConfig
 import os.path
 
@@ -45,75 +42,23 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'devices': {
+        'view_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'devices.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'volumes': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'volumes.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'users': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'users.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'mappings': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'mappings.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'http': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'http.log'),
+            'filename': os.path.join(LOG_DIR, 'view_handler.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'tornado': {
+        'system': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False
         },
-        'tornado.devices': {
-            'handlers': ['devices'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'tornado.volumes': {
-            'handlers': ['volumes'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'tornado.users': {
-            'handlers': ['users'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'tornado.mappings': {
-            'handlers': ['mappings'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'tornado.http': {
-            'handlers': ['http'],
+        'system.view_handler': {
+            'handlers': ['view_handler'],
             'level': 'DEBUG',
             'propagate': False,
         },

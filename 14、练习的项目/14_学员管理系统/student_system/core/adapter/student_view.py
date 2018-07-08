@@ -40,19 +40,22 @@ class StudentView(object):
     def student_homework():
         pass
 
-    @staticmethod
-    def commit_homework():
+    def commit_homework(self):
         class_id = input(u"请输入班级的id:").strip()
         record_id = input(u"请输入上课课程id:").strip()
         file_path = input(u"请输入您的课程作业上传文件:").strip()
-        rsp = Handler.commit_homework(class_id, record_id, file_path)
+        rsp = Handler.commit_homework(self.username, class_id, record_id, file_path)
         if rsp.code == 200:
             print(rsp.data)
         print(rsp.msg)
 
     def query_score_and_rank(self):
-        pass
-
+        class_id = input(u"请输入班级的id:").strip()
+        record_id = input(u"请输入上课课程id:").strip()
+        rsp = Handler.commit_homework(self.username, class_id, record_id)
+        if rsp.code == 200:
+            print(rsp.data)
+        print(rsp.msg)
 
     def logout(self):
         pass

@@ -11,6 +11,9 @@ class HybridViews(object):
         self.role_tag = role_tag
         self.adapter_views()
 
+    def role_tag(self):
+        pass
+    
     def adapter_views(self):
         try:
             views = {"student": StudentView,

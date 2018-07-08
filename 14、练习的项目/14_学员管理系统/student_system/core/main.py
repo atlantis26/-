@@ -1,6 +1,6 @@
 #  coding:utf-8
 from core.adapter import HybridViews
-from core.handler import login
+from core.handler import Handler
 
 
 def console():
@@ -14,9 +14,9 @@ def console():
         if num == "1":
             username = input(u"请输入账号：").strip()
             password = input(u"请输入密码：").strip()
-            rsp = login(username, password)
+            rsp = Handler.login(username, password)
             if rsp.code == 200:
-                role_tag = rsp["data"]["role"]["name"]
+                role_tag = rsp.data["role_id"]
                 HybridViews(username, role_tag)
             else:
                 print(rsp.msg)
