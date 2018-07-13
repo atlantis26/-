@@ -15,7 +15,8 @@ class Handler(object):
                 raise SomethingError(u"用户账号或密码错误")
             code = 200
             msg = "登录成功"
-            data = user.__dict__
+            data = user.to_dict()
+            print(111, data)
         except SomethingError as e:
             code = 400
             msg = "登录失败，详情：{0}".format(str(e))
@@ -40,7 +41,7 @@ class Handler(object):
             user = DatabaseHandler.create_user(name, account, password1, qq, role_id)
             code = 200
             msg = "创建用户成功"
-            data = user.__dict__
+            data = user.to_dict()
         except SomethingError as e:
             code = 400
             msg = "创建用户失败，详情：{0}".format(str(e))
@@ -95,7 +96,7 @@ class Handler(object):
                 raise SomethingError(u"id为'{0}'的用户不存在".format(user_id))
             code = 200
             msg = "查询用户详情成功"
-            data = user.__dict__
+            data = user.to_dict()
         except SomethingError as e:
             code = 400
             msg = "查询用户详情失败，详情：{0}".format(str(e))
@@ -127,7 +128,7 @@ class Handler(object):
             class1 = DatabaseHandler.create_class(name)
             code = 200
             msg = "创建班级成功"
-            data = class1.__dict__
+            data = class1.to_dict()
         except SomethingError as e:
             code = 400
             msg = "创建班级失败，详情：{0}".format(str(e))
@@ -177,7 +178,7 @@ class Handler(object):
                 raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
             code = 200
             msg = "查询班级详情成功"
-            data = class1.__dict__
+            data = class1.to_dict()
         except SomethingError as e:
             code = 400
             msg = "查询班级详情失败，详情：{0}".format(str(e))
@@ -216,7 +217,7 @@ class Handler(object):
                 DatabaseHandler.create_homework(record.id, student_id, score=None, homework_path=None)
             code = 200
             msg = "创建上课记录成功"
-            data = record.__dict__
+            data = record.to_dict()
         except SomethingError as e:
             code = 400
             msg = "创建上课记录失败，详情：{0}".format(str(e))
@@ -251,7 +252,7 @@ class Handler(object):
 
             code = 200
             msg = "创建学员家庭作业记录成功"
-            data = homework.__dict__
+            data = homework.to_dict()
         except SomethingError as e:
             code = 400
             msg = "创建学员家庭作业记录失败，详情：{0}".format(str(e))
@@ -266,7 +267,7 @@ class Handler(object):
             home_list = DatabaseHandler.list_homework_by_record_id(record_id)
             code = 200
             msg = "查询上课作业列表成功"
-            data = home_list.__dict__
+            data = home_list.to_dict()
         except SomethingError as e:
             code = 400
             msg = "查询上课作业列表失败，详情：{0}".format(str(e))
@@ -283,7 +284,7 @@ class Handler(object):
             home_list = DatabaseHandler.update_homework_score(homework_id, score)
             code = 200
             msg = "更新学员作业成绩成功"
-            data = home_list.__dict__
+            data = home_list.to_dict()
         except SomethingError as e:
             code = 400
             msg = "更新学员作业成绩失败，详情：{0}".format(str(e))

@@ -5,9 +5,11 @@ from core.handler import Handler
 class MangerView(object):
     def __init__(self, username):
         self.username = username
+        self.console()
 
     def console(self):
         """ 学员视图主页"""
+        print(u"欢迎管理员‘{0}’登录本学员管理系统...".format(self.username))
         while True:
             msg = u"""-------------------------------------------------
                 您可以选择如下操作：
@@ -36,7 +38,7 @@ class MangerView(object):
         password1 = input(u"请输入登录密码：").strip()
         password2 = input(u"请重复输入登录密码：").strip()
         qq = input(u"请输入用户qq账号：").strip()
-        role = input(u"请输入设置用户角色类型（学员|教师|管理员）：").strip()
+        role = input(u"请输入设置用户角色类型（student、teacher或者manager）：").strip()
         rsp = Handler.create_user(name, account, password1, password2, qq, role)
         if rsp.code == 200:
             print(rsp.data)
@@ -46,8 +48,6 @@ class MangerView(object):
     def delete_user():
         user_id = input(u"请输入用户id：").strip()
         rsp = Handler.delete_user(user_id)
-        if rsp.code == 200:
-            print(rsp.data)
         print(rsp.msg)
 
     @staticmethod
@@ -56,10 +56,8 @@ class MangerView(object):
         name = input(u"请输入用户姓名：").strip()
         password = input(u"请输入登录密码：").strip()
         qq = input(u"请输入用户qq账号：").strip()
-        role = input(u"请输入设置用户角色类型（学员|教师|管理员）：").strip()
+        role = input(u"请输入设置用户角色类型（student、teacher或者manager）：").strip()
         rsp = Handler.update_user(user_id, name, password, qq, role)
-        if rsp.code == 200:
-            print(rsp.data)
         print(rsp.msg)
 
     @staticmethod
@@ -74,7 +72,8 @@ class MangerView(object):
     def list_user():
         rsp = Handler.list_user()
         if rsp.code == 200:
-            print(rsp.data)
+            for user in rsp.data:
+                print(user)
         print(rsp.msg)
 
     @staticmethod

@@ -6,9 +6,11 @@ class TeacherView(object):
     """讲师视图"""
     def __init__(self, username):
         self.username = username
+        self.console()
 
     def console(self):
         """ 教师视图主页"""
+        print(u"欢迎教师‘{0}’登录本学员管理系统...".format(self.username))
         while True:
             msg = u"""-------------------------------------------------
                 您可以选择如下操作：
@@ -16,7 +18,8 @@ class TeacherView(object):
                     <\033[36;1m3\033[0m>.修改班级                   <\033[36;1m4\033[0m>.查询班级信息
                     <\033[36;1m5\033[0m>.查询班级列表               <\033[36;1m6\033[0m>.创建上课记录  
                     <\033[36;1m7\033[0m>.查询上课记录列表            <\033[36;1m8\033[0m>.根据上课记录查询作业
-                    <\033[36;1m9\033[0m>.修改学员作业成绩            <\033[36;1m10\033[0m>.退出视图
+                    <\033[36;1m9\033[0m>.修改学员作业成绩            <\033[36;1m10\033[0m>.根据qq号添加班级学员
+                    <\033[36;1m11\033[0m>.退出视图
             """
             print(msg)
             actions = {"1": self.create_class,
@@ -47,8 +50,6 @@ class TeacherView(object):
     def delete_class():
         class_id = input(u"请输入班级的id：").strip()
         rsp = Handler.delete_class(class_id)
-        if rsp.code == 200:
-            print(rsp.data)
         print(rsp.msg)
 
     @staticmethod
@@ -56,8 +57,6 @@ class TeacherView(object):
         class_id = input(u"请输入班级的id：").strip()
         name = input(u"请输入班级名称：").strip()
         rsp = Handler.update_class(class_id, name)
-        if rsp.code == 200:
-            print(rsp.data)
         print(rsp.msg)
 
     @staticmethod
@@ -72,7 +71,8 @@ class TeacherView(object):
     def list_class():
         rsp = Handler.list_class()
         if rsp.code == 200:
-            print(rsp.data)
+            for cl in rsp.data:
+                print(cl)
         print(rsp.msg)
 
     def create_record(self):
@@ -87,7 +87,8 @@ class TeacherView(object):
     def list_record():
         rsp = Handler.list_record()
         if rsp.code == 200:
-            print(rsp.data)
+            for r in rsp.data:
+                print(r)
         print(rsp.msg)
 
     @staticmethod
@@ -95,7 +96,8 @@ class TeacherView(object):
         record_id = input(u"请输入上课记录的id：").strip()
         rsp = Handler.list_homework_by_record_id(record_id)
         if rsp.code == 200:
-            print(rsp.data)
+            for h in rsp.data:
+                print(h)
         print(rsp.msg)
 
     @staticmethod
@@ -103,8 +105,13 @@ class TeacherView(object):
         homework_id = input(u"请输入学员的家庭作业记录id：").strip()
         score = eval(input(u"请输入该作业的成绩分数：").strip())
         rsp = Handler.update_homework_score(homework_id, score)
-        if rsp.code == 200:
-            print(rsp.data)
+        print(rsp.msg)
+
+    @staticmethod
+    def class_add_student_by_qq():
+        class_id = input(u"请输入班级的id：").strip()
+        qq = input(u"请输入注册学员的qq号：").strip()
+        rsp = Handler.class_add_student_by_qq(class_id, qq)
         print(rsp.msg)
 
     @staticmethod

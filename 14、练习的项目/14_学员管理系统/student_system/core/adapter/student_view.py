@@ -6,9 +6,11 @@ class StudentView(object):
     """学员视图"""
     def __init__(self, username):
         self.username = username
+        self.console()
 
     def console(self):
         """ 学员视图主页"""
+        print(u"欢迎学员‘{0}’登录本学员管理系统...".format(self.username))
         while True:
             msg = u"""-------------------------------------------------
                 您可以选择如下操作：
