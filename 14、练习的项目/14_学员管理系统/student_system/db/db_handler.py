@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from db.orm import User, Role, Class, CourseRecord, Homework, user_m2m_class
+from db.orm import User, Role, Class, CourseRecord, Homework, UserM2MClass
 from db import DBSession
 from sqlalchemy import and_
 from core.utils import SomethingError
@@ -18,7 +18,7 @@ class DatabaseHandler(object):
             session.close()
             return user
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_user_by_account(account, password=None):
@@ -31,7 +31,7 @@ class DatabaseHandler(object):
             session.close()
             return user
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_user_by_qq(qq):
@@ -41,7 +41,7 @@ class DatabaseHandler(object):
             session.close()
             return user
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_user_by_id(user_id):
@@ -51,7 +51,7 @@ class DatabaseHandler(object):
             session.close()
             return user
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_role_by_name(name):
@@ -61,7 +61,7 @@ class DatabaseHandler(object):
             session.close()
             return role
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_role_by_id(role_id):
@@ -71,7 +71,7 @@ class DatabaseHandler(object):
             session.close()
             return role
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def delete_user_by_id(user_id):
@@ -81,7 +81,7 @@ class DatabaseHandler(object):
             session.commit()
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def update_user(user_id, name, password, qq, role_id):
@@ -94,7 +94,7 @@ class DatabaseHandler(object):
             session.commit()
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_user():
@@ -104,7 +104,7 @@ class DatabaseHandler(object):
             session.close()
             return [user.to_dict() for user in user_list]
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def create_class(name):
@@ -117,7 +117,7 @@ class DatabaseHandler(object):
             session.close()
             return class1
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def delete_class_by_id(class_id):
@@ -127,7 +127,7 @@ class DatabaseHandler(object):
             session.commit()
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def update_class(class_id, name):
@@ -137,7 +137,7 @@ class DatabaseHandler(object):
             session.commit()
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_class_by_name(name):
@@ -147,7 +147,7 @@ class DatabaseHandler(object):
             session.close()
             return class1
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_class_by_id(class_id):
@@ -157,7 +157,7 @@ class DatabaseHandler(object):
             session.close()
             return class1
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_class():
@@ -167,7 +167,7 @@ class DatabaseHandler(object):
             session.close()
             return [class1.to_dict() for class1 in class_list]
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def create_record(teacher_id, class_id, description):
@@ -177,12 +177,12 @@ class DatabaseHandler(object):
             record = CourseRecord(date=date, teacher_id=teacher_id, class_id=class_id, description=description)
             session.add(record)
             session.commit()
-            record = session.query(CourseRecord).filter(and_(CourseRecord.date == date,
+            record = session.query(CourseRecord).filter(and_(CourseRecord.description == description,
                                                              CourseRecord.class_id == class_id)).first()
             session.close()
             return record
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_record_by_id(record_id):
@@ -192,7 +192,7 @@ class DatabaseHandler(object):
             session.close()
             return record
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_record():
@@ -202,7 +202,7 @@ class DatabaseHandler(object):
             session.close()
             return [record.to_dict() for record in record_list]
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def create_homework(record_id, student_id, score, homework_path):
@@ -216,7 +216,7 @@ class DatabaseHandler(object):
             session.close()
             return homework
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def update_homework_path(homework_id, homework_path):
@@ -227,7 +227,7 @@ class DatabaseHandler(object):
             session.commit()
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def update_homework_score(homework_id, score):
@@ -236,7 +236,7 @@ class DatabaseHandler(object):
             session.query(Homework).filter(Homework.id == homework_id).update({"score": score})
             session.close()
         except Exception as e:
-            raise SomethingError("操作数据库时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_homework_by_student_id(student_id):
@@ -246,7 +246,7 @@ class DatabaseHandler(object):
             session.close()
             return [homework.to_dict() for homework in homework_list]
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_homework_by_record_id(record_id):
@@ -256,18 +256,18 @@ class DatabaseHandler(object):
             session.close()
             return [homework.to_dict() for homework in homework_list]
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_students_by_class_id(class_id):
         try:
             session = DBSession()
-            lst = session.query(user_m2m_class).filter(user_m2m_class.class_id == class_id).all()
+            lst = session.query(UserM2MClass).filter(UserM2MClass.class_id == class_id).all()
             student_list = [st.user_id for st in lst]
             session.close()
             return student_list
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def query_homework(student_id, record_id):
@@ -278,15 +278,26 @@ class DatabaseHandler(object):
             session.close()
             return homework
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
     def list_class_by_student_id(student_id):
         try:
             session = DBSession()
-            lst = session.query(user_m2m_class).filter(user_m2m_class.student_id == student_id).all()
+            lst = session.query(UserM2MClass).filter(UserM2MClass.user_id == student_id).all()
             class_list = [cla.to_dict() for cla in lst]
             session.close()
             return class_list
         except Exception as e:
-            raise SomethingError("操作数据库时时出错，详情：{0}".format(str(e)))
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def create_mapping_class_user(class_id, user_id):
+        try:
+            session = DBSession()
+            mapping1 = UserM2MClass(class_id=class_id, user_id=user_id)
+            session.add(mapping1)
+            session.commit()
+            session.close()
+        except Exception as e:
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))

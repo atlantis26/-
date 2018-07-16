@@ -1,14 +1,17 @@
 # coding:utf-8
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from db import BaseModel
 
 
-# 创建多对多关系表，在数据中实体存在的表，在另外两个主表中一个表中删除某条数据，关系标中对应的关系也会自动删除
-user_m2m_class = Table("user_m2m_class", BaseModel.metadata,
-                       Column("id", Integer, primary_key=True, autoincrement=True),
-                       Column("class_id", Integer, ForeignKey("class.id")),
-                       Column("user_id", Integer, ForeignKey("user.id")))
+class UserM2MClass(BaseModel):
+    __tablename__ = "user_m2m_class"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    class_id = Column(Integer, ForeignKey('class.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+    def __repr__(self):
+        return self.name
 
 
 class User(BaseModel):
@@ -20,7 +23,7 @@ class User(BaseModel):
     qq = Column(String(50))
     role_id = Column(Integer, ForeignKey('role.id'))
     # relationship用于快捷查询关联的所有班级对象，不会在表中建立实体对象
-    class1 = relationship('Class', secondary=user_m2m_class, backref='user')
+    # class1 = relationship('Class', backref='user')
     role = relationship('Role', backref='user')
 
     def __repr__(self):
@@ -41,7 +44,7 @@ class Class(BaseModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50))
     # relationship的设置，用于正向快捷查询关联的所有学生\老师对象，不会在表中建立实体对象
-    student = relationship('User', secondary=user_m2m_class, backref='class')
+    # student = relationship('User', backref='class')
 
     def __repr__(self):
         return self.name
@@ -57,7 +60,7 @@ class CourseRecord(BaseModel):
     description = Column(String(100))
 
     def __repr__(self):
-        return u"开课记录, 日期:{0}，内容描述:{1}".format(self.datetime, self.description)
+        return u"开课记录, 日期:{0}，内容描述:{1}".format(self.date, self.description)
 
 
 class Homework(BaseModel):
@@ -67,3 +70,6 @@ class Homework(BaseModel):
     record_id = Column(Integer, ForeignKey('course_record.id'))
     student_id = Column(Integer, ForeignKey('user.id'))
     score = Column(Integer, default=None)
+
+    def __repr__(self):
+        return self.homework_path

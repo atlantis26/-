@@ -14,12 +14,11 @@ class Handler(object):
             if not user:
                 raise SomethingError(u"用户账号或密码错误")
             code = 200
-            msg = "登录成功"
+            msg = u"登录成功"
             data = user.to_dict()
-            print(111, data)
         except SomethingError as e:
             code = 400
-            msg = "登录失败，详情：{0}".format(str(e))
+            msg = u"登录失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -29,7 +28,7 @@ class Handler(object):
     def create_user(name, account, password1, password2, qq, role_name):
         try:
             if password1 != password2:
-                raise SomethingError("创建用户失败，两次密码不一致")
+                raise SomethingError(u"创建用户失败，两次密码不一致")
             role = DatabaseHandler.query_role_by_name(role_name)
             if not role:
                 raise SomethingError(u"用户角色类型‘{0}’不存在".format(role_name))
@@ -40,11 +39,11 @@ class Handler(object):
                 raise SomethingError(u"用户账号名'{0}'已被使用".format(account))
             user = DatabaseHandler.create_user(name, account, password1, qq, role_id)
             code = 200
-            msg = "创建用户成功"
+            msg = u"创建用户成功"
             data = user.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "创建用户失败，详情：{0}".format(str(e))
+            msg = u"创建用户失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -57,10 +56,10 @@ class Handler(object):
                 raise SomethingError(u"id为'{0}'的用户不存在".format(user_id))
             DatabaseHandler.delete_user_by_id(user_id)
             code = 200
-            msg = "删除用户成功"
+            msg = u"删除用户成功"
         except SomethingError as e:
             code = 400
-            msg = "删除用户失败，详情：{0}".format(str(e))
+            msg = u"删除用户失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -80,10 +79,10 @@ class Handler(object):
                     raise SomethingError(u"qq号'{0}'已被使用".format(qq))
             DatabaseHandler.update_user(user_id, name, password, qq, role_id)
             code = 200
-            msg = "更新用户成功"
+            msg = u"更新用户成功"
         except SomethingError as e:
             code = 400
-            msg = "更新用户失败，详情：{0}".format(str(e))
+            msg = u"更新用户失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -95,11 +94,11 @@ class Handler(object):
             if not user:
                 raise SomethingError(u"id为'{0}'的用户不存在".format(user_id))
             code = 200
-            msg = "查询用户详情成功"
+            msg = u"查询用户详情成功"
             data = user.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "查询用户详情失败，详情：{0}".format(str(e))
+            msg = u"查询用户详情失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -110,11 +109,11 @@ class Handler(object):
         try:
             user_list = DatabaseHandler.list_user()
             code = 200
-            msg = "查询用户列表成功"
+            msg = u"查询用户列表成功"
             data = user_list
         except SomethingError as e:
             code = 400
-            msg = "查询用户列表失败，详情：{0}".format(str(e))
+            msg = u"查询用户列表失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -127,11 +126,11 @@ class Handler(object):
                 raise SomethingError(u"班级名称'{0}'已被使用".format(name))
             class1 = DatabaseHandler.create_class(name)
             code = 200
-            msg = "创建班级成功"
+            msg = u"创建班级成功"
             data = class1.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "创建班级失败，详情：{0}".format(str(e))
+            msg = u"创建班级失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -144,10 +143,10 @@ class Handler(object):
                 raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
             DatabaseHandler.delete_class_by_id(class_id)
             code = 200
-            msg = "删除班级成功"
+            msg = u"删除班级成功"
         except SomethingError as e:
             code = 400
-            msg = "删除班级失败，详情：{0}".format(str(e))
+            msg = u"删除班级失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -162,10 +161,10 @@ class Handler(object):
                 raise SomethingError(u"名称'{0}'已被使用".format(name))
             DatabaseHandler.delete_class_by_id(class_id)
             code = 200
-            msg = "修改班级成功"
+            msg = u"修改班级成功"
         except SomethingError as e:
             code = 400
-            msg = "修改班级失败，详情：{0}".format(str(e))
+            msg = u"修改班级失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
@@ -177,11 +176,11 @@ class Handler(object):
             if not class1:
                 raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
             code = 200
-            msg = "查询班级详情成功"
+            msg = u"查询班级详情成功"
             data = class1.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "查询班级详情失败，详情：{0}".format(str(e))
+            msg = u"查询班级详情失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -192,11 +191,11 @@ class Handler(object):
         try:
             class_list = DatabaseHandler.list_class()
             code = 200
-            msg = "查询班级列表成功"
+            msg = u"查询班级列表成功"
             data = class_list
         except SomethingError as e:
             code = 400
-            msg = "查询班级列表失败，详情：{0}".format(str(e))
+            msg = u"查询班级列表失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -208,7 +207,7 @@ class Handler(object):
             teacher = DatabaseHandler.query_user_by_account(username)
             if not teacher:
                 raise SomethingError(u"账号为'{0}'的教师不存在".format(username))
-            if DatabaseHandler.query_class_by_id(class_id):
+            if not DatabaseHandler.query_class_by_id(class_id):
                 raise SomethingError(u"id为'{0}'的班级不存在".format(class_id))
             record = DatabaseHandler.create_record(teacher.id, class_id, description)
             # 上课班级所属的同学添加家庭作业记录
@@ -216,11 +215,11 @@ class Handler(object):
             for student_id in student_list:
                 DatabaseHandler.create_homework(record.id, student_id, score=None, homework_path=None)
             code = 200
-            msg = "创建上课记录成功"
+            msg = u"创建上课记录成功"
             data = record.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "创建上课记录失败，详情：{0}".format(str(e))
+            msg = u"创建上课记录失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -231,11 +230,11 @@ class Handler(object):
         try:
             record_list = DatabaseHandler.list_record()
             code = 200
-            msg = "查询上课记录列表成功"
+            msg = u"查询上课记录列表成功"
             data = record_list
         except SomethingError as e:
             code = 400
-            msg = "查询上课记录列表失败，详情：{0}".format(str(e))
+            msg = u"查询上课记录列表失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -251,11 +250,11 @@ class Handler(object):
             homework = DatabaseHandler.create_homework(record_id, student_id, score, homework_path)
 
             code = 200
-            msg = "创建学员家庭作业记录成功"
+            msg = u"创建学员家庭作业记录成功"
             data = homework.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "创建学员家庭作业记录失败，详情：{0}".format(str(e))
+            msg = u"创建学员家庭作业记录失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -266,11 +265,11 @@ class Handler(object):
         try:
             home_list = DatabaseHandler.list_homework_by_record_id(record_id)
             code = 200
-            msg = "查询上课作业列表成功"
-            data = home_list.to_dict()
+            msg = u"查询上课作业列表成功"
+            data = home_list
         except SomethingError as e:
             code = 400
-            msg = "查询上课作业列表失败，详情：{0}".format(str(e))
+            msg = u"查询上课作业列表失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
@@ -280,60 +279,81 @@ class Handler(object):
     def update_homework_score(homework_id, score):
         try:
             if not (isinstance(score, (int, float)) and 0 <= score <= 100):
-                raise SomethingError("成绩分数必须是大于等于0小于等于100的数值")
+                raise SomethingError(u"成绩分数必须是大于等于0小于等于100的数值")
             home_list = DatabaseHandler.update_homework_score(homework_id, score)
             code = 200
-            msg = "更新学员作业成绩成功"
+            msg = u"更新学员作业成绩成功"
             data = home_list.to_dict()
         except SomethingError as e:
             code = 400
-            msg = "更新学员作业成绩失败，详情：{0}".format(str(e))
+            msg = u"更新学员作业成绩失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)
 
     @staticmethod
-    def commit_homework(student_id, class_id, record_id, file_path):
+    def commit_homework(username, class_id, record_id, file_path):
         try:
-            homework = DatabaseHandler.query_homework(student_id, record_id)
+            student = DatabaseHandler.query_user_by_account(username)
+            homework = DatabaseHandler.query_homework(student.id, record_id)
             DatabaseHandler.update_homework_path(homework.student_id, file_path)
             code = 200
-            msg = "上传作业文件成功"
+            msg = u"上传作业文件成功"
         except SomethingError as e:
             code = 400
-            msg = "上传作业文件失败，详情：{0}".format(str(e))
+            msg = u"上传作业文件失败，详情：{0}".format(str(e))
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
 
     @staticmethod
-    def show_student_info(student_id):
+    def show_student_info(username):
         try:
-            student = DatabaseHandler.query_user_by_id(student_id)
-            class_list = DatabaseHandler.list_class_by_student_id(student_id)
+            student = DatabaseHandler.query_user_by_account(username)
+            class_list = DatabaseHandler.list_class_by_student_id(student.id)
+            class_list = [DatabaseHandler.query_class_by_id(c["class_id"]).name for c in class_list]
             code = 200
-            msg = "查询学员个人信息成功"
-            data = [student, class_list]
+            msg = u"查询学员个人信息成功"
+            data = [student.to_dict(), class_list]
         except SomethingError as e:
             code = 400
-            msg = "查询学员个人信息失败，详情：{0}".format(str(e))
+            msg = u"查询学员个人信息失败，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)
 
     @staticmethod
-    def show_student_homework(student_id):
+    def show_student_homework(username):
         try:
-            homework_list = DatabaseHandler.list_homework_by_student_id(student_id)
+            student = DatabaseHandler.query_user_by_account(username)
+            homework_list = DatabaseHandler.list_homework_by_student_id(student.id)
+            record_lst = [DatabaseHandler.query_record_by_id(h["record_id"]) for h in homework_list]
             code = 200
-            msg = "查询学员个人家庭作业信息成功"
-            data = homework_list
+            msg = u"查询学员个人家庭作业信息成功"
+            data = record_lst
         except SomethingError as e:
             code = 400
-            msg = "查询学员个人家庭作业信息成功，详情：{0}".format(str(e))
+            msg = u"查询学员个人家庭作业信息成功，详情：{0}".format(str(e))
             data = None
         logger.debug(ResponseData(code, msg, data).__dict__)
 
         return ResponseData(code, msg, data)
+
+    @staticmethod
+    def class_add_student_by_qq(class_id, qq):
+        try:
+            user = DatabaseHandler.query_user_by_qq(qq)
+            if not user:
+                raise SomethingError(u"本系统不存在此qq号‘{0}’".format(qq))
+            DatabaseHandler.create_mapping_class_user(class_id, user.id)
+            code = 200
+            msg = u"通过qq号添加学员到班级成功"
+        except SomethingError as e:
+            code = 400
+            msg = u"通过qq号添加学员到班级失败，详情：{0}".format(str(e))
+
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)

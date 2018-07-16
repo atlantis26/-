@@ -34,21 +34,21 @@ class StudentView(object):
         rsp = Handler.show_student_info(self.username)
         if rsp.code == 200:
             student, class1 = rsp.data
-            print("您的个人信息：{0}".format(student))
-            print("您报名的班级：{0}".format(class1))
+            print(u"您的个人信息：{0}".format(student))
+            print(u"您报名的班级：{0}".format(class1))
         print(rsp.msg)
 
-    @staticmethod
-    def student_homework():
-        pass
+    def student_homework(self):
+        rsp = Handler.show_student_homework(self.username)
+        if rsp.code == 200:
+            print(u"您的个人课程作业：{0}".format(rsp.data))
+        print(rsp.msg)
 
     def commit_homework(self):
         class_id = input(u"请输入班级的id:").strip()
         record_id = input(u"请输入上课课程id:").strip()
         file_path = input(u"请输入您的课程作业上传文件:").strip()
         rsp = Handler.commit_homework(self.username, class_id, record_id, file_path)
-        if rsp.code == 200:
-            print(rsp.data)
         print(rsp.msg)
 
     def query_score_and_rank(self):

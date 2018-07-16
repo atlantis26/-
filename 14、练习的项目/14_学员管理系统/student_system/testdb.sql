@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50720
 File Encoding         : 65001
 
-Date: 2018-07-13 18:02:08
+Date: 2018-07-16 17:16:08
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -47,11 +47,12 @@ CREATE TABLE `course_record` (
   KEY `class_id` (`class_id`),
   CONSTRAINT `course_record_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`id`),
   CONSTRAINT `course_record_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of course_record
 -- ----------------------------
+INSERT INTO `course_record` VALUES ('2', '2018-07-16 16:23:03', '2', '1', '课程1，作业：计算1+1');
 
 -- ----------------------------
 -- Table structure for homework
@@ -68,11 +69,13 @@ CREATE TABLE `homework` (
   KEY `student_id` (`student_id`),
   CONSTRAINT `homework_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `course_record` (`id`),
   CONSTRAINT `homework_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of homework
 -- ----------------------------
+INSERT INTO `homework` VALUES ('1', null, '2', '3', null);
+INSERT INTO `homework` VALUES ('2', null, '2', '4', null);
 
 -- ----------------------------
 -- Table structure for role
@@ -128,9 +131,15 @@ CREATE TABLE `user_m2m_class` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_m2m_class_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
   CONSTRAINT `user_m2m_class_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user_m2m_class
 -- ----------------------------
+INSERT INTO `user_m2m_class` VALUES ('1', '1', '3');
+INSERT INTO `user_m2m_class` VALUES ('2', '1', '4');
+INSERT INTO `user_m2m_class` VALUES ('3', '2', '4');
+INSERT INTO `user_m2m_class` VALUES ('4', '3', '4');
+INSERT INTO `user_m2m_class` VALUES ('5', '2', '3');
+INSERT INTO `user_m2m_class` VALUES ('6', '3', '3');
 SET FOREIGN_KEY_CHECKS=1;

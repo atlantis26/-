@@ -31,7 +31,8 @@ class TeacherView(object):
                        "7": self.list_record,
                        "8": self.list_homework_by_record_id,
                        "9": self.update_homework_score,
-                       "10": self.logout}
+                       "10": self.class_add_student_by_qq,
+                       "11": self.logout}
             num = input(u"请输入您选择的操作的编号:").strip()
             if num not in actions:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
@@ -116,5 +117,5 @@ class TeacherView(object):
 
     @staticmethod
     def logout():
-        print("欢迎您再次访问本系统，再见")
+        print(u"欢迎您再次访问本系统，再见")
         exit()
