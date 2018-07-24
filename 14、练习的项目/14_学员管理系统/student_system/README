@@ -1,56 +1,11 @@
-用户角色，讲师＼学员， 用户登陆后根据角色不同，能做的事情不同，分别如下
+用户角色，讲师＼学员， 用户登陆后根据角色不同，能做的事情不同，分别如下：
 讲师视图
-　　1、管理班级，可创建班级，根据学员qq号把学员加入班级(qq唯一性校验)
-        create_class, add_student_to_class_by_qq
-　　2、可创建指定班级的上课纪录，注意一节上课纪录对应多条学员的上课纪录， 即每节课都有整班学员上， 为了纪录每位学员的学习成绩，
-        create_class_recrod
-    3、需在创建每节上课纪录是，同时为这个班的每位学员创建一条上课纪录，为学员批改成绩， 一条一条的手动修改成绩
-        update_class_recrod_by_student
+            创建班级 、删除班级、修改班级、查询班级信息、查询班级列表、创建上课记录
+            查询上课记录列表 、根据上课记录查询作业、修改学员作业成绩、根据qq号添加班级学员、退出视图
 学员视图
-    1、提交作业
-    commit_homework(student_id, class_id,class_record_id)
-    2、查看作业成绩
-    show_homework_record(student_id, class_recod_id)
-    3、一个学员可以同时属于多个班级，就像报了Linux的同时也可以报名Python一样， 所以提交作业时需先选择班级，再选择具体上课的节数
-    4、学员可以查看自己的班级成绩排名
+            我的个人信息、我的作业、提交作业、查看成绩与排名、退出视图
 
-user
-    id,username,password,qq, role_id
-    1   zhangsan  123456    3292801923   2
-    2   lisi      123456    3874788477   2
-    3   alex      123456    657588588    1
-    4   admin     admin     null         3
-
-role
-    id, role
-    1    teacher
-    2    student
-    3    administrator
-
-course
-    id,name
-    1, python
-    2, java
-
-class
-    id,name
-    1 python班
-    2 java班
-
-class_record
-    id,class_id, course, homework
-    1   1     网络编程课程1    网络编程作业1
-    2   1     网络编程课程2    网络编程作业2
-    3   2     java基础课程1    java基础联系题1
-
-homework
-    id student_id   file_path
-    1   2            /home_work/1.zip
-
-student_homework
-    id,record_id,student_id, score
-    1    1           1              88
-    2    1           2              65
-    3    2           1              100
+管理员视图
+            创建用户、删除用户、修改用户、查询用户详情、查询用户列表、退出系统
 
 

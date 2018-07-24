@@ -44,17 +44,16 @@ class StudentView(object):
             print(u"您的个人课程作业：{0}".format(rsp.data))
         print(rsp.msg)
 
-    def commit_homework(self):
-        class_id = input(u"请输入班级的id:").strip()
-        record_id = input(u"请输入上课课程id:").strip()
-        file_path = input(u"请输入您的课程作业上传文件:").strip()
-        rsp = Handler.commit_homework(self.username, class_id, record_id, file_path)
+    @staticmethod
+    def commit_homework():
+        homework_id = input(u"请输入课程作业的id编号:").strip()
+        file_path = input(u"请输入课程作业的上传文件路径:").strip()
+        rsp = Handler.commit_homework(homework_id, file_path)
         print(rsp.msg)
 
     def query_score_and_rank(self):
-        class_id = input(u"请输入班级的id:").strip()
-        record_id = input(u"请输入上课课程id:").strip()
-        rsp = Handler.commit_homework(self.username, class_id, record_id)
+        homework_id = input(u"请输入课程作业的id编号:").strip()
+        rsp = Handler.query_score_and_rank(self.username, homework_id)
         if rsp.code == 200:
             print(rsp.data)
         print(rsp.msg)

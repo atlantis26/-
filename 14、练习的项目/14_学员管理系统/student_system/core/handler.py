@@ -293,11 +293,9 @@ class Handler(object):
         return ResponseData(code, msg, data)
 
     @staticmethod
-    def commit_homework(username, class_id, record_id, file_path):
+    def commit_homework(homework_id, file_path):
         try:
-            student = DatabaseHandler.query_user_by_account(username)
-            homework = DatabaseHandler.query_homework(student.id, record_id)
-            DatabaseHandler.update_homework_path(homework.student_id, file_path)
+            DatabaseHandler.update_homework_path(homework_id, file_path)
             code = 200
             msg = u"上传作业文件成功"
         except SomethingError as e:
@@ -329,10 +327,13 @@ class Handler(object):
         try:
             student = DatabaseHandler.query_user_by_account(username)
             homework_list = DatabaseHandler.list_homework_by_student_id(student.id)
-            record_lst = [DatabaseHandler.query_record_by_id(h["record_id"]) for h in homework_list]
+            ret_list = list()
+            for homework in homework_list:
+                record = DatabaseHandler.query_record_by_id(homework["record_id"]).to_dict()
+                ret_list.append({u"课程记录": record, "课程作业：": homework})
             code = 200
             msg = u"查询学员个人家庭作业信息成功"
-            data = record_lst
+            data = ret_list
         except SomethingError as e:
             code = 400
             msg = u"查询学员个人家庭作业信息成功，详情：{0}".format(str(e))
@@ -357,3 +358,23 @@ class Handler(object):
         logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
+
+    @staticmethod
+    def query_score_and_rank(username, homework_id):
+        try:
+            homework_list = DatabaseHandler.list_homework()
+            for h in homework_list:
+                if int(homework_id) == h.id:
+                    user_score = h.score
+
+
+            code = 200
+            msg = u"通过qq号添加学员到班级成功"
+        except SomethingError as e:
+            code = 400
+            msg = u"通过qq号添加学员到班级失败，详情：{0}".format(str(e))
+
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+

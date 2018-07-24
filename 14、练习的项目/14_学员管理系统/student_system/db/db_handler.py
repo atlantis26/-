@@ -281,6 +281,26 @@ class DatabaseHandler(object):
             raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
 
     @staticmethod
+    def query_homework_by_id(homework_id):
+        try:
+            session = DBSession()
+            homework = session.query(Homework).filter(Homework.id == homework_id).first()
+            session.close()
+            return homework
+        except Exception as e:
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_homework():
+        try:
+            session = DBSession()
+            homework_list = session.query(Homework).filter(Homework.score is not None).all()
+            session.close()
+            return homework_list
+        except Exception as e:
+            raise SomethingError(u"操作数据库时时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
     def list_class_by_student_id(student_id):
         try:
             session = DBSession()
