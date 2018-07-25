@@ -16,19 +16,22 @@ class StudentView(object):
                 您可以选择如下操作：
                     <\033[36;1m1\033[0m>.我的个人信息               <\033[36;1m2\033[0m>.我的作业
                     <\033[36;1m3\033[0m>.提交作业                   <\033[36;1m4\033[0m>.查看成绩与排名
-                    <\033[36;1m5\033[0m>.退出视图
+                    <\033[36;1m5\033[0m>.注销登出
             """
             print(msg)
             actions = {"1": self.student_info,
                        "2": self.student_homework,
                        "3": self.commit_homework,
-                       "4": self.query_score_and_rank,
-                       "5": self.logout}
+                       "4": self.query_score_and_rank}
             num = input(u"请输入您选择的操作的编号:").strip()
-            if num not in actions:
+            if num in actions:
+                actions[num]()
+            elif num == "5":
+                print("您已注销登录，欢迎您再次访问本系统")
+                break
+            else:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
                 continue
-            actions[num]()
 
     def student_info(self):
         rsp = Handler.show_student_info(self.username)
@@ -57,6 +60,3 @@ class StudentView(object):
         if rsp.code == 200:
             print(rsp.data)
         print(rsp.msg)
-
-    def logout(self):
-        pass

@@ -15,7 +15,7 @@ class MangerView(object):
                 您可以选择如下操作：
                     <\033[36;1m1\033[0m>.创建用户                   <\033[36;1m2\033[0m>.删除用户
                     <\033[36;1m3\033[0m>.修改用户                   <\033[36;1m4\033[0m>.查询用户详情
-                    <\033[36;1m5\033[0m>.查询用户列表               <\033[36;1m6\033[0m>.退出系统
+                    <\033[36;1m5\033[0m>.查询用户列表               <\033[36;1m6\033[0m>.注销登出
                     
             """
             print(msg)
@@ -23,13 +23,16 @@ class MangerView(object):
                        "2": self.delete_user,
                        "3": self.modify_user,
                        "4": self.detail_user,
-                       "5": self.list_user,
-                       "6": self.logout}
+                       "5": self.list_user}
             num = input(u"请输入您选择的操作的编号:").strip()
-            if num not in actions:
+            if num in actions:
+                actions[num]()
+            elif num == "6":
+                print("您已注销登录，欢迎您再次访问本系统")
+                break
+            else:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
                 continue
-            actions[num]()
 
     @staticmethod
     def create_user():
@@ -76,7 +79,3 @@ class MangerView(object):
                 print(user)
         print(rsp.msg)
 
-    @staticmethod
-    def logout():
-        print("欢迎您再次访问本系统，再见")
-        exit()

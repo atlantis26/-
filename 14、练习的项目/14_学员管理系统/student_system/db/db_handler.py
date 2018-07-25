@@ -11,7 +11,7 @@ class DatabaseHandler(object):
     def create_user(name, account, password, qq, role_id):
         try:
             session = DBSession()
-            user = User(name=name, account=account, password=password, qq=qq, role_id=role_id)
+            user = User(name=name, account=account, password=password, qq=qq, role_id=int(role_id))
             session.add(user)
             session.commit()
             user = session.query(User).filter(User.account == account).first()
@@ -47,7 +47,7 @@ class DatabaseHandler(object):
     def query_user_by_id(user_id):
         try:
             session = DBSession()
-            user = session.query(User).filter(User.id == user_id).first()
+            user = session.query(User).filter(User.id == int(user_id)).first()
             session.close()
             return user
         except Exception as e:
@@ -67,7 +67,7 @@ class DatabaseHandler(object):
     def query_role_by_id(role_id):
         try:
             session = DBSession()
-            role = session.query(Role).filter(Role.id == role_id).first()
+            role = session.query(Role).filter(Role.id == int(role_id)).first()
             session.close()
             return role
         except Exception as e:
@@ -77,7 +77,7 @@ class DatabaseHandler(object):
     def delete_user_by_id(user_id):
         try:
             session = DBSession()
-            session.query(User).filter(User.id == user_id).delete()
+            session.query(User).filter(User.id == int(user_id)).delete()
             session.commit()
             session.close()
         except Exception as e:
@@ -87,10 +87,10 @@ class DatabaseHandler(object):
     def update_user(user_id, name, password, qq, role_id):
         try:
             session = DBSession()
-            session.query(User).filter(User.id == user_id).update({"name": name,
-                                                                   "password": password,
-                                                                   "qq": qq,
-                                                                   "role_id": role_id})
+            session.query(User).filter(User.id == int(user_id)).update({"name": name,
+                                                                       "password": password,
+                                                                        "qq": qq,
+                                                                        "role_id": int(role_id)})
             session.commit()
             session.close()
         except Exception as e:
@@ -123,7 +123,7 @@ class DatabaseHandler(object):
     def delete_class_by_id(class_id):
         try:
             session = DBSession()
-            session.query(Class).filter(Class.id == class_id).delete()
+            session.query(Class).filter(Class.id == int(class_id)).delete()
             session.commit()
             session.close()
         except Exception as e:
@@ -133,7 +133,7 @@ class DatabaseHandler(object):
     def update_class(class_id, name):
         try:
             session = DBSession()
-            session.query(Class).filter(Class.id == class_id).update({"name": name})
+            session.query(Class).filter(Class.id == int(class_id)).update({"name": name})
             session.commit()
             session.close()
         except Exception as e:
@@ -153,7 +153,7 @@ class DatabaseHandler(object):
     def query_class_by_id(class_id):
         try:
             session = DBSession()
-            class1 = session.query(Class).filter(Class.id == class_id).first()
+            class1 = session.query(Class).filter(Class.id == int(class_id)).first()
             session.close()
             return class1
         except Exception as e:
@@ -174,7 +174,7 @@ class DatabaseHandler(object):
         try:
             session = DBSession()
             date = datetime.now()
-            record = CourseRecord(date=date, teacher_id=teacher_id, class_id=class_id, description=description)
+            record = CourseRecord(date=date, teacher_id=int(teacher_id), class_id=int(class_id), description=description)
             session.add(record)
             session.commit()
             record = session.query(CourseRecord).filter(and_(CourseRecord.description == description,
@@ -188,7 +188,7 @@ class DatabaseHandler(object):
     def query_record_by_id(record_id):
         try:
             session = DBSession()
-            record = session.query(CourseRecord).filter(CourseRecord.id == record_id).first()
+            record = session.query(CourseRecord).filter(CourseRecord.id == int(record_id)).first()
             session.close()
             return record
         except Exception as e:
@@ -208,11 +208,11 @@ class DatabaseHandler(object):
     def create_homework(record_id, student_id, score, homework_path):
         try:
             session = DBSession()
-            homework = Homework(homework_path=homework_path, record_id=record_id, student_id=student_id, score=score)
+            homework = Homework(homework_path=homework_path, record_id=int(record_id), student_id=int(student_id), score=score)
             session.add(homework)
             session.commit()
-            homework = session.query(Homework).filter(and_(Homework.record_id == record_id,
-                                                           Homework.student_id == student_id)).first()
+            homework = session.query(Homework).filter(and_(Homework.record_id == int(record_id),
+                                                           Homework.student_id == int(student_id))).first()
             session.close()
             return homework
         except Exception as e:
@@ -222,7 +222,7 @@ class DatabaseHandler(object):
     def update_homework_path(homework_id, homework_path):
         try:
             session = DBSession()
-            session.query(Homework).filter(Homework.id == homework_id).update(
+            session.query(Homework).filter(Homework.id == int(homework_id)).update(
                 {"homework_path": homework_path})
             session.commit()
             session.close()
@@ -233,7 +233,8 @@ class DatabaseHandler(object):
     def update_homework_score(homework_id, score):
         try:
             session = DBSession()
-            session.query(Homework).filter(Homework.id == homework_id).update({"score": score})
+            session.query(Homework).filter(Homework.id == int(homework_id)).update({"score": score})
+            session.commit()
             session.close()
         except Exception as e:
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
@@ -242,7 +243,7 @@ class DatabaseHandler(object):
     def list_homework_by_student_id(student_id):
         try:
             session = DBSession()
-            homework_list = session.query(Homework).filter(Homework.student_id == student_id).all()
+            homework_list = session.query(Homework).filter(Homework.student_id == int(student_id)).all()
             session.close()
             return [homework.to_dict() for homework in homework_list]
         except Exception as e:
@@ -252,7 +253,7 @@ class DatabaseHandler(object):
     def list_homework_by_record_id(record_id):
         try:
             session = DBSession()
-            homework_list = session.query(Homework).filter(Homework.record_id == record_id).all()
+            homework_list = session.query(Homework).filter(Homework.record_id == int(record_id)).all()
             session.close()
             return [homework.to_dict() for homework in homework_list]
         except Exception as e:
@@ -262,7 +263,7 @@ class DatabaseHandler(object):
     def list_students_by_class_id(class_id):
         try:
             session = DBSession()
-            lst = session.query(UserM2MClass).filter(UserM2MClass.class_id == class_id).all()
+            lst = session.query(UserM2MClass).filter(UserM2MClass.class_id == int(class_id)).all()
             student_list = [st.user_id for st in lst]
             session.close()
             return student_list
@@ -273,8 +274,8 @@ class DatabaseHandler(object):
     def query_homework(student_id, record_id):
         try:
             session = DBSession()
-            homework = session.query(Homework).filter(and_(Homework.student_id == student_id,
-                                                           Homework.record_id == record_id)).first()
+            homework = session.query(Homework).filter(and_(Homework.student_id == int(student_id),
+                                                           Homework.record_id == int(record_id))).first()
             session.close()
             return homework
         except Exception as e:
@@ -284,7 +285,7 @@ class DatabaseHandler(object):
     def query_homework_by_id(homework_id):
         try:
             session = DBSession()
-            homework = session.query(Homework).filter(Homework.id == homework_id).first()
+            homework = session.query(Homework).filter(Homework.id == int(homework_id)).first()
             session.close()
             return homework
         except Exception as e:
@@ -294,7 +295,7 @@ class DatabaseHandler(object):
     def list_homework():
         try:
             session = DBSession()
-            homework_list = session.query(Homework).filter(Homework.score is not None).all()
+            homework_list = session.query(Homework).filter(Homework.score != None).all()
             session.close()
             return homework_list
         except Exception as e:
@@ -304,7 +305,7 @@ class DatabaseHandler(object):
     def list_class_by_student_id(student_id):
         try:
             session = DBSession()
-            lst = session.query(UserM2MClass).filter(UserM2MClass.user_id == student_id).all()
+            lst = session.query(UserM2MClass).filter(UserM2MClass.user_id == int(student_id)).all()
             class_list = [cla.to_dict() for cla in lst]
             session.close()
             return class_list
@@ -315,7 +316,7 @@ class DatabaseHandler(object):
     def create_mapping_class_user(class_id, user_id):
         try:
             session = DBSession()
-            mapping1 = UserM2MClass(class_id=class_id, user_id=user_id)
+            mapping1 = UserM2MClass(class_id=int(class_id), user_id=int(user_id))
             session.add(mapping1)
             session.commit()
             session.close()

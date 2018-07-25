@@ -19,7 +19,7 @@ class TeacherView(object):
                     <\033[36;1m5\033[0m>.查询班级列表               <\033[36;1m6\033[0m>.创建上课记录  
                     <\033[36;1m7\033[0m>.查询上课记录列表            <\033[36;1m8\033[0m>.根据上课记录查询作业
                     <\033[36;1m9\033[0m>.修改学员作业成绩            <\033[36;1m10\033[0m>.根据qq号添加班级学员
-                    <\033[36;1m11\033[0m>.退出视图
+                    <\033[36;1m11\033[0m>.注销登出
             """
             print(msg)
             actions = {"1": self.create_class,
@@ -31,13 +31,16 @@ class TeacherView(object):
                        "7": self.list_record,
                        "8": self.list_homework_by_record_id,
                        "9": self.update_homework_score,
-                       "10": self.class_add_student_by_qq,
-                       "11": self.logout}
+                       "10": self.class_add_student_by_qq}
             num = input(u"请输入您选择的操作的编号:").strip()
-            if num not in actions:
+            if num in actions:
+                actions[num]()
+            elif num == "11":
+                print("您已注销登录，欢迎您再次访问本系统")
+                break
+            else:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
                 continue
-            actions[num]()
 
     @staticmethod
     def create_class():

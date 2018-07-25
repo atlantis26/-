@@ -16,8 +16,5 @@ DB_PASS = config.get('db', 'password')
 DB_HOST = config.get('db', 'host')
 DB_PORT = config.get('db', 'port')
 
-# 初始登录状态标示
-Is_Authenticated = config.get('auth', 'is_authenticated')
-
 # 初始化日志系统
 init_logging()

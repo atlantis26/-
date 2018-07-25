@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50720
 File Encoding         : 65001
 
-Date: 2018-07-24 18:01:39
+Date: 2018-07-25 15:16:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -74,8 +74,8 @@ CREATE TABLE `homework` (
 -- ----------------------------
 -- Records of homework
 -- ----------------------------
-INSERT INTO `homework` VALUES ('1', null, '2', '3', null);
-INSERT INTO `homework` VALUES ('2', null, '2', '4', null);
+INSERT INTO `homework` VALUES ('1', '/test1/homework1.zip', '2', '3', '98');
+INSERT INTO `homework` VALUES ('2', '/test2/homework2.zip', '2', '4', '88');
 
 -- ----------------------------
 -- Table structure for role

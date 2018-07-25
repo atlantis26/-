@@ -248,7 +248,6 @@ class Handler(object):
             if not DatabaseHandler.query_user_by_id(student_id):
                 raise SomethingError(u"学员id'{0}'不存在".format(student_id))
             homework = DatabaseHandler.create_homework(record_id, student_id, score, homework_path)
-
             code = 200
             msg = u"创建学员家庭作业记录成功"
             data = homework.to_dict()
@@ -263,6 +262,8 @@ class Handler(object):
     @staticmethod
     def list_homework_by_record_id(record_id):
         try:
+            if not DatabaseHandler.query_record_by_id(record_id):
+                raise SomethingError(u"上课记录id不存在")
             home_list = DatabaseHandler.list_homework_by_record_id(record_id)
             code = 200
             msg = u"查询上课作业列表成功"
@@ -278,23 +279,25 @@ class Handler(object):
     @staticmethod
     def update_homework_score(homework_id, score):
         try:
+            if not DatabaseHandler.query_homework_by_id(homework_id):
+                raise SomethingError(u"课程作业id不存在")
             if not (isinstance(score, (int, float)) and 0 <= score <= 100):
                 raise SomethingError(u"成绩分数必须是大于等于0小于等于100的数值")
-            home_list = DatabaseHandler.update_homework_score(homework_id, score)
+            DatabaseHandler.update_homework_score(homework_id, score)
             code = 200
             msg = u"更新学员作业成绩成功"
-            data = home_list.to_dict()
         except SomethingError as e:
             code = 400
             msg = u"更新学员作业成绩失败，详情：{0}".format(str(e))
-            data = None
-        logger.debug(ResponseData(code, msg, data).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
-        return ResponseData(code, msg, data)
+        return ResponseData(code, msg)
 
     @staticmethod
     def commit_homework(homework_id, file_path):
         try:
+            if not DatabaseHandler.query_homework_by_id(homework_id):
+                raise SomethingError(u"课程作业id不存在")
             DatabaseHandler.update_homework_path(homework_id, file_path)
             code = 200
             msg = u"上传作业文件成功"
@@ -309,6 +312,8 @@ class Handler(object):
     def show_student_info(username):
         try:
             student = DatabaseHandler.query_user_by_account(username)
+            if not student:
+                raise SomethingError(u"学员账号不存在")
             class_list = DatabaseHandler.list_class_by_student_id(student.id)
             class_list = [DatabaseHandler.query_class_by_id(c["class_id"]).name for c in class_list]
             code = 200
@@ -326,6 +331,8 @@ class Handler(object):
     def show_student_homework(username):
         try:
             student = DatabaseHandler.query_user_by_account(username)
+            if not student:
+                raise SomethingError(u"学员账号不存在")
             homework_list = DatabaseHandler.list_homework_by_student_id(student.id)
             ret_list = list()
             for homework in homework_list:
@@ -345,6 +352,8 @@ class Handler(object):
     @staticmethod
     def class_add_student_by_qq(class_id, qq):
         try:
+            if not DatabaseHandler.query_class_by_id(class_id):
+                raise SomethingError(u"班级id不存在")
             user = DatabaseHandler.query_user_by_qq(qq)
             if not user:
                 raise SomethingError(u"本系统不存在此qq号‘{0}’".format(qq))
@@ -362,19 +371,33 @@ class Handler(object):
     @staticmethod
     def query_score_and_rank(username, homework_id):
         try:
+            user = DatabaseHandler.query_user_by_account(username)
+            homework = DatabaseHandler.query_homework_by_id(homework_id)
+            if not homework:
+                raise SomethingError(u"课程作业id不存在")
+            if user.id != homework.student_id:
+                raise SomethingError(u"课程作业id错误，请核对后再试")
             homework_list = DatabaseHandler.list_homework()
-            for h in homework_list:
-                if int(homework_id) == h.id:
-                    user_score = h.score
-
-
+            for i in range(len(homework_list) - 1):  # 这个循环负责设置冒泡排序进行的次数
+                for j in range(len(homework_list) - i - 1):  # ｊ为列表下标
+                    if homework_list[j].score > homework_list[j + 1].score:
+                        homework_list[j], homework_list[j + 1] = homework_list[j + 1], homework_list[j]
+            homework_list = reversed(homework_list)
+            data = dict()
+            for index, h in enumerate(homework_list):
+                if h.id == int(homework_id):
+                    data["rank"] = index + 1
+                    data["score"] = h.score
+                    break
             code = 200
-            msg = u"通过qq号添加学员到班级成功"
+            msg = u"查询个人成绩与当前排名成功"
+            data = data if data else u"你的作业还未被老师查阅并给出成绩"
         except SomethingError as e:
             code = 400
-            msg = u"通过qq号添加学员到班级失败，详情：{0}".format(str(e))
+            msg = u"查询个人成绩与当前排名失败，详情：{0}".format(str(e))
+            data = None
 
-        logger.debug(ResponseData(code, msg).__dict__)
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
-        return ResponseData(code, msg)
+        return ResponseData(code, msg, data)
 
