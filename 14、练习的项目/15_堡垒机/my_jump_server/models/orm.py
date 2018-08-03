@@ -1,14 +1,9 @@
-# _*_coding:utf-8_*_
+# coding:utf-8
 from sqlalchemy import create_engine, Table
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
-from  sqlalchemy.orm import sessionmaker
-from sqlalchemy import or_, and_
-from sqlalchemy import func
-from sqlalchemy_utils import ChoiceType, PasswordType
-
-Base = declarative_base()  # 生成一个SqlORM 基类
+from sqlalchemy_utils import ChoiceType
+from models import Base
 
 engine = create_engine("mysql+mysqldb://root@localhost:3306/test", echo=False)
 
@@ -33,11 +28,19 @@ class UserProfile(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(32), unique=True, nullable=False)
     password = Column(String(128), unique=True, nullable=False)
+    role_id = Column(Integer, ForeignKey('role.id'))
     groups = relationship('Group', secondary=Group2UserProfile)
     bind_hosts = relationship('BindHost', secondary=BindHost2UserProfile)
+    role = relationship('Role')
 
     def __repr__(self):
         return "<UserProfile(id='%s',username='%s')>" % (self.id, self.username)
+
+
+class Role(Base):
+    __tablename__ = 'role'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    role_type = Column(String(32), unique=True, nullable=False)
 
 
 class RemoteUser(Base):
@@ -90,31 +93,22 @@ class BindHost(Base):
     groups = relationship("Group", secondary=BindHost2Group, back_populates='bind_hosts')
     user_profiles = relationship("UserProfile", secondary=BindHost2UserProfile)
 
-    __table_args__ = (UniqueConstraint('host_id', 'remoteuser_id', name='_bindhost_and_user_uc'),)
+    __table_args__ = (UniqueConstraint('host_id', 'remoteuser_id', name='_bindhost_and_user_uc'))
 
     def __repr__(self):
         return "<BindHost(id='%s',name='%s',user='%s')>" % (self.id,
                                                             self.host.hostname,
-                                                            self.remoteuser.username
+                                                            self.remoteuser.username)
 
-                                                            )
+
 class AuditLog(Base):
     __tablename__ = 'audit_log'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profile.id'))
     bind_host_id = Column(Integer, ForeignKey('bind_host.id'))
-    action_choices = [
-        (0, 'CMD'),
-        (1, 'Login'),
-        (2, 'Logout'),
-        (3, 'GetFile'),
-        (4, 'SendFile'),
-        (5, 'Exception'),
-    ]
+    action_choices = [(0, 'CMD'), (1, 'Login'), (2, 'Logout')]
     action_type = Column(ChoiceType(action_choices))
     cmd = Column(String(255))
     date = Column(DateTime)
-
     user_profile = relationship("UserProfile")
     bind_host = relationship("BindHost")
-
