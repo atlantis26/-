@@ -22,6 +22,7 @@ import sys
 from paramiko.py3compat import u
 from models.orm import AuditLog
 import datetime
+from core.redis_handler import RedisHandler
 
 # windows does not have termios...
 try:
@@ -32,16 +33,15 @@ except ImportError:
     has_termios = False
 
 
-def interactive_shell(chan,user_obj,bind_host_obj,cmd_caches,log_recording):
+def interactive_shell(chan, user_obj, bind_host_obj):
     if has_termios:
-        posix_shell(chan,user_obj,bind_host_obj,cmd_caches,log_recording)
+        posix_shell(chan, user_obj, bind_host_obj)
     else:
         windows_shell(chan)
 
 
-def posix_shell(chan,user_obj,bind_host_obj,cmd_caches,log_recording):
+def posix_shell(chan, user_obj, bind_host_obj):
     import select
-    
     oldtty = termios.tcgetattr(sys.stdin)
     try:
         tty.setraw(sys.stdin.fileno())
@@ -56,8 +56,8 @@ def posix_shell(chan,user_obj,bind_host_obj,cmd_caches,log_recording):
                 try:
                     x = u(chan.recv(1024))
                     if tab_key:
-                        if x not in ('\x07' , '\r\n'):
-                            #print('tab:',x)
+                        if x not in ('\x07', '\r\n'):
+                            # print('tab:',x)
                             cmd += x
                         tab_key = False
                     if len(x) == 0:
@@ -70,21 +70,20 @@ def posix_shell(chan,user_obj,bind_host_obj,cmd_caches,log_recording):
             if sys.stdin in r:
                 x = sys.stdin.read(1)
                 if '\r' != x:
-                    cmd +=x
+                    cmd += x
                 else:
-
-                    print('cmd->:',cmd)
+                    print('cmd->:', cmd)
                     log_item = AuditLog(user_id=user_obj.id,
-                                          bind_host_id=bind_host_obj.id,
-                                          action_type='cmd',
-                                          cmd=cmd ,
-                                          date=datetime.datetime.now()
-                                          )
+                                        bind_host_id=bind_host_obj.id,
+                                        action_type='cmd',
+                                        cmd=cmd,
+                                        date=datetime.datetime.now())
+                    RedisHandler.put("", log_item)
                     cmd_caches.append(log_item)
                     cmd = ''
 
-                    if len(cmd_caches)>=10:
-                        log_recording(user_obj,bind_host_obj,cmd_caches)
+                    if len(cmd_caches) >= 10:
+                        log_recording(user_obj, bind_host_obj, cmd_caches)
                         cmd_caches = []
                 if '\t' == x:
                     tab_key = True

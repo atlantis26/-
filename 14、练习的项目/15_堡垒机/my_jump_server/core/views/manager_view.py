@@ -11,7 +11,7 @@ class ManagerView(object):
             msg = u"""
                 您可以选择如下操作：
                     <\033[36;1m1\033[0m>.展示主机及主机组信息         <\033[36;1m2\033[0m>.登录目标主机
-                    <\033[36;1m2\033[0m>.退出系统
+                    <\033[36;1m3\033[0m>.退出系统
             """
             print(msg)
             actions = {"1": self.show_hosts,
@@ -33,4 +33,5 @@ class ManagerView(object):
 
     @staticmethod
     def login_host():
+        host_id = input(u"请输入目标主机的id：").strip()
         ManagerHandler.start_session()

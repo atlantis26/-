@@ -40,7 +40,7 @@ class UserProfile(Base):
 class Role(Base):
     __tablename__ = 'role'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    role_type = Column(String(32), unique=True, nullable=False)
+    name = Column(String(32), unique=True, nullable=False)
 
 
 class RemoteUser(Base):

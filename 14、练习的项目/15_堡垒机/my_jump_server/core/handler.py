@@ -1,35 +1,41 @@
 # _*_coding:utf-8_*_
-from models.orm import UserProfile, AuditLog
+from models.orm import UserProfile, AuditLog, Host
 from models import DBSession
+from sqlalchemy import and_
 from core.utils import print_err, yaml_parser
 from core import ssh_login
-from core.utils import SomethingError
+from core.utils import SomethingError, ResponseData
+import logging
+
+logger = logging.getLogger("system.handler")
+
+
+def login(username, password):
+    """ 用户登录认证"""
+    try:
+        if len(username) == 0:
+            raise SomethingError(u"账号不能为空")
+        if len(password) == 0:
+            print(u"密码不能为空")
+        session = DBSession()
+        user_obj = session.query(UserProfile).filter(and_(UserProfile.username == username,
+                                                     UserProfile.password == password)).first()
+        session.close()
+        if not user_obj:
+            raise SomethingError(u"用户不存在")
+        code = 200
+        msg = u"登录成功"
+        data = user_obj.__dict__
+    except Exception as e:
+        code = 400
+        msg = u"登录失败，原因：{0}".format(str(e))
+        data = None
+    logger.debug(ResponseData(code, msg, data).__dict__)
+
+    return ResponseData(code, msg, data)
 
 
 class BaseHandler(object):
-    @staticmethod
-    def auth():
-        """ 用户登录认证"""
-        count = 0
-        while count < 3:
-            username = input(u"请输入用户账号：").strip()
-            if len(username) == 0:
-                print(u"账号不能为空")
-            password = input(u"请输入账号密码：").strip()
-            if len(password) == 0:
-                print(u"密码不能为空")
-            session = DBSession()
-            user_obj = session.query(UserProfile).filter(UserProfile.username == username,
-                                                         UserProfile.password == password).first()
-            session.close()
-            if user_obj:
-                return user_obj
-            else:
-                print(u"账户或密码错误, 你还有{0}次机会.".format(3-count-1))
-                count += 1
-        else:
-            print_err(u"输入错误账号密码次数过多")
-
     @staticmethod
     def record_log(user_id, bind_host_id, action, cmd, timestamp):
         """数据库内记录用户操作的日志"""
@@ -40,18 +46,52 @@ class BaseHandler(object):
         session.close()
 
     @staticmethod
-    def show_user_info(user_obj):
-        pass
+    def show_user_info(user_id):
+        try:
+            session = DBSession()
+            user_obj = session.query(UserProfile).filter(UserProfile.id == user_id).first()
+            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
+                print("  %s.\t%s@%s(%s)" % (index,
+                                            bind_host.remoteuser.username,
+                                            bind_host.host.hostname,
+                                            bind_host.host.ip_addr,
+                                            ))
+            bind_hosts = user_obj.bind_hosts
+            groups = user_obj.groups
+        except SomethingError as e:
+            pass
+
 
     @staticmethod
-    def start_session():
+    def start_session(user_id, host_id):
+        try:
+            session = DBSession()
+            host_obj = session.query(Host).filter(Host.id == host_id).first()
+            if not host_obj:
+                raise SomethingError(u"目标主机不存在")
+            user_obj = session.query(UserProfile).filter(UserProfile.id == user_id).first()
+            if host_id not in [host.id for host in user_obj.bind_hosts]:
+                raise SomethingError(u"您没有权限访问目标主机")
+            session.close()
+            ssh_login.ssh_login(user_obj, host_obj)
+            code = 200
+            msg = u"登录目标主机成功"
+        except SomethingError as e:
+            code = 200
+            msg = u"登录目标主机失败，原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg).__dict__)
+
+        return ResponseData(code, msg)
+
+    @staticmethod
+    def start_session1(user, host):
         user = BaseHandler.auth()
         if user:
             print(u"欢迎用户{0}登录本系统...".format(user.username))
             exit_flag = False
             while not exit_flag:
                 if user.bind_hosts:
-                    print('\033[32;1mz.\tungroupped hosts (%s)\033[0m' %len(user.bind_hosts) )
+                    print('\033[32;1mz.\tungroupped hosts (%s)\033[0m' % len(user.bind_hosts))
                 for index, group in enumerate(user.host_groups):
                     print('\033[32;1m{0}.\t{1} ({2})\033[0m'.format(index, group.name,  len(group.bind_hosts)) )
 

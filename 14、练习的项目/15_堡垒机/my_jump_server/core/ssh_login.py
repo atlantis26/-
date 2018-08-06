@@ -1,4 +1,4 @@
-#_*_coding:utf-8_*_
+# _*_coding:utf-8_*_
 __author__ = 'Alex Li'
 
 import base64
@@ -18,14 +18,14 @@ except ImportError:
     from . import interactive
 
 
-def ssh_login(user_obj,bind_host_obj,mysql_engine,log_recording):
+def ssh_login(user_obj, bind_host_obj):
     # now, connect and use paramiko Client to negotiate SSH2 across the connection
     try:
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.WarningPolicy())
         print('*** Connecting...')
-        #client.connect(hostname, port, username, password)
+        # client.connect(hostname, port, username, password)
         client.connect(bind_host_obj.host.ip_addr,
                        bind_host_obj.host.port,
                        bind_host_obj.remoteuser.username,
@@ -40,7 +40,7 @@ def ssh_login(user_obj,bind_host_obj,mysql_engine,log_recording):
                                    bind_host_id=bind_host_obj.id,
                                    action_type='login',
                                    date=datetime.datetime.now()))
-        log_recording(user_obj,bind_host_obj,cmd_caches)
+        log_recording(user_obj, bind_host_obj, cmd_caches)
         interactive.interactive_shell(chan, user_obj, bind_host_obj, cmd_caches, log_recording)
         chan.close()
         client.close()
