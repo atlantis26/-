@@ -1,7 +1,5 @@
 # _*_coding:utf-8_*_
-from models.orm import UserProfile, AuditLog, Host
-from models import DBSession
-from sqlalchemy import and_
+from models.db_handler import DatabaseHandler
 from core.utils import print_err, yaml_parser
 from core import ssh_login
 from core.utils import SomethingError, ResponseData
@@ -10,69 +8,106 @@ import logging
 logger = logging.getLogger("system.handler")
 
 
-def login(username, password):
-    """ 用户登录认证"""
-    try:
-        if len(username) == 0:
-            raise SomethingError(u"账号不能为空")
-        if len(password) == 0:
-            print(u"密码不能为空")
-        session = DBSession()
-        user_obj = session.query(UserProfile).filter(and_(UserProfile.username == username,
-                                                     UserProfile.password == password)).first()
-        session.close()
-        if not user_obj:
-            raise SomethingError(u"用户不存在")
-        code = 200
-        msg = u"登录成功"
-        data = user_obj.__dict__
-    except Exception as e:
-        code = 400
-        msg = u"登录失败，原因：{0}".format(str(e))
-        data = None
-    logger.debug(ResponseData(code, msg, data).__dict__)
-
-    return ResponseData(code, msg, data)
-
-
-class BaseHandler(object):
+class Handler(object):
     @staticmethod
-    def record_log(user_id, bind_host_id, action, cmd, timestamp):
+    def login(username, password):
+        """ 用户登录认证"""
+        try:
+            if len(username) == 0:
+                raise SomethingError(u"账号不能为空")
+            if len(password) == 0:
+                print(u"密码不能为空")
+            user_obj = DatabaseHandler.query_user_profile_by_account(username, password)
+            if not user_obj:
+                raise SomethingError(u"用户不存在")
+            code = 200
+            msg = u"登录成功"
+            data = user_obj.__dict__
+        except Exception as e:
+            code = 400
+            msg = u"登录失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def create_audit_log(user_id, bind_host_id, action, cmd, timestamp):
         """数据库内记录用户操作的日志"""
-        session = DBSession()
-        log = AuditLog(user_id=user_id, bind_host_id=bind_host_id, action_type=action, cmd=cmd, date=timestamp)
-        session.add(log)
-        session.commit()
-        session.close()
+        try:
+            DatabaseHandler.create_audit_log(user_id, bind_host_id, action, cmd, timestamp)
+            code = 200
+            msg = u"创建用户操作日志成功"
+        except Exception as e:
+            code = 400
+            msg = u"创建用户操作日志成功失败，原因：{0}".format(str(e))
+        logger.debug(ResponseData(code, msg, ).__dict__)
+
+        return ResponseData(code, msg)
 
     @staticmethod
-    def show_user_info(user_id):
+    def select_host_by_group(user_id):
+        """根据主机组来选择目标登录主机"""
         try:
-            session = DBSession()
-            user_obj = session.query(UserProfile).filter(UserProfile.id == user_id).first()
-            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
-                print("  %s.\t%s@%s(%s)" % (index,
-                                            bind_host.remoteuser.username,
-                                            bind_host.host.hostname,
-                                            bind_host.host.ip_addr,
-                                            ))
-            bind_hosts = user_obj.bind_hosts
-            groups = user_obj.groups
+            user = DatabaseHandler.query_user_profile_by_id(user_id)
+            print(u"您具有访问权限的主机组如下：")
+            for index, group in enumerate(user.groups):
+                print(u"id：{0}    主机组名：{1}".format(group.id, group.name))
+            choice1 = input(u"请输入选择的主机组的id:").strip()
+            if not choice1:
+                raise SomethingError(u"主机组id不存在")
+            print(u"您选择的主机组下可访问的主机列表如下：")
+            for index, host in enumerate(user.groups[choice1].bind_hosts):
+                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：".format(host.id,
+                                                                    host.hostname,
+                                                                    host.ip_addr,
+                                                                    host.remoteuser.username))
+            host_id = input(u"请输入选择的主机的id")
+            code = 200
+            msg = u"选择目标主机成功"
+            data = host_id
         except SomethingError as e:
-            pass
+            code = 200
+            msg = u"选择目标主机失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
+        return ResponseData(code, msg, data)
 
     @staticmethod
-    def start_session(user_id, host_id):
+    def select_host_by_list(user_id):
+        """根据主机列表来选择目标登录主机"""
         try:
-            session = DBSession()
-            host_obj = session.query(Host).filter(Host.id == host_id).first()
+            user = DatabaseHandler.query_user_profile_by_id(user_id)
+            print(u"您具有访问权限的主机列表如下：")
+            for index, host in enumerate(user.bind_hosts):
+                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：".format(host.id,
+                                                                    host.hostname,
+                                                                    host.ip_addr,
+                                                                    host.remoteuser.username))
+            host_id = input(u"请输入选择的主机的id")
+            code = 200
+            msg = u"登录目标主机成功"
+            data = host_id
+        except SomethingError as e:
+            code = 200
+            msg = u"选择目标主机失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg, data)
+
+    @staticmethod
+    def start_host_session(user_id, host_id):
+        try:
+            host_obj = DatabaseHandler.query_host_by_id(host_id)
             if not host_obj:
                 raise SomethingError(u"目标主机不存在")
-            user_obj = session.query(UserProfile).filter(UserProfile.id == user_id).first()
+            user_obj = DatabaseHandler.query_user_profile_by_id(user_id)
+            if not user_obj:
+                raise SomethingError(u"用户不存在")
             if host_id not in [host.id for host in user_obj.bind_hosts]:
-                raise SomethingError(u"您没有权限访问目标主机")
-            session.close()
+                raise SomethingError(u"没有权限访问目标主机")
             ssh_login.ssh_login(user_obj, host_obj)
             code = 200
             msg = u"登录目标主机成功"
@@ -84,86 +119,18 @@ class BaseHandler(object):
         return ResponseData(code, msg)
 
     @staticmethod
-    def start_session1(user, host):
-        user = BaseHandler.auth()
-        if user:
-            print(u"欢迎用户{0}登录本系统...".format(user.username))
-            exit_flag = False
-            while not exit_flag:
-                if user.bind_hosts:
-                    print('\033[32;1mz.\tungroupped hosts (%s)\033[0m' % len(user.bind_hosts))
-                for index, group in enumerate(user.host_groups):
-                    print('\033[32;1m{0}.\t{1} ({2})\033[0m'.format(index, group.name,  len(group.bind_hosts)) )
-
-                choice = input("[%s]:" % user.username).strip()
-                if len(choice) == 0:continue
-                if choice == 'z':
-                    print("------ Group: ungroupped hosts ------" )
-                    for index,bind_host in enumerate(user.bind_hosts):
-                        print("  %s.\t%s@%s(%s)"%(index,
-                                                  bind_host.remoteuser.username,
-                                                  bind_host.host.hostname,
-                                                  bind_host.host.ip_addr,
-                                                  ))
-                    print("----------- END -----------" )
-                elif choice.isdigit():
-                    choice = int(choice)
-                    if choice < len(user.groups):
-                        print("------ Group: %s ------"  % user.groups[choice].name )
-                        for index,bind_host in enumerate(user.groups[choice].bind_hosts):
-                            print("  %s.\t%s@%s(%s)"%(index,
-                                                      bind_host.remoteuser.username,
-                                                      bind_host.host.hostname,
-                                                      bind_host.host.ip_addr,
-                                                      ))
-                        print("----------- END -----------" )
-
-                        #host selection
-                        while not exit_flag:
-                            user_option = input("[(b)back, (q)quit, select host to login]:").strip()
-                            if len(user_option)==0:continue
-                            if user_option == 'b':break
-                            if user_option == 'q':
-                                exit_flag=True
-                            if user_option.isdigit():
-                                user_option = int(user_option)
-                                if user_option < len(user.groups[choice].bind_hosts) :
-                                    print('host:',user.groups[choice].bind_hosts[user_option])
-                                    print('audit log:',user.groups[choice].bind_hosts[user_option].audit_logs)
-                                    ssh_login.ssh_login(user,
-                                                        user.groups[choice].bind_hosts[user_option],
-                                                        session,
-                                                        log_recording)
-                    else:
-                        print("no this option..")
-
-
-class ManagerHandler(BaseHandler):
-    def __init__(self):
-        BaseHandler.__init__(self)
-
-    @staticmethod
-    def create_users(argvs):
-        '''
-        create little_finger access user
-        :param argvs:
-        :return:
-        '''
-        if '-f' in argvs:
-            user_file = argvs[argvs.index("-f") + 1]
-        else:
-            print_err("invalid usage, should be:\ncreateusers -f <the new users file>", quit=True)
-
+    def create_users(user_file, role_id):
+        """创建系统用户"""
         source = yaml_parser(user_file)
         if source:
             for key, val in source.items():
                 print(key, val)
-                obj = models.UserProfile(username=key, password=val.get('password'))
+                user = DatabaseHandler.create_user(username=key, password=val.get('password'), role_id=role_id)
                 if val.get('groups'):
-                    groups = session.query(models.Group).filter(models.Group.name.in_(val.get('groups'))).all()
+                    groups = DatabaseHandler.list_group_by_name_list(val.get('groups'))
                     if not groups:
                         print_err("none of [%s] exist in group table." % val.get('groups'), quit=True)
-                    obj.groups = groups
+                    user.groups = groups
                 if val.get('bind_hosts'):
                     bind_hosts = common_filters.bind_hosts_filter(val)
                     obj.bind_hosts = bind_hosts

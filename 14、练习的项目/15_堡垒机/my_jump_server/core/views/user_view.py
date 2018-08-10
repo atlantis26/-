@@ -1,5 +1,6 @@
 # coding:utf-8
 from core.handler import BaseHandler
+from models.db_handler import DatabaseHandler
 
 
 class UserView(object):
@@ -26,6 +27,31 @@ class UserView(object):
             else:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
                 continue
+
+    @property
+    def user_obj(self):
+        try:
+            user = DatabaseHandler.query_user_profile_by_id(self.user_id)
+            print(u"您具有的权限访问的主机组如下：")
+            for index, group in enumerate(user.groups):
+                print(u"id：{0}    主机组名：{1}".format(group.id, group.name))
+            choice = input(u"请输入选择的主机组的id:")
+            if not choice:
+                raise
+            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
+
+            choice = input(u"请输入选择的主机组的id")
+            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
+                print("  %s.\t%s@%s(%s)" % (index,
+                                            bind_host.remoteuser.username,
+                                            bind_host.host.hostname,
+                                            bind_host.host.ip_addr,
+                                            ))
+            bind_hosts = user_obj.bind_hosts
+            groups = user_obj.groups
+        except SomethingError as e:
+            pass
+
 
     def show_hosts(self):
         """显示用户具有操作权限的主机以及主机组"""

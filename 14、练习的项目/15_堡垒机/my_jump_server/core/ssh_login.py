@@ -1,17 +1,11 @@
 # _*_coding:utf-8_*_
-__author__ = 'Alex Li'
-
-import base64
-import getpass
-import os
-import socket
+# __author__ = 'Alex Li'
 import sys
 import traceback
-from paramiko.py3compat import input
-from models.orm import AuditLog
+from models.db_handler import DatabaseHandler
 import datetime
-
 import paramiko
+
 try:
     import interactive
 except ImportError:
@@ -31,17 +25,15 @@ def ssh_login(user_obj, bind_host_obj):
                        bind_host_obj.remoteuser.username,
                        bind_host_obj.remoteuser.password,
                        timeout=30)
-
-        cmd_caches = []
         chan = client.invoke_shell()
         print(repr(client.get_transport()))
         print('*** Here we go!\n')
-        cmd_caches.append(AuditLog(user_id=user_obj.id,
-                                   bind_host_id=bind_host_obj.id,
-                                   action_type='login',
-                                   date=datetime.datetime.now()))
-        log_recording(user_obj, bind_host_obj, cmd_caches)
-        interactive.interactive_shell(chan, user_obj, bind_host_obj, cmd_caches, log_recording)
+        DatabaseHandler.create_audit_log(user_id=user_obj.id,
+                                         bind_host_id=bind_host_obj.id,
+                                         action='login',
+                                         cmd="",
+                                         timestamp=datetime.datetime.now())
+        interactive.interactive_shell(chan, user_obj, bind_host_obj)
         chan.close()
         client.close()
 

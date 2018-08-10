@@ -50,10 +50,10 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard',
         },
-        'db': {
+        'models': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'db.log'),
+            'filename': os.path.join(LOG_DIR, 'models.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -70,8 +70,8 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'system.db': {
-            'handlers': ['db'],
+        'system.models': {
+            'handlers': ['models'],
             'level': 'DEBUG',
             'propagate': False,
         },

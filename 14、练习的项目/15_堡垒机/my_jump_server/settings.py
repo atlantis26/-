@@ -10,11 +10,11 @@ CONF_FILE = os.path.join(ROOT, "conf/server.properties")
 config.read(CONF_FILE)
 
 # 数据库设置
-DB_NAME = config.get('db', 'database')
-DB_USER = config.get('db', 'username')
-DB_PASS = config.get('db', 'password')
-DB_HOST = config.get('db', 'host')
-DB_PORT = config.get('db', 'port')
+DB_NAME = config.get('models', 'database')
+DB_USER = config.get('models', 'username')
+DB_PASS = config.get('models', 'password')
+DB_HOST = config.get('models', 'host')
+DB_PORT = config.get('models', 'port')
 
 # 初始化日志系统
 init_logging()
