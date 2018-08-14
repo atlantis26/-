@@ -2,12 +2,16 @@
 
 
 class RedisHandler(object):
-    def __init__(self):
-        pass
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.pool = []
 
     def get(self):
         pass
 
-    @staticmethod
-    def put(key, value):
+    def put(self, log):
+        pass
+
+    def append(self, msg):
         pass

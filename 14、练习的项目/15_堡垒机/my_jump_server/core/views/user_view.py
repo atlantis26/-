@@ -1,6 +1,5 @@
 # coding:utf-8
-from core.handler import BaseHandler
-from models.db_handler import DatabaseHandler
+from core.handler import Handler
 
 
 class UserView(object):
@@ -12,54 +11,22 @@ class UserView(object):
         while True:
             msg = u"""
                 您可以选择如下操作：
-                    <\033[36;1m1\033[0m>.展示主机及主机组信息         <\033[36;1m2\033[0m>.登录目标主机
+                    <\033[36;1m1\033[0m>.通过主机列表选择主机         <\033[36;1m2\033[0m>.通过主机组选择主机
                     <\033[36;1m3\033[0m>.退出系统
             """
             print(msg)
-            actions = {"1": self.show_hosts,
-                       "2": self.login_host}
+            actions = {"1": Handler.select_host_by_list,
+                       "2": Handler.select_host_by_group}
             num = input(u"请输入您选择的操作的编号:").strip()
             if num in actions:
-                actions[num]()
+                rsp = actions[num](self.user_id)
+                print(rsp.msg)
+                if rsp.code == 200:
+                    host_id = rsp.data
+                    Handler.start_host_session(self.user_id, host_id)
             elif num == "3":
                 print("您已退出登录，欢迎再次访问本系统")
                 break
             else:
                 print(u"输入的操作编号{0}不存在，请核对后再试".format(num))
                 continue
-
-    @property
-    def user_obj(self):
-        try:
-            user = DatabaseHandler.query_user_profile_by_id(self.user_id)
-            print(u"您具有的权限访问的主机组如下：")
-            for index, group in enumerate(user.groups):
-                print(u"id：{0}    主机组名：{1}".format(group.id, group.name))
-            choice = input(u"请输入选择的主机组的id:")
-            if not choice:
-                raise
-            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
-
-            choice = input(u"请输入选择的主机组的id")
-            for index, bind_host in enumerate(user.groups[choice].bind_hosts):
-                print("  %s.\t%s@%s(%s)" % (index,
-                                            bind_host.remoteuser.username,
-                                            bind_host.host.hostname,
-                                            bind_host.host.ip_addr,
-                                            ))
-            bind_hosts = user_obj.bind_hosts
-            groups = user_obj.groups
-        except SomethingError as e:
-            pass
-
-
-    def show_hosts(self):
-        """显示用户具有操作权限的主机以及主机组"""
-        pass
-
-    def login_host(self):
-        """用户登录目标主机进行操作"""
-        host_id = input(u"请输入目标主机的id：").strip()
-        rsp = BaseHandler.start_session(self.user_id, host_id)
-        print(rsp.msg)
-

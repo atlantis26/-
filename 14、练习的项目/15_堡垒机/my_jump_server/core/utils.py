@@ -1,28 +1,22 @@
 # coding:utf-8
 import yaml
+import os
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
 
 
-def print_err(msg, quit=False):
-    output = "\033[31;1mError: %s\033[0m" % msg
-    if quit:
-        exit(output)
-    else:
-        print(output)
-
-
 def yaml_parser(yml_filename):
     """解析yml文件内容转为字典数据"""
-    # yml_filename = "%s/%s.yml" % (settings.StateFileBaseDir,yml_filename)
     try:
+        if not os.path.exists(yml_filename):
+            raise SomethingError(u"配置文件不存在")
         yml_file = open(yml_filename, 'r')
         data = yaml.load(yml_file)
         return data
     except Exception as e:
-        print_err(e)
+        raise SomethingError(u"解析配置文件失败，原因：{0}".format(str(e)))
 
 
 class ResponseData(object):
@@ -37,3 +31,4 @@ class ResponseData(object):
 class SomethingError(Exception):
     """自定义异常错误"""
     pass
+

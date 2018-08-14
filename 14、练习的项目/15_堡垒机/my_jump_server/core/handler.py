@@ -1,6 +1,7 @@
 # _*_coding:utf-8_*_
 from models.db_handler import DatabaseHandler
-from core.utils import print_err, yaml_parser
+from models.orm import UserProfile, Role, RemoteUser, Host, Group, BindHost
+from core.utils import yaml_parser
 from core import ssh_login
 from core.utils import SomethingError, ResponseData
 import logging
@@ -119,138 +120,178 @@ class Handler(object):
         return ResponseData(code, msg)
 
     @staticmethod
-    def create_users(user_file, role_id):
+    def create_users(user_file):
         """创建系统用户"""
-        source = yaml_parser(user_file)
-        if source:
-            for key, val in source.items():
-                print(key, val)
-                user = DatabaseHandler.create_user(username=key, password=val.get('password'), role_id=role_id)
-                if val.get('groups'):
-                    groups = DatabaseHandler.list_group_by_name_list(val.get('groups'))
-                    if not groups:
-                        print_err("none of [%s] exist in group table." % val.get('groups'), quit=True)
-                    user.groups = groups
-                if val.get('bind_hosts'):
-                    bind_hosts = common_filters.bind_hosts_filter(val)
-                    obj.bind_hosts = bind_hosts
-                # print(obj)
-                session.add(obj)
-            session.commit()
+        try:
+            source = yaml_parser(user_file)
+            if source:
+                for key, val in source.items():
+                    user = UserProfile(username=key, password=val.get('password'), role_id=val.get('role_id'))
+                    group_names = val.get('groups')
+                    if group_names:
+                        groups = DatabaseHandler.list_group_by_names(group_names)
+                        if not groups:
+                            raise SomethingError(u"配置文件中的主机组都不存在")
+                        user.groups = groups
+                    bind_host_names = val.get('bind_hosts')
+                    if bind_host_names:
+                        bind_hosts = DatabaseHandler.list_bindhost_by_names(bind_host_names)
+                        user.bind_hosts = bind_hosts
+                    DatabaseHandler.commit_orm_object(user)
+            code = 200
+            msg = u"创建系统用户成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建系统用户失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg)
 
     @staticmethod
-    def create_groups(argvs):
-        '''
-        create groups
-        :param argvs:
-        :return:
-        '''
-        if '-f' in argvs:
-            group_file = argvs[argvs.index("-f") + 1]
-        else:
-            print_err("invalid usage, should be:\ncreategroups -f <the new groups file>", quit=True)
-        source = yaml_parser(group_file)
-        if source:
-            for key, val in source.items():
-                print(key, val)
-                obj = models.Group(name=key)
-                if val.get('bind_hosts'):
-                    bind_hosts = common_filters.bind_hosts_filter(val)
-                    obj.bind_hosts = bind_hosts
+    def create_groups(group_file):
+        """创建主机组"""
+        try:
+            source = yaml_parser(group_file)
+            if source:
+                for key, val in source.items():
+                    group = Group(name=key)
+                    bind_host_names = val.get('bind_hosts')
+                    if bind_host_names:
+                        bind_hosts = DatabaseHandler.list_bindhost_by_names(bind_host_names)
+                        group.bind_hosts = bind_hosts
+                    username_list = val.get('user_profiles')
+                    if username_list:
+                        user_profiles = DatabaseHandler.list_user_profiles_by_usernames(username_list)
+                        group.user_profiles = user_profiles
+                    DatabaseHandler.commit_orm_object(group)
+            code = 200
+            msg = u"创建主机组成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建主机组失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
 
-                if val.get('user_profiles'):
-                    user_profiles = common_filters.user_profiles_filter(val)
-                    obj.user_profiles = user_profiles
-                session.add(obj)
-            session.commit()
-
-    @staticmethod
-    def create_hosts(argvs):
-        '''
-        create hosts
-        :param argvs:
-        :return:
-        '''
-        if '-f' in argvs:
-            hosts_file = argvs[argvs.index("-f") + 1]
-        else:
-            print_err("invalid usage, should be:\ncreate_hosts -f <the new hosts file>", quit=True)
-        source = yaml_parser(hosts_file)
-        if source:
-            for key, val in source.items():
-                print(key, val)
-                obj = models.Host(hostname=key, ip_addr=val.get('ip_addr'), port=val.get('port') or 22)
-                session.add(obj)
-            session.commit()
+        return ResponseData(code, msg)
 
     @staticmethod
-    def create_bindhosts(argvs):
-        '''
-        create bind hosts
-        :param argvs:
-        :return:
-        '''
-        if '-f' in argvs:
-            bindhosts_file = argvs[argvs.index("-f") + 1]
-        else:
-            print_err("invalid usage, should be:\ncreate_hosts -f <the new bindhosts file>", quit=True)
-        source = yaml_parser(bindhosts_file)
-        if source:
-            for key, val in source.items():
-                # print(key,val)
-                host_obj = session.query(models.Host).filter(models.Host.hostname == val.get('hostname')).first()
-                assert host_obj
-                for item in val['remote_users']:
-                    print(item)
-                    assert item.get('auth_type')
-                    if item.get('auth_type') == 'ssh-passwd':
-                        remoteuser_obj = session.query(models.RemoteUser).filter(
-                            models.RemoteUser.username == item.get('username'),
-                            models.RemoteUser.password == item.get('password')
-                        ).first()
-                    else:
-                        remoteuser_obj = session.query(models.RemoteUser).filter(
-                            models.RemoteUser.username == item.get('username'),
-                            models.RemoteUser.auth_type == item.get('auth_type'),
-                        ).first()
-                    if not remoteuser_obj:
-                        print_err("RemoteUser obj %s does not exist." % item, quit=True)
-                    bindhost_obj = models.BindHost(host_id=host_obj.id, remoteuser_id=remoteuser_obj.id)
-                    session.add(bindhost_obj)
-                    # for groups this host binds to
-                    if source[key].get('groups'):
-                        group_objs = session.query(models.Group).filter(
-                            models.Group.name.in_(source[key].get('groups'))).all()
-                        assert group_objs
-                        print('groups:', group_objs)
-                        bindhost_obj.groups = group_objs
-                    # for user_profiles this host binds to
-                    if source[key].get('user_profiles'):
-                        userprofile_objs = session.query(models.UserProfile).filter(models.UserProfile.username.in_(
-                            source[key].get('user_profiles')
-                        )).all()
-                        assert userprofile_objs
-                        print("userprofiles:", userprofile_objs)
-                        bindhost_obj.user_profiles = userprofile_objs
-                        # print(bindhost_obj)
-            session.commit()
+    def create_hosts(hosts_file):
+        """创建主机"""
+        try:
+            source = yaml_parser(hosts_file)
+            if source:
+                for key, val in source.items():
+                    host = Host(hostname=key, ip_addr=val.get('ip_addr'), port=val.get('port') or 22)
+                    DatabaseHandler.commit_orm_object(host)
+            code = 200
+            msg = u"创建主机成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建主机失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg)
 
     @staticmethod
-    def create_remoteusers(argvs):
-        '''
-        create remoteusers
-        :param argvs:
-        :return:
-        '''
-        if '-f' in argvs:
-            remoteusers_file = argvs[argvs.index("-f") + 1]
-        else:
-            print_err("invalid usage, should be:\ncreate_remoteusers -f <the new remoteusers file>", quit=True)
-        source = yaml_parser(remoteusers_file)
-        if source:
-            for key, val in source.items():
-                print(key, val)
-                obj = models.RemoteUser(username=val.get('username'), auth_type=val.get('auth_type'),
-                                        password=val.get('password'))
-                session.add(obj)
-            session.commit()
+    def create_bindhosts(bindhosts_file):
+        """创建主机的组、登录账号、用户权限的映射关系"""
+        try:
+            source = yaml_parser(bindhosts_file)
+            if source:
+                for key, val in source.items():
+                    host_name = val.get('hostname')
+                    if not host_name:
+                        raise SomethingError(u"配置文件内未设置主机名称")
+                    host_obj = DatabaseHandler.query_host_by_name(host_name)
+                    if not host_obj:
+                        raise SomethingError(u"配置文件内的主机名{0}不存在".format(host_name))
+                    for item in val['remote_users']:
+                        auth_type = item.get('auth_type')
+                        if not auth_type:
+                            raise SomethingError(u"配置文件内未设置'auth_type'")
+                        if item.get('auth_type') == 'ssh-passwd':
+                            remoteuser_obj = DatabaseHandler.query_remote_user_by_password(item.get('username'),
+                                                                                           item.get('password'))
+                        else:
+                            remoteuser_obj = DatabaseHandler.query_remote_user_by_auth_type(item.get('username'),
+                                                                                            item.get('auth_type'))
+                        if not remoteuser_obj:
+                            raise SomethingError(u"配置文件内的主机登录账号'{0}'不存在".format(item.get('username')))
+                        bindhost_obj = BindHost(host_id=host_obj.id, remoteuser_id=remoteuser_obj.id)
+
+                        # for groups this host binds to
+                        group_names = source[key].get('groups')
+                        if group_names:
+                            groups = DatabaseHandler.list_group_by_names(group_names)
+                            if not groups:
+                                raise SomethingError(u"配置文件中，有不存在的主机组名")
+                            bindhost_obj.groups = groups
+
+                        # for user_profiles this host binds to
+                        user_names = source[key].get('user_profiles')
+                        if user_names:
+                            userprofile_objs = DatabaseHandler.list_user_profiles_by_usernames(user_names)
+                            if not userprofile_objs:
+                                raise SomethingError(u"配置文件中，有不存在的系统用户")
+                            bindhost_obj.user_profiles = userprofile_objs
+                        DatabaseHandler.commit_orm_object(bindhost_obj)
+            code = 200
+            msg = u"创建主机与组、登录账号、用户权限关系成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建主机与组、登录账号、用户权限关系失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg)
+
+    @staticmethod
+    def create_remoteusers(remoteusers_file):
+        """配置主机的登录账号信息"""
+        try:
+            source = yaml_parser(remoteusers_file)
+            if source:
+                for key, val in source.items():
+                    remote_user = RemoteUser(username=val.get('username'),
+                                             auth_type=val.get('auth_type'),
+                                             password=val.get('password'))
+                    DatabaseHandler.commit_orm_object(remote_user)
+            code = 200
+            msg = u"创建主机登录账号信息成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建主机登录账号信息失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg)
+
+    @staticmethod
+    def create_roles(role_file):
+        """配置用户角色信息"""
+        try:
+            source = yaml_parser(role_file)
+            if source:
+                for key, names in source.items():
+                    if DatabaseHandler.list_role_by_names(names):
+                        raise SomethingError(u"配置文件中有角色已经存在")
+                    for name in names:
+                        role = Role(name=name)
+                        DatabaseHandler.commit_orm_object(role)
+            code = 200
+            msg = u"创建新角色成功"
+            data = source
+        except SomethingError as e:
+            code = 200
+            msg = u"创建新角色失败，原因：{0}".format(str(e))
+            data = None
+        logger.debug(ResponseData(code, msg, data).__dict__)
+
+        return ResponseData(code, msg)

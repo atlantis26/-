@@ -41,6 +41,28 @@ class DatabaseHandler(object):
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
+    def query_remote_user_by_password(username, password):
+        try:
+            session = DBSession()
+            remote_user_obj = session.query(RemoteUser).filter(and_(RemoteUser.username == username,
+                                                                    RemoteUser.password == password)).first()
+            session.close()
+            return remote_user_obj
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def query_remote_user_by_auth_type(username, auth_type):
+        try:
+            session = DBSession()
+            remote_user_obj = session.query(RemoteUser).filter(and_(RemoteUser.username == username,
+                                                                    RemoteUser.auth_type == auth_type)).first()
+            session.close()
+            return remote_user_obj
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
     def create_audit_log(user_id, bind_host_id, action, cmd, timestamp):
         try:
             session = DBSession()
@@ -62,11 +84,61 @@ class DatabaseHandler(object):
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
-    def list_group_by_name_list(group_name_list):
+    def query_host_by_name(host_name):
+        try:
+            session = DBSession()
+            host = session.query(Host).filter(Host.hostname == host_name).first()
+            session.close()
+            return host
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_group_by_names(group_name_list):
         try:
             session = DBSession()
             groups = session.query(Group).filter(Group.name.in_(group_name_list)).all()
             session.close()
             return groups
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_bindhost_by_names(host_name_list):
+        try:
+            session = DBSession()
+            bind_hosts = session.query(BindHost).filter(Host.hostname.in_(host_name_list)).all()
+            session.close()
+            return bind_hosts
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def commit_orm_object(orm_obj):
+        try:
+            session = DBSession()
+            session.add(orm_obj)
+            session.commit()
+            session.close()
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_user_profiles_by_usernames(usernames):
+        try:
+            session = DBSession()
+            user_profiles = session.query(UserProfile).filter(UserProfile.username.in_(usernames).all())
+            session.close()
+            return user_profiles
+        except Exception as e:
+            raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
+
+    @staticmethod
+    def list_role_by_names(names):
+        try:
+            session = DBSession()
+            roles = session.query(Role).filter(Role.username.in_(names).all())
+            session.close()
+            return roles
         except Exception as e:
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
