@@ -14,6 +14,8 @@ DBSession = sessionmaker(bind=db)
 def to_dict(self):
     # 将sqlAlchemy中的对象转换为dict
     return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+
+
 Base.to_dict = to_dict
 
 

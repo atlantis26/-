@@ -2,7 +2,8 @@
 # __author__ = 'Alex Li'
 import sys
 import traceback
-from models.db_handler import DatabaseHandler
+from models.orm import AuditLog
+from core.redis_handler import Redis_Handler
 import datetime
 import paramiko
 
@@ -28,15 +29,15 @@ def ssh_login(user_obj, bind_host_obj):
         chan = client.invoke_shell()
         print(repr(client.get_transport()))
         print('*** Here we go!\n')
-        DatabaseHandler.create_audit_log(user_id=user_obj.id,
-                                         bind_host_id=bind_host_obj.id,
-                                         action='login',
-                                         cmd="",
-                                         timestamp=datetime.datetime.now())
+        log = AuditLog(user_id=user_obj.id,
+                       bind_host_id=bind_host_obj.id,
+                       action_type='login',
+                       cmd="",
+                       date=datetime.datetime.now())
+        Redis_Handler.push(log)
         interactive.interactive_shell(chan, user_obj, bind_host_obj)
         chan.close()
         client.close()
-
     except Exception as e:
         print('*** Caught exception: %s: %s' % (e.__class__, e))
         traceback.print_exc()

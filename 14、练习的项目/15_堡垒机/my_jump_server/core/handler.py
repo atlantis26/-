@@ -42,7 +42,7 @@ class Handler(object):
         except Exception as e:
             code = 400
             msg = u"创建用户操作日志成功失败，原因：{0}".format(str(e))
-        logger.debug(ResponseData(code, msg, ).__dict__)
+        logger.debug(ResponseData(code, msg).__dict__)
 
         return ResponseData(code, msg)
 

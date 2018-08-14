@@ -1,11 +1,10 @@
 # coding:utf-8
-from sqlalchemy import create_engine, Table
+from sqlalchemy import Table
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
 from models import Base
 
-engine = create_engine("mysql+mysqldb://root@localhost:3306/test", echo=False)
 
 BindHost2Group = Table('bindhost_2_group', Base.metadata,
                        Column('bindhost_id', ForeignKey('bind_host.id'), primary_key=True),
@@ -93,7 +92,7 @@ class BindHost(Base):
     groups = relationship("Group", secondary=BindHost2Group, back_populates='bind_hosts')
     user_profiles = relationship("UserProfile", secondary=BindHost2UserProfile)
 
-    __table_args__ = (UniqueConstraint('host_id', 'remoteuser_id', name='_bindhost_and_user_uc'))
+    __table_args__ = (UniqueConstraint('host_id', 'remoteuser_id', name='_bindhost_and_user_uc'),)
 
     def __repr__(self):
         return "<BindHost(id='%s',name='%s',user='%s')>" % (self.id,

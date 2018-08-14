@@ -22,7 +22,7 @@ import sys
 from paramiko.py3compat import u
 from models.orm import AuditLog
 import datetime
-from settings import Redis_Handler
+from core.redis_handler import Redis_Handler
 
 # windows does not have termios...
 try:
@@ -72,12 +72,12 @@ def posix_shell(chan, user_obj, bind_host_obj):
                     cmd += x
                 else:
                     print('cmd->:', cmd)
-                    log_item = AuditLog(user_id=user_obj.id,
-                                        bind_host_id=bind_host_obj.id,
-                                        action_type='cmd',
-                                        cmd=cmd,
-                                        date=datetime.datetime.now())
-                    Redis_Handler.put(log_item)
+                    log = AuditLog(user_id=user_obj.id,
+                                   bind_host_id=bind_host_obj.id,
+                                   action_type='cmd',
+                                   cmd=cmd,
+                                   date=datetime.datetime.now())
+                    Redis_Handler.push(log)
                     cmd = ''
                 if '\t' == x:
                     tab_key = True

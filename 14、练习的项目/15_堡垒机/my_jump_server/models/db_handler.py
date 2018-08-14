@@ -114,10 +114,13 @@ class DatabaseHandler(object):
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))
 
     @staticmethod
-    def commit_orm_object(orm_obj):
+    def commit_orm_object(obj_or_list):
         try:
             session = DBSession()
-            session.add(orm_obj)
+            if isinstance(obj_or_list, list):
+                session.add_all(obj_or_list)
+            else:
+                session.add(obj_or_list)
             session.commit()
             session.close()
         except Exception as e:

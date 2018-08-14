@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 from logconfig.logconfig import init_logging
-from core.redis_handler import RedisHandler
 import configparser
 import os
 
@@ -20,7 +19,6 @@ DB_PORT = config.get('db', 'port')
 # redis连接初始化
 REDIS_HOST = config.get('redis', 'host')
 REDIS_PORT = config.get('redis', 'port')
-Redis_Handler = RedisHandler(REDIS_HOST, REDIS_PORT)
 
 # 初始化日志系统
 init_logging()
