@@ -37,7 +37,7 @@ def interactive_shell(chan, user_obj, bind_host_obj):
     if has_termios:
         posix_shell(chan, user_obj, bind_host_obj)
     else:
-        windows_shell(chan)
+        windows_shell(chan, user_obj, bind_host_obj)
 
 
 def posix_shell(chan, user_obj, bind_host_obj):
@@ -72,11 +72,11 @@ def posix_shell(chan, user_obj, bind_host_obj):
                     cmd += x
                 else:
                     print('cmd->:', cmd)
-                    log = AuditLog(user_id=user_obj.id,
-                                   bind_host_id=bind_host_obj.id,
-                                   action_type='cmd',
-                                   cmd=cmd,
-                                   date=datetime.datetime.now())
+                    log = dict(user_id=user_obj.id,
+                               bind_host_id=bind_host_obj.id,
+                               action_type='cmd',
+                               cmd=cmd,
+                               date=datetime.datetime.now())
                     Redis_Handler.push(log)
                     cmd = ''
                 if '\t' == x:
@@ -90,7 +90,7 @@ def posix_shell(chan, user_obj, bind_host_obj):
 
     
 # thanks to Mike Looijmans for this code
-def windows_shell(chan):
+def windows_shell(chan, user_obj, bind_host_obj):
     import threading
 
     sys.stdout.write("Line-buffered terminal emulation. Press F6 or ^Z to send EOF.\r\n\r\n")
@@ -102,7 +102,7 @@ def windows_shell(chan):
                 sys.stdout.write('\r\n*** EOF ***\r\n\r\n')
                 sys.stdout.flush()
                 break
-            sys.stdout.write(data)
+            sys.stdout.write(data.decode("utf-8"))
             sys.stdout.flush()
         
     writer = threading.Thread(target=writeall, args=(chan,))
@@ -114,6 +114,12 @@ def windows_shell(chan):
             if not d:
                 break
             chan.send(d)
+            log = dict(user_id=user_obj.id,
+                       bind_host_id=bind_host_obj.id,
+                       action_type='cmd',
+                       cmd=d,
+                       date=datetime.datetime.now())
+            Redis_Handler.push(log)
     except EOFError:
         # user hit ^Z or F6
         pass

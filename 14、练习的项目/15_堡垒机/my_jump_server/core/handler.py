@@ -23,7 +23,7 @@ class Handler(object):
                 raise SomethingError(u"用户不存在")
             code = 200
             msg = u"登录成功"
-            data = user_obj.__dict__
+            data = user_obj.to_dict()
         except Exception as e:
             code = 400
             msg = u"登录失败，原因：{0}".format(str(e))
@@ -81,12 +81,12 @@ class Handler(object):
         try:
             user = DatabaseHandler.query_user_profile_by_id(user_id)
             print(u"您具有访问权限的主机列表如下：")
-            for index, host in enumerate(user.bind_hosts):
-                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：".format(host.id,
-                                                                    host.hostname,
-                                                                    host.ip_addr,
-                                                                    host.remoteuser.username))
-            host_id = input(u"请输入选择的主机的id")
+            for index, bind_host in enumerate(user.bind_hosts):
+                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：{3}".format(bind_host.id,
+                                                                       bind_host.host.hostname,
+                                                                       bind_host.host.ip_addr,
+                                                                       bind_host.remoteuser.username))
+            host_id = input(u"请输入选择的主机的id：")
             code = 200
             msg = u"登录目标主机成功"
             data = host_id
@@ -101,13 +101,13 @@ class Handler(object):
     @staticmethod
     def start_host_session(user_id, host_id):
         try:
-            host_obj = DatabaseHandler.query_host_by_id(host_id)
+            host_obj = DatabaseHandler.query_bindhost_by_id(host_id)
             if not host_obj:
                 raise SomethingError(u"目标主机不存在")
             user_obj = DatabaseHandler.query_user_profile_by_id(user_id)
             if not user_obj:
                 raise SomethingError(u"用户不存在")
-            if host_id not in [host.id for host in user_obj.bind_hosts]:
+            if int(host_id) not in [host.id for host in user_obj.bind_hosts]:
                 raise SomethingError(u"没有权限访问目标主机")
             ssh_login.ssh_login(user_obj, host_obj)
             code = 200
@@ -124,6 +124,7 @@ class Handler(object):
         """创建系统用户"""
         try:
             source = yaml_parser(user_file)
+            print(source)
             if source:
                 for key, val in source.items():
                     user = UserProfile(username=key, password=val.get('password'), role_id=val.get('role_id'))
@@ -154,6 +155,7 @@ class Handler(object):
         """创建主机组"""
         try:
             source = yaml_parser(group_file)
+            print(source)
             if source:
                 for key, val in source.items():
                     group = Group(name=key)
@@ -165,11 +167,13 @@ class Handler(object):
                     if username_list:
                         user_profiles = DatabaseHandler.list_user_profiles_by_usernames(username_list)
                         group.user_profiles = user_profiles
-                    DatabaseHandler.commit_orm_object(group)
+                    print(group)
+                    DatabaseHandler.commit_orm_object([group])
             code = 200
             msg = u"创建主机组成功"
             data = source
-        except SomethingError as e:
+        # except SomethingError as e:
+        except KeyboardInterrupt as e:
             code = 200
             msg = u"创建主机组失败，原因：{0}".format(str(e))
             data = None
@@ -182,6 +186,7 @@ class Handler(object):
         """创建主机"""
         try:
             source = yaml_parser(hosts_file)
+            print(source)
             if source:
                 for key, val in source.items():
                     host = Host(hostname=key, ip_addr=val.get('ip_addr'), port=val.get('port') or 22)
@@ -202,6 +207,7 @@ class Handler(object):
         """创建主机的组、登录账号、用户权限的映射关系"""
         try:
             source = yaml_parser(bindhosts_file)
+            print(source)
             if source:
                 for key, val in source.items():
                     host_name = val.get('hostname')
@@ -228,16 +234,12 @@ class Handler(object):
                         group_names = source[key].get('groups')
                         if group_names:
                             groups = DatabaseHandler.list_group_by_names(group_names)
-                            if not groups:
-                                raise SomethingError(u"配置文件中，有不存在的主机组名")
                             bindhost_obj.groups = groups
 
                         # for user_profiles this host binds to
                         user_names = source[key].get('user_profiles')
                         if user_names:
                             userprofile_objs = DatabaseHandler.list_user_profiles_by_usernames(user_names)
-                            if not userprofile_objs:
-                                raise SomethingError(u"配置文件中，有不存在的系统用户")
                             bindhost_obj.user_profiles = userprofile_objs
                         DatabaseHandler.commit_orm_object(bindhost_obj)
             code = 200
@@ -256,6 +258,7 @@ class Handler(object):
         """配置主机的登录账号信息"""
         try:
             source = yaml_parser(remoteusers_file)
+            print(source)
             if source:
                 for key, val in source.items():
                     remote_user = RemoteUser(username=val.get('username'),
@@ -278,6 +281,7 @@ class Handler(object):
         """配置用户角色信息"""
         try:
             source = yaml_parser(role_file)
+            print(source)
             if source:
                 for key, names in source.items():
                     if DatabaseHandler.list_role_by_names(names):

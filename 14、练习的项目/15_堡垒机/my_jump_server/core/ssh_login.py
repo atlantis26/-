@@ -29,11 +29,11 @@ def ssh_login(user_obj, bind_host_obj):
         chan = client.invoke_shell()
         print(repr(client.get_transport()))
         print('*** Here we go!\n')
-        log = AuditLog(user_id=user_obj.id,
-                       bind_host_id=bind_host_obj.id,
-                       action_type='login',
-                       cmd="",
-                       date=datetime.datetime.now())
+        log = dict(user_id=user_obj.id,
+                   bind_host_id=bind_host_obj.id,
+                   action_type='login',
+                   cmd="",
+                   date=datetime.datetime.now())
         Redis_Handler.push(log)
         interactive.interactive_shell(chan, user_obj, bind_host_obj)
         chan.close()

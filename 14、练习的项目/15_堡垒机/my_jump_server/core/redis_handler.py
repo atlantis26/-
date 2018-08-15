@@ -1,7 +1,10 @@
 # coding:utf-8
 import redis
+import json
 from models.db_handler import DatabaseHandler
+from models.orm import AuditLog
 from settings import REDIS_HOST, REDIS_PORT
+
 
 
 class RedisHandler(object):
@@ -21,10 +24,18 @@ class RedisHandler(object):
         if num >= 10:
             # 获取列表中的所有元素
             logs = self.client.lrange(self.key, 0, -1)
-            DatabaseHandler.commit_orm_object(logs)
+            print(logs)
+            lst = []
+            for d in logs:
+                d = json.loads(d)
+                log = AuditLog(**d)
+                lst.append(log)
+            DatabaseHandler.commit_orm_object(lst)
             # 清空列表中的所有元素
             self.client.ltrim(self.key, 1, 0)
         else:
+            # if isinstance(log, dict):
+            #     log = json.dumps(log)
             self.client.rpush(self.key, log)
 
 

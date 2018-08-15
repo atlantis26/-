@@ -33,7 +33,7 @@ class ManagerView(object):
                         host_id = rsp.data
                         Handler.start_host_session(self.user_id, host_id)
                 else:
-                    actions[num](self.user_id)
+                    actions[num]()
             elif num == "8":
                 print("您已退出登录，欢迎再次访问本系统")
                 break

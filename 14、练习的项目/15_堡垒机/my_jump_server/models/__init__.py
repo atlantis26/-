@@ -9,6 +9,7 @@ DATABASE_URI = "mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8"\
 db = create_engine(DATABASE_URI, encoding="utf-8")
 Base = declarative_base()
 DBSession = sessionmaker(bind=db)
+session = DBSession()
 
 
 def to_dict(self):

@@ -75,7 +75,8 @@ class Group(Base):
     __tablename__ = 'group'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(64), nullable=False, unique=True)
-    bind_hosts = relationship("BindHost", secondary=BindHost2Group, back_populates='groups')
+    bind_hosts = relationship("BindHost", secondary=BindHost2Group)
+    # bind_hosts = relationship("BindHost", secondary=BindHost2Group, back_populates='groups')
     user_profiles = relationship("UserProfile", secondary=Group2UserProfile)
 
     def __repr__(self):
@@ -83,7 +84,7 @@ class Group(Base):
 
 
 class BindHost(Base):
-    __tablename__ = 'bind_host'.encode()
+    __tablename__ = 'bind_host'
     id = Column(Integer, primary_key=True, autoincrement=True)
     host_id = Column(Integer, ForeignKey('host.id'))
     remoteuser_id = Column(Integer, ForeignKey('remote_user.id'))
