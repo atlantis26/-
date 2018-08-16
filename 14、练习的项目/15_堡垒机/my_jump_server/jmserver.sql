@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50720
 File Encoding         : 65001
 
-Date: 2018-08-15 17:48:23
+Date: 2018-08-16 10:36:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,11 +31,61 @@ CREATE TABLE `audit_log` (
   KEY `bind_host_id` (`bind_host_id`),
   CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_profile` (`id`),
   CONSTRAINT `audit_log_ibfk_2` FOREIGN KEY (`bind_host_id`) REFERENCES `bind_host` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of audit_log
 -- ----------------------------
+INSERT INTO `audit_log` VALUES ('1', '4', '2', 'login', '', '2018-08-16 01:56:50');
+INSERT INTO `audit_log` VALUES ('2', '4', '2', 'cmd', 'ls', '2018-08-16 01:56:54');
+INSERT INTO `audit_log` VALUES ('3', '4', '2', 'cmd', 'ls', '2018-08-16 01:57:20');
+INSERT INTO `audit_log` VALUES ('4', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:21');
+INSERT INTO `audit_log` VALUES ('5', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:22');
+INSERT INTO `audit_log` VALUES ('6', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:23');
+INSERT INTO `audit_log` VALUES ('7', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:23');
+INSERT INTO `audit_log` VALUES ('8', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:24');
+INSERT INTO `audit_log` VALUES ('9', '4', '2', 'cmd', 'pwd', '2018-08-16 01:57:25');
+INSERT INTO `audit_log` VALUES ('10', '4', '2', 'cmd', 'ls', '2018-08-16 01:57:35');
+INSERT INTO `audit_log` VALUES ('11', '4', '2', 'cmd', 'ls', '2018-08-16 01:57:50');
+INSERT INTO `audit_log` VALUES ('12', '4', '2', 'cmd', 'ls', '2018-08-16 01:58:43');
+INSERT INTO `audit_log` VALUES ('13', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:45');
+INSERT INTO `audit_log` VALUES ('14', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:46');
+INSERT INTO `audit_log` VALUES ('15', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:47');
+INSERT INTO `audit_log` VALUES ('16', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:48');
+INSERT INTO `audit_log` VALUES ('17', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:49');
+INSERT INTO `audit_log` VALUES ('18', '4', '2', 'cmd', 'aw', '2018-08-16 01:58:51');
+INSERT INTO `audit_log` VALUES ('19', '4', '2', 'cmd', 'aw', '2018-08-16 01:58:53');
+INSERT INTO `audit_log` VALUES ('20', '4', '2', 'cmd', 'aw', '2018-08-16 01:58:54');
+INSERT INTO `audit_log` VALUES ('21', '4', '2', 'cmd', 'aw', '2018-08-16 01:58:56');
+INSERT INTO `audit_log` VALUES ('22', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:57');
+INSERT INTO `audit_log` VALUES ('23', '4', '2', 'cmd', 'pwd', '2018-08-16 01:58:58');
+INSERT INTO `audit_log` VALUES ('24', '4', '2', 'cmd', 'awd', '2018-08-16 01:58:59');
+INSERT INTO `audit_log` VALUES ('25', '4', '2', 'cmd', 'df -h', '2018-08-16 01:59:05');
+INSERT INTO `audit_log` VALUES ('26', '4', '2', 'cmd', 'ls', '2018-08-16 01:59:21');
+INSERT INTO `audit_log` VALUES ('27', '4', '2', 'cmd', 'ls', '2018-08-16 01:59:21');
+INSERT INTO `audit_log` VALUES ('28', '4', '2', 'cmd', 'ls', '2018-08-16 01:59:22');
+INSERT INTO `audit_log` VALUES ('29', '4', '2', 'cmd', 'ls', '2018-08-16 01:59:23');
+INSERT INTO `audit_log` VALUES ('30', '4', '2', 'cmd', 'pwd', '2018-08-16 01:59:34');
+INSERT INTO `audit_log` VALUES ('31', '4', '2', 'login', '', '2018-08-16 02:06:16');
+INSERT INTO `audit_log` VALUES ('32', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:18');
+INSERT INTO `audit_log` VALUES ('33', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:23');
+INSERT INTO `audit_log` VALUES ('34', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:24');
+INSERT INTO `audit_log` VALUES ('35', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:25');
+INSERT INTO `audit_log` VALUES ('36', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:25');
+INSERT INTO `audit_log` VALUES ('37', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:26');
+INSERT INTO `audit_log` VALUES ('38', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:27');
+INSERT INTO `audit_log` VALUES ('39', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:28');
+INSERT INTO `audit_log` VALUES ('40', '4', '2', 'cmd', 'pwd', '2018-08-16 02:06:29');
+INSERT INTO `audit_log` VALUES ('41', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:30');
+INSERT INTO `audit_log` VALUES ('42', '4', '2', 'cmd', 'ls', '2018-08-16 02:06:52');
+INSERT INTO `audit_log` VALUES ('43', '4', '2', 'cmd', 'z', '2018-08-16 02:06:59');
+INSERT INTO `audit_log` VALUES ('44', '4', '2', 'login', '', '2018-08-16 02:22:15');
+INSERT INTO `audit_log` VALUES ('45', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:17');
+INSERT INTO `audit_log` VALUES ('46', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:18');
+INSERT INTO `audit_log` VALUES ('47', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:18');
+INSERT INTO `audit_log` VALUES ('48', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:19');
+INSERT INTO `audit_log` VALUES ('49', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:19');
+INSERT INTO `audit_log` VALUES ('50', '4', '2', 'cmd', 'ls', '2018-08-16 02:22:20');
 
 -- ----------------------------
 -- Table structure for bind_host
@@ -78,6 +128,9 @@ CREATE TABLE `bindhost_2_group` (
 INSERT INTO `bindhost_2_group` VALUES ('1', '1');
 INSERT INTO `bindhost_2_group` VALUES ('2', '1');
 INSERT INTO `bindhost_2_group` VALUES ('3', '1');
+INSERT INTO `bindhost_2_group` VALUES ('1', '3');
+INSERT INTO `bindhost_2_group` VALUES ('2', '3');
+INSERT INTO `bindhost_2_group` VALUES ('3', '3');
 
 -- ----------------------------
 -- Table structure for bindhost_2_userprofile
@@ -109,11 +162,12 @@ CREATE TABLE `group` (
   `name` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of group
 -- ----------------------------
+INSERT INTO `group` VALUES ('3', 'operation_team');
 INSERT INTO `group` VALUES ('1', 'web_devteam');
 
 -- ----------------------------
@@ -136,6 +190,7 @@ INSERT INTO `group_2_userprofile` VALUES ('1', '1');
 INSERT INTO `group_2_userprofile` VALUES ('2', '1');
 INSERT INTO `group_2_userprofile` VALUES ('3', '1');
 INSERT INTO `group_2_userprofile` VALUES ('4', '1');
+INSERT INTO `group_2_userprofile` VALUES ('4', '3');
 
 -- ----------------------------
 -- Table structure for host

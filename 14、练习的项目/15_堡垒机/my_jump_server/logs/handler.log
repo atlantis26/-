@@ -1,0 +1,2 @@
+2018-08-16 10:44:02 - handler.py:31(handler:login) - DEBUG - {'code': 200, 'msg': '登录成功', 'data': {'id': 1, 'username': 'admin', 'password': 'admin', 'role_id': 1}}
+2018-08-16 11:12:31 - handler.py:31(handler:login) - DEBUG - {'code': 200, 'msg': '登录成功', 'data': {'id': 4, 'username': 'test1', 'password': '123456', 'role_id': 2}}

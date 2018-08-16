@@ -19,9 +19,8 @@
 
 import socket
 import sys
+import time
 from paramiko.py3compat import u
-from models.orm import AuditLog
-import datetime
 from core.redis_handler import Redis_Handler
 
 # windows does not have termios...
@@ -76,7 +75,7 @@ def posix_shell(chan, user_obj, bind_host_obj):
                                bind_host_id=bind_host_obj.id,
                                action_type='cmd',
                                cmd=cmd,
-                               date=datetime.datetime.now())
+                               date=time.time())
                     Redis_Handler.push(log)
                     cmd = ''
                 if '\t' == x:
@@ -109,17 +108,23 @@ def windows_shell(chan, user_obj, bind_host_obj):
     writer.start()
         
     try:
+        cmd = ''
         while True:
             d = sys.stdin.read(1)
-            if not d:
+            if "\n" == d:
+                log = dict(user_id=user_obj.id,
+                           bind_host_id=bind_host_obj.id,
+                           action_type='cmd',
+                           cmd=cmd,
+                           date=time.time())
+                Redis_Handler.push(log)
+                cmd = ''
+            elif not d:
                 break
+            else:
+                cmd += d
             chan.send(d)
-            log = dict(user_id=user_obj.id,
-                       bind_host_id=bind_host_obj.id,
-                       action_type='cmd',
-                       cmd=d,
-                       date=datetime.datetime.now())
-            Redis_Handler.push(log)
+
     except EOFError:
         # user hit ^Z or F6
         pass

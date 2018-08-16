@@ -1,11 +1,10 @@
 
-web_devteam:
+operation_team:
   bind_hosts:
-    - server1
-    - server2
+    - test_server1
+    - test_server2
   user_profiles:
-    - alex
-    - rain
-    - jack
+    - root
+    - test1
 
 

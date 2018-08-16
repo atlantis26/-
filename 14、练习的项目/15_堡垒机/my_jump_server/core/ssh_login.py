@@ -2,9 +2,8 @@
 # __author__ = 'Alex Li'
 import sys
 import traceback
-from models.orm import AuditLog
+import time
 from core.redis_handler import Redis_Handler
-import datetime
 import paramiko
 
 try:
@@ -33,7 +32,7 @@ def ssh_login(user_obj, bind_host_obj):
                    bind_host_id=bind_host_obj.id,
                    action_type='login',
                    cmd="",
-                   date=datetime.datetime.now())
+                   date=time.time())
         Redis_Handler.push(log)
         interactive.interactive_shell(chan, user_obj, bind_host_obj)
         chan.close()

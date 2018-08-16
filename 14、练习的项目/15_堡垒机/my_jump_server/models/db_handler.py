@@ -96,7 +96,7 @@ class DatabaseHandler(object):
     @staticmethod
     def list_bindhost_by_names(host_name_list):
         try:
-            bind_hosts = session.query(Host).filter(Host.hostname.in_(host_name_list)).all()
+            bind_hosts = session.query(BindHost).filter(Host.hostname.in_(host_name_list)).all()
             return bind_hosts
         except Exception as e:
             raise SomethingError(u"操作数据库时出错，详情：{0}".format(str(e)))

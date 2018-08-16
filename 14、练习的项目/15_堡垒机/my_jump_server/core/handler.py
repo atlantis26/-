@@ -53,17 +53,19 @@ class Handler(object):
             user = DatabaseHandler.query_user_profile_by_id(user_id)
             print(u"您具有访问权限的主机组如下：")
             for index, group in enumerate(user.groups):
-                print(u"id：{0}    主机组名：{1}".format(group.id, group.name))
-            choice1 = input(u"请输入选择的主机组的id:").strip()
-            if not choice1:
-                raise SomethingError(u"主机组id不存在")
+                print(u"编号：{0}  主机组名：{1}".format(index, group.name))
+            choice1 = input(u"请输入选择的主机组的编号:").strip()
+            if not choice1.isdigit():
+                raise SomethingError(u"主机组编号不是数字")
+            elif int(choice1) > len(user.groups)-1:
+                raise SomethingError(u"主机组编号不存在")
             print(u"您选择的主机组下可访问的主机列表如下：")
-            for index, host in enumerate(user.groups[choice1].bind_hosts):
-                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：".format(host.id,
-                                                                    host.hostname,
-                                                                    host.ip_addr,
-                                                                    host.remoteuser.username))
-            host_id = input(u"请输入选择的主机的id")
+            for index, bind_host in enumerate(user.groups[int(choice1)].bind_hosts):
+                print(u"id：{0}   主机名称：{1}   ip地址：{2}  登录账号：".format(bind_host.id,
+                                                                    bind_host.host.hostname,
+                                                                    bind_host.host.ip_addr,
+                                                                    bind_host.remoteuser.username))
+            host_id = input(u"请输入选择的主机的id：")
             code = 200
             msg = u"选择目标主机成功"
             data = host_id
@@ -124,7 +126,6 @@ class Handler(object):
         """创建系统用户"""
         try:
             source = yaml_parser(user_file)
-            print(source)
             if source:
                 for key, val in source.items():
                     user = UserProfile(username=key, password=val.get('password'), role_id=val.get('role_id'))
@@ -155,7 +156,6 @@ class Handler(object):
         """创建主机组"""
         try:
             source = yaml_parser(group_file)
-            print(source)
             if source:
                 for key, val in source.items():
                     group = Group(name=key)
@@ -186,7 +186,6 @@ class Handler(object):
         """创建主机"""
         try:
             source = yaml_parser(hosts_file)
-            print(source)
             if source:
                 for key, val in source.items():
                     host = Host(hostname=key, ip_addr=val.get('ip_addr'), port=val.get('port') or 22)
@@ -207,7 +206,6 @@ class Handler(object):
         """创建主机的组、登录账号、用户权限的映射关系"""
         try:
             source = yaml_parser(bindhosts_file)
-            print(source)
             if source:
                 for key, val in source.items():
                     host_name = val.get('hostname')
@@ -258,7 +256,6 @@ class Handler(object):
         """配置主机的登录账号信息"""
         try:
             source = yaml_parser(remoteusers_file)
-            print(source)
             if source:
                 for key, val in source.items():
                     remote_user = RemoteUser(username=val.get('username'),
@@ -281,7 +278,6 @@ class Handler(object):
         """配置用户角色信息"""
         try:
             source = yaml_parser(role_file)
-            print(source)
             if source:
                 for key, names in source.items():
                     if DatabaseHandler.list_role_by_names(names):

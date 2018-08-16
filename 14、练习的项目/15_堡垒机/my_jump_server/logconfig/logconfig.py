@@ -42,18 +42,10 @@ LOGGING = {
             'facility': 'logging.handlers.SysLogHandler.LOG_LOCAL7',
             'formatter': 'standard',
         },
-        'server': {
+        'handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'server.log'),
-            'maxBytes': 1024 * 1024 * 100,
-            'backupCount': 5,
-            'formatter': 'standard',
-        },
-        'models': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'models.log'),
+            'filename': os.path.join(LOG_DIR, 'handler.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
@@ -65,13 +57,8 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'system.server': {
-            'handlers': ['server'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'system.models': {
-            'handlers': ['models'],
+        'system.handler': {
+            'handlers': ['handler'],
             'level': 'DEBUG',
             'propagate': False,
         },
