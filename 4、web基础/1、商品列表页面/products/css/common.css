@@ -1,0 +1,15 @@
+img{
+    height:300px;
+    width: 300px;
+    border: 0;
+}
+a{
+text-decoration:none;
+color: blue;
+}
+
+.demo_line_02{
+    height: 1px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}

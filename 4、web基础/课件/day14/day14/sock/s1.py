@@ -5,7 +5,7 @@ import socket
 def handle_request(client):
     buf = client.recv(1024)
     client.send(bytes("HTTP/1.1 200 OK\r\n\r\n",encoding='utf-8'))
-    f = open('index.html', 'r', encoding='utf-8')
+    f = open('index.js', 'r', encoding='utf-8')
     data = f.read()
     f.close()
     import time
