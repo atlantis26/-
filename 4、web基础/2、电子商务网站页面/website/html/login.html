@@ -2,9 +2,204 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>登录login</title>
+    <link rel = "shortcut icon" href="../images/favicon.ico">
+    <link rel = "stylesheet" type="text/css" href="../css/common.css">
 </head>
 <body>
-
+    <div class="pg-header" style="height: 100px; position: relative;">
+        <img src="../images/logo.jpg" style="position: absolute; height:95px;width: 100px; border: 0;">
+        <h1>京东欢迎登录</h1>
+    </div>
+    <div class="pg-header" style="height: 100px; position: relative;">
+        <form method="POST" action="https://localhost:8080">
+            <div style="position: absolute ; left: 40%; top: 50%">
+                <input type="text" id="pd1" name="product" style="height: 25px;">
+                <input type="submit" value="搜索" style="height: 25px;">
+            </div>
+        </form>
+    </div>
+    <div class="pg-kind1" style="height: 40px; position: relative; background-color: crimson;">
+        <div style="position: absolute ; left: 0; top: 50%">
+            <a href="">全部商品分类</a>
+        </div>
+        <div style="position: absolute ; left: 25%; top: 50%">
+            <span><a href="">首页</a></span>
+            <span><a href="">网上超市</a></span>
+            <span><a href="">数码超市</a></span>
+            <span><a href="">超级订餐</a></span>
+            <span><a href="">生活娱乐</a></span>
+            <span><a href="">研究院</a></span>
+        </div>
+        <div style="position: absolute ; left: 80%; top: 50%">
+            <span><a href="">研究院</a></span>
+            <span><a href="">研究院</a></span>
+            <span><a href="">论坛</a></span>
+        </div>
+    </div>
+    <div class="pg-kind2" style="width: 20%; float: left;">
+        <br />
+        <div>
+            <a>数码产品</a>
+            <ul><li><a>电脑</a></li></ul>
+            <ul><li><a>手机</a></li></ul>
+            <ul><li><a>家电</a></li></ul>
+            <ul><li><a>其它</a></li></ul>
+        </div>
+        <div>
+            <a>家具</a>
+            <ul><li><a>皮质</a></li></ul>
+            <ul><li><a>布艺</a></li></ul>
+            <ul><li><a>其它</a></li></ul>
+        </div>
+        <div>
+            <a>服饰</a>
+            <ul><li><a>男装</a></li></ul>
+            <ul><li><a>女装</a></li></ul>
+            <ul><li><a>童装</a></li></ul>
+            <ul><li><a>其它</a></li></ul>
+        </div>
+        <div>
+            <a>生鲜</a>
+            <ul><li><a>肉类</a></li></ul>
+            <ul><li><a>谷物</a></li></ul>
+            <ul><li><a>其它</a></li></ul>
+        </div>
+    </div>
+    <div class="pg-body" style="width: 78%; float: left;border: groove;">
+        <br />
+        <div>
+            <div><label>你已选择：</label><a>数码产品</a></div>
+            <div><label>类型：</label><a>笔记本电脑</a></div>
+            <div><label>尺寸：</label><a>14寸</a></div>
+        </div>
+        <div>
+            <label>排序：</label><a>价格</a>&nbsp|&nbsp<a>销量</a>&nbsp|&nbsp<a>综合</a>
+        </div>
+        <br />
+        <div class="demo_line_02" style="margin: auto"></div>
+        <p></p>
+        <div style="clear: both">
+            <div style="float: left;border: groove;">
+                <div><img src="images/1.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑1</a></div>
+                <div style="float: left;"><label>￥3999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/2.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑2</a></div>
+                <div style="float: left;"><label>￥4999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/3.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑3</a></div>
+                <div style="float: left;"><label>￥5999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/4.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑4</a></div>
+                <div style="float: left;"><label>￥6999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/5.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑5</a></div>
+                <div style="float: left;"><label>￥7999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/6.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑6</a></div>
+                <div style="float: left;"><label>￥8999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/7.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑7</a></div>
+                <div style="float: left;"><label>￥9999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/8.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑8</a></div>
+                <div style="float: left;"><label>￥10999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+            <div style="float: left;border: groove;">
+                <div><img src="images/9.jpg"></div>
+                <div style="text-align: center;"><a>笔记本电脑9</a></div>
+                <div style="float: left;"><label>￥11999</label></div>
+                <div style="float: right;">
+                    <span style="border: 1px solid gray;">
+                        <span><a style="color: red">-</a></span>
+                        <span><input type="text" value="1" style="width: 15px; color: gray;"></span>
+                        <span><a style="color: red">+</a></span>
+                    </span>
+                    <span><a>购买</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-footer">
+    </div>
 </body>
 </html>
